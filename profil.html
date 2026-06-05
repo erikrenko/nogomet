@@ -68,30 +68,6 @@
     .h2h-row-label { font-family: 'JetBrains Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); text-align: center; white-space: nowrap; }
     .h2h-footer { margin-top: 12px; font-size: .75rem; color: var(--muted); text-align: center; border-top: 1px solid var(--border); padding-top: 10px; }
 
-    /* Jersey cabinet */
-    .cabinet-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; box-shadow: var(--shadow-sm); }
-    .cabinet-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 4px; }
-    .cabinet-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
-    .cabinet-count { font-size: .72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-    .cabinet-title { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 2px; }
-    .cabinet-sub { font-size: .75rem; color: var(--muted); margin-bottom: 16px; }
-    .cabinet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-    .cabinet-tile { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); background: var(--bg-mid); position: relative; }
-    .cabinet-tile-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--bg-deep); }
-    .cabinet-tile-img-placeholder { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
-    .cabinet-tile-stripe { height: 4px; width: 100%; }
-    .cabinet-tile-body { padding: 10px 12px; }
-    .cabinet-tile-name { font-size: .82rem; font-weight: 700; color: var(--text); }
-    .cabinet-tile-date { font-size: .68rem; color: var(--muted); margin-bottom: 8px; }
-    .cabinet-tile-btn { width: 100%; padding: 6px; font-size: .75rem; font-weight: 600; background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-main); color: var(--text-mid); transition: all .15s; }
-    .cabinet-tile-btn:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
-    .cabinet-tile-hint-mobile { display: none; font-size: .62rem; color: var(--muted); text-align: center; margin-top: 5px; }
-    @media (max-width: 768px) {
-      .cabinet-tile-btn-desktop { display: none !important; }
-      .cabinet-tile-hint-mobile { display: block; }
-    }
-    .cabinet-new-badge { position: absolute; top: 8px; right: 8px; background: var(--accent); color: #fff; font-size: .58rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
-    .cabinet-empty { padding: 32px; text-align: center; color: var(--muted); font-size: .85rem; }
 
     /* Rival picker modal */
     .rival-modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -302,20 +278,7 @@
 
       </div>
 
-      <!-- 6. JERSEY CABINET -->
-      <div class="cabinet-card">
-        <div class="cabinet-header">
-          <div>
-            <div class="cabinet-eyebrow">Navijaški kotiček: Dresi</div>
-          </div>
-          <div class="cabinet-count" id="cabinet-count"></div>
-        </div>
-        <div class="cabinet-title">Tvoja osebna zbirka dresov s prvenstva</div>
-        <div class="cabinet-sub">Ob posebnih priložnostih in presenečenjih se tukaj pojavi nov dres · prenesi katerega koli</div>
-        <div class="cabinet-grid" id="cabinet-grid">
-          <div class="cabinet-empty">Nalagam zbirko...</div>
-        </div>
-      </div>
+
 
     </div>
   </div>
@@ -530,7 +493,7 @@
         <div style="text-align:center;padding:24px 16px;color:var(--muted)">
           <div style="font-size:1.5rem;margin-bottom:8px">🤜🤛</div>
           <div style="font-size:.85rem;font-weight:600;margin-bottom:4px">Izberi tekmeca</div>
-          <div style="font-size:.75rem;margin-bottom:12px">Primerjaj se s kolegom za celotno sezono</div>
+          <div style="font-size:.75rem;margin-bottom:12px">Izberi nekoga iz družine in preveri, kdo je boljši skozi celotno prvenstvo</div>
           <button class="btn btn-primary btn-sm" onclick="_openRivalPicker()">Izberi tekmeca →</button>
         </div>`;
       return;
@@ -550,12 +513,11 @@
     const rows = [
       { label: 'Uvrstitev',       me: _myLb.rank,          riv: _rivalLb.rank,         lowerWins: true  },
       { label: 'Skupaj točk',     me: _myLb.total_points,  riv: _rivalLb.total_points,  lowerWins: false },
-      { label: 'Trivia točke',    me: _myLb.trivia_points, riv: _rivalLb.trivia_points,  lowerWins: false },
       { label: 'Highest rank',    me: _myLb.rank,          riv: _rivalLb.rank,          lowerWins: true  },
       { label: 'Točnih napovedi', me: _myLb.correct_scores, riv: _rivalLb.correct_scores, lowerWins: false },
     ];
 
-    const rowLabels = ['Uvrstitev', 'Skupaj točk', 'Trivia točke', 'Najvišja uvrstitev', 'Točnih napovedi'];
+    const rowLabels = ['Uvrstitev', 'Skupaj točk', 'Najvišja uvrstitev', 'Točnih napovedi'];
     let meWins = 0, rivWins = 0;
     rows.forEach(r => {
       const meLeads = r.lowerWins ? r.me < r.riv : r.me > r.riv;
@@ -754,83 +716,6 @@
     }
   }
 
-  /* ── JERSEY CABINET ────────────────────────────────────────── */
-  async function _loadCabinet() {
-    const today = new Date();
-    const todayISO = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-    const { data: days } = await NP.db
-      .from('themed_days')
-      .select('*')
-      .not('jersey_url', 'is', null)
-      .lte('theme_date', todayISO)
-      .order('theme_date', { ascending: false });
-
-    const grid = document.getElementById('cabinet-grid');
-
-    if (!days?.length) {
-      grid.innerHTML = '';
-      document.getElementById('cabinet-count').textContent = '';
-      return;
-    }
-
-    document.getElementById('cabinet-count').textContent = `${days.length} doslej`;
-
-    const jerseyName = (td) => {
-      const themeCode = td.theme_code;
-      const aliases   = _profile.aliases ?? {};
-      return aliases?.[themeCode]?.jersey
-          ?? NP.getAlias(_profile, _state, 'short').split(' ')[0];
-    };
-
-    const dateLabel = (iso) => {
-      const d = new Date(iso);
-      return `${d.getDate()}. ${['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'][d.getMonth()]}`;
-    };
-
-    grid.innerHTML = days.map(td => {
-      const isToday = td.theme_date === todayISO;
-      const fill = td.jersey_name_color || '#ffffff';
-      const alias = jerseyName(td);
-      const cx = td.jersey_center_x || 312;
-      const cy = td.jersey_center_y || 147;
-      const mw = td.jersey_max_width || 320;
-      const mf = td.jersey_font_size || 52;
-
-      return `<div class="cabinet-tile">
-        ${isToday ? '<div class="cabinet-new-badge">NOV</div>' : ''}
-        <div class="cabinet-tile-stripe" style="background:${td.banner_color_primary || '#449d44'}"></div>
-        <div style="position:relative">
-          <img class="cabinet-tile-img"
-            id="cabinet-img-${_esc(td.theme_code)}"
-            src="${_esc(td.jersey_url)}"
-            alt="${_esc(td.theme_name_sl || '')}"
-            style="-webkit-touch-callout:default"
-            data-alias="${_esc(alias)}"
-            data-fill="${_esc(fill)}"
-            data-cx="${cx}" data-cy="${cy}"
-            data-mw="${mw}" data-mf="${mf}"
-            data-url="${_esc(td.jersey_url)}">
-          <div class="cabinet-name-overlay" style="position:absolute;left:${(cx/1024*100).toFixed(2)}%;top:${(cy/1024*100).toFixed(2)}%;
-            transform:translate(-50%,-50%);font-family:Figtree,sans-serif;font-weight:900;
-            font-size:clamp(6px,3.5%,14px);color:${fill};text-transform:uppercase;
-            white-space:nowrap;pointer-events:none;letter-spacing:.05em;
-            text-shadow:0 1px 2px rgba(0,0,0,.3)">${_esc(alias)}</div>
-        </div>
-        <div class="cabinet-tile-body">
-          <div class="cabinet-tile-name">${_esc(td.theme_name_sl || '')}</div>
-          <div class="cabinet-tile-date">${dateLabel(td.theme_date)}</div>
-          <button class="cabinet-tile-btn"
-            onclick="_shareOrDownloadJersey('${_esc(td.jersey_url)}','${_esc(alias)}','${_esc(fill)}','${_esc(td.theme_code)}',${cx},${cy},${mw},${mf},this)">
-            ⬇ Prenesi
-          </button>
-        </div>
-      </div>`;
-    }).join('');
-
-    // Pre-bake all jerseys to canvas so long-press on mobile saves the named version
-    _prebakeAllJerseys();
-  }
 
   /* ── JERSEY SHARE / DOWNLOAD ───────────────────────────────── */
   /*
