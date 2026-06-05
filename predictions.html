@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Napovednik 2026 — Napovedi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=3">
+  <style>
+    /* ── PAGE HEADER ── */
+    .pred-page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .pred-page-title-group {}
+    .pred-page-eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .pred-page-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .pred-stats-trio {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+      padding-top: 4px;
+    }
+    .pred-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+    .pred-stat-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .pred-stat-label {
+      font-size: .6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+    }
+    .pred-stat.caka .pred-stat-num  { color: var(--gold); }
+    .pred-stat.tocke .pred-stat-num { color: var(--accent-dark); }
+
+    /* ── TABS ── */
+    .pred-tabs-nav {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+      gap: 0;
+    }
+    .pred-tab-btn {
+      padding: 10px 18px;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--muted);
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      background: none;
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: color var(--t-fast), border-color var(--t-fast);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .pred-tab-btn:hover { color: var(--text); }
+    .pred-tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+    .pred-tab-badge {
+      background: var(--red);
+      color: white;
+      font-size: .62rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 99px;
+      min-width: 18px;
+      text-align: center;
+    }
+    .pred-tab-pane { display: none; }
+    .pred-tab-pane.active { display: block; }
+
+    /* ── ACCORDION (Po datumu) ── */
+    .acc-day {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 8px;
+      background: var(--bg-mid);
+    }
+    .acc-day-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      cursor: pointer;
+      user-select: none;
+      gap: 12px;
+      transition: background var(--t-fast);
+    }
+    .acc-day-header:hover { background: var(--bg-deep); }
+    .acc-day-date {
+      min-width: 90px;
+    }
+    .acc-day-date-main {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .acc-day-date-sub {
+      font-size: .7rem;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    .acc-day-today-badge {
+      background: var(--accent);
+      color: white;
+      font-size: .65rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .acc-day-spacer { flex: 1; }
+    .acc-day-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .acc-day-status {
+      font-size: .75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .acc-day-status.all-done {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid rgba(68,157,68,.2);
+    }
+    .acc-day-status.pending {
+      background: var(--gold-bg);
+      color: var(--gold);
+      border: 1px solid rgba(180,90,0,.2);
+    }
+    .acc-day-status.missing {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(192,49,43,.2);
+    }
+    .acc-day-arrow {
+      color: var(--muted);
+      font-size: .8rem;
+      transition: transform var(--t-base);
+      flex-shrink: 0;
+    }
+    .acc-day.open .acc-day-arrow { transform: rotate(180deg); }
+    .acc-day-body { display: none; border-top: 1px solid var(--border); }
+    .acc-day.open .acc-day-body { display: block; }
+
+    /* ── PREDICTION MATCH ROW ── */
+    .pred-match-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+      transition: background var(--t-fast);
+      position: relative;
+    }
+    .pred-match-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      width: 220px;
+      flex-shrink: 0;
+    }
+    .pred-match-row:last-child { border-bottom: none; }
+    .pred-match-row.deadline-soon {
+      background: rgba(180,90,0,.04);
+      border-left: 3px solid var(--gold);
+    }
+    .pred-match-row.locked { opacity: .7; }
+
+    .pred-match-group {
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 46px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .pred-match-teams {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .pred-team {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+    }
+    .pred-team.right { justify-content: flex-end; flex-direction: row-reverse; }
+    .pred-team-name {
+      font-size: .88rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+    .pred-team img.flag {
+      width: 22px;
+      height: 15px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .pred-vs {
+      min-width: 60px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .pred-vs-time {
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .pred-vs-score {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    /* Score inputs */
+    .pred-inputs-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pred-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .pred-score-input {
+      width: 44px;
+      text-align: center;
+      font-family: var(--font-main);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 5px 2px;
+      background: var(--white);
+      border: 2px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    }
+    .pred-score-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+    .pred-score-input::-webkit-outer-spin-button,
+    .pred-score-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .pred-score-input[type=number] { -moz-appearance: textfield; }
+    .pred-score-input.saved { border-color: var(--accent); }
+    .pred-score-input.locked {
+      background: var(--bg-deep);
+      border-color: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+    .pred-sep {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    /* Outcome indicator */
+    .pred-outcome {
+      font-size: .7rem;
+      font-weight: 800;
+      width: 22px;
+      text-align: center;
+      flex-shrink: 0;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .pred-outcome.H { background: var(--green-bg); color: var(--green-text); }
+    .pred-outcome.A { background: var(--blue-bg);  color: var(--blue); }
+    .pred-outcome.D { background: var(--bg-deep);  color: var(--muted); }
+    .pred-outcome.empty { color: transparent; background: transparent; }
+
+    /* Result chip */
+    .pred-result-chip {
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pred-result-chip.exact   { background: var(--green-bg); color: var(--green-text); border: 1px solid rgba(68,157,68,.25); }
+    .pred-result-chip.correct { background: var(--blue-bg);  color: var(--blue);       border: 1px solid rgba(29,78,216,.2); }
+    .pred-result-chip.wrong   { background: var(--red-bg);   color: var(--red);        border: 1px solid rgba(192,49,43,.2); }
+    .pred-result-chip.pending { background: var(--bg-deep);  color: var(--muted);      border: 1px solid var(--border); }
+    .pred-result-chip.missing { background: var(--red-bg);   color: var(--red);        border: 1px solid rgba(192,49,43,.2); }
+    .pred-result-chip.locked  { background: var(--bg-deep);  color: var(--muted);      border: 1px solid var(--border); }
+
+    .deadline-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--gold);
+      background: var(--gold-bg);
+      padding: 2px 7px;
+      border-radius: 99px;
+      border: 1px solid rgba(180,90,0,.2);
+      white-space: nowrap;
+    }
+
+    .save-indicator {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity var(--t-base);
+    }
+    .save-indicator.saving  { background: var(--gold);  opacity: 1; }
+    .save-indicator.saved   { background: var(--green); opacity: 1; }
+    .save-indicator.error   { background: var(--red);   opacity: 1; }
+
+    /* ── GROUP CARDS (Po skupini) ── */
+    .group-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px) { .group-cards-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 600px) { .group-cards-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .group-card {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(40,80,44,.06);
+      cursor: pointer;
+      transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    }
+    .group-card:hover { border-color: var(--accent); box-shadow: 0 3px 10px rgba(40,80,44,.1); }
+
+    .group-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .group-card-label {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .group-card-status {
+      font-size: .65rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 99px;
+    }
+    .group-card-status.done    { background: var(--green-bg); color: var(--green-text); }
+    .group-card-status.partial { background: var(--gold-bg);  color: var(--gold); }
+    .group-card-status.pending { background: var(--bg-deep);  color: var(--muted); }
+
+    .group-card-teams { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .group-card-team {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .group-card-team img {
+      width: 18px; height: 12px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .group-card-footer {
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-deep);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .group-card-progress {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-right: 8px;
+    }
+    .group-card-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      transition: width .4s ease;
+    }
+    .group-card-link {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--accent-dark);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .group-card-progress-label {
+      font-size: .65rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── PRIHODNJE tab ── */
+    .deadline-alert {
+      background: var(--gold-bg);
+      border: 1px solid rgba(180,90,0,.25);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .deadline-alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .deadline-alert-text { flex: 1; font-size: .85rem; color: var(--text-mid); }
+    .deadline-alert-text strong { color: var(--gold); }
+
+    /* ── NEPOPOLNE tab ── */
+    .missing-banner {
+      background: var(--red-bg);
+      border: 1px solid rgba(192,49,43,.2);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .missing-banner-left {}
+    .missing-banner-count {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--red);
+      line-height: 1;
+    }
+    .missing-banner-sub {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .missing-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .missing-empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    .nepopolne-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+      border-left: 4px solid transparent;
+      background: var(--bg-mid);
+      transition: background var(--t-fast);
+    }
+    .nepopolne-row:hover { background: var(--bg-deep); }
+    .nepopolne-row:first-child { border-radius: var(--radius-md) var(--radius-md) 0 0; }
+    .nepopolne-row:last-child  { border-bottom: none; border-radius: 0 0 var(--radius-md) var(--radius-md); }
+    .nepopolne-row.urgent  { border-left-color: var(--red); }
+    .nepopolne-row.soon    { border-left-color: var(--gold); }
+    .nepopolne-row.later   { border-left-color: var(--border-dark); }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 22px; right: 22px; display: flex; flex-direction: column; gap: 7px; z-index: 3000; pointer-events: none; }
+    .toast { display: flex; align-items: center; gap: 9px; padding: 10px 14px; border-radius: var(--radius-md); font-size: .83rem; font-weight: 500; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(40,80,44,.12); background: var(--white); color: var(--text); animation: toastIn .25s ease, toastOut .25s ease forwards; animation-delay: 0s, 2.75s; pointer-events: all; }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--red); }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(8px); } }
+
+    @media (max-width: 640px) {
+      .pred-stats-trio { gap: 12px; }
+      .pred-stat-num { font-size: 1.2rem; }
+      .pred-tab-btn { padding: 10px 12px; font-size: .8rem; }
+      .pred-match-group { width: 34px; }
+      .pred-team-name { font-size: .8rem; }
+    }
+
+    /* ── PREDICTIONS MOBILE ── */
+
+    /* Mobile-only team/vs elements — hidden on desktop */
+    .pred-mobile-team,
+    .pred-vs-mobile { display: none; }
+
+    /* Short/full result labels */
+    .result-short { display: none; }
+
+    /* Po skupinah: team list in accordion header — single row of 4 on desktop */
+    .grp-team-grid {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 4px 10px;
+      flex: 1;
+      min-width: 0;
+      margin: 0 12px;
+    }
+    .grp-team-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      min-width: 0;
+      flex-shrink: 1;
+    }
+    .grp-team-chip span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 768px) {
+      /* Page header */
+      .pred-page-header { gap: 12px; margin-bottom: 14px; }
+      .pred-page-title { font-size: 1.45rem; }
+      .pred-stats-trio { gap: 14px; }
+      .pred-stat-num { font-size: 1.2rem; }
+      .pred-stat-label { font-size: .54rem; }
+
+      /* Tabs: scrollable strip */
+      .pred-tabs-nav {
+        overflow-x: auto; scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1px;
+      }
+      .pred-tabs-nav::-webkit-scrollbar { display: none; }
+      .pred-tab-btn { padding: 10px 12px; font-size: .82rem; flex-shrink: 0; }
+
+      /* Accordion headers: tighter */
+      .acc-day-header { padding: 12px 14px; gap: 8px; }
+      .acc-day-date { min-width: 72px; }
+      .acc-day-date-main { font-size: .92rem; }
+      .acc-day-status { font-size: .7rem; padding: 2px 8px; }
+
+      /* Hide "Sk. " prefix on mobile — just the letter saves space */
+      .sk-prefix { display: none; }
+
+      /* Po skupinah: stack teams to 4 rows on mobile, left-aligned */
+      .grp-team-grid {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 3px !important;
+        margin: 4px 10px !important;
+      }
+      .grp-team-chip { font-size: .75rem !important; }
+
+      /* Hide deadline countdown pill — saves space, not critical on mobile */
+      .deadline-pill { display: none; }
+
+      /* ── MATCH ROW: 5-col grid ── */
+      .pred-match-row {
+        display: grid !important;
+        /* A  | home team | score | away team | result */
+        grid-template-columns: 14px 1fr 50px 1fr 96px !important;
+        align-items: center !important;
+        column-gap: 6px !important;
+        padding: 9px 12px !important;
+      }
+
+      /* Desktop teams wrapper: hidden — replaced by mobile siblings */
+      .pred-match-teams { display: none !important; }
+
+      /* Mobile team divs: shown as direct grid children */
+      .pred-mobile-team {
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        min-width: 0 !important;
+      }
+      /* Away team: flag then code, left-aligned like home */
+      .pred-mobile-team-away {
+        justify-content: flex-start !important;
+      }
+      .pred-mobile-team img.flag {
+        width: 19px !important; height: 13px !important;
+        object-fit: cover !important; border-radius: 2px !important;
+        border: 1px solid var(--border) !important; flex-shrink: 0 !important;
+      }
+      .pred-mobile-team .pred-team-name {
+        display: inline-block !important;
+        overflow: hidden !important; white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        font-size: .84rem !important; font-weight: 800 !important;
+        color: var(--text) !important; line-height: 1 !important;
+      }
+
+      /* Mobile vs/score block */
+      .pred-vs-mobile {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+      }
+      .pred-vs-mobile .pred-vs-score { font-size: 1.05rem !important; font-weight: 900 !important; text-align: center !important; }
+      .pred-vs-mobile .pred-vs-time  { font-size: .72rem !important; font-weight: 700 !important; text-align: center !important; white-space: nowrap !important; }
+
+      .pred-match-group {
+        width: auto !important; font-size: .70rem !important;
+        font-weight: 700 !important; color: var(--muted) !important;
+        text-align: center !important;
+      }
+      .pred-match-right {
+        width: auto !important; justify-content: flex-end !important;
+        min-width: 0 !important; gap: 4px !important;
+        flex-wrap: wrap !important;
+      }
+      /* Inner wrapper div around deadline + inputs */
+      .pred-match-right > div { gap: 4px !important; }
+
+      /* Short result labels on mobile */
+      .pred-result-chip .result-full  { display: none !important; }
+      .pred-result-chip .result-short { display: inline !important; }
+      .pred-result-chip { font-size: .70rem !important; padding: 2px 7px !important; }
+      .pred-chip { font-size: .70rem !important; padding: 2px 7px !important; }
+
+      /* Score inputs: compact on mobile */
+      .pred-inputs-wrap { gap: 3px !important; }
+      .pred-score-input { width: 36px !important; font-size: .95rem !important; padding: 4px 2px !important; }
+      .pred-inputs { gap: 4px !important; }
+      .pred-sep { font-size: .9rem !important; }
+      .save-indicator { display: none; }
+
+      /* Time must fit in the 50px score column */
+      .pred-vs-time { font-size: .72rem !important; white-space: nowrap; }
+
+      /* Bonus / team-pick grid */
+      .team-pick-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .pred-match-row {
+        grid-template-columns: 14px 1fr 46px 1fr 88px !important;
+        column-gap: 5px !important;
+        padding: 8px 10px !important;
+      }
+      .pred-mobile-team img.flag { width: 17px !important; height: 11px !important; }
+      .pred-score-input { width: 36px; font-size: .95rem; }
+      .team-pick-grid { grid-template-columns: repeat(3, 1fr); }
+      .pred-page-title { font-size: 1.3rem; }
+      .pred-stats-trio { gap: 10px; }
+    }
+
+    /* ── BONUS TABS ── */
+    .bonus-card {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(40,80,44,.07);
+      max-width: 680px;
+    }
+    .bonus-card-header {
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-deep);
+    }
+    .bonus-card-title {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .bonus-card-pts {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: var(--gold-bg);
+      color: var(--gold);
+      border: 1px solid rgba(180,90,0,.2);
+    }
+    .bonus-pundit {
+      margin: 14px 18px;
+      font-size: .82rem;
+      color: var(--text-mid);
+      font-style: italic;
+      line-height: 1.55;
+      padding: 10px 14px;
+      background: var(--bg-deep);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--accent);
+    }
+    .bonus-locked-banner {
+      margin: 14px 18px;
+      padding: 10px 14px;
+      background: var(--red-bg);
+      border: 1px solid rgba(192,49,43,.2);
+      border-radius: var(--radius-md);
+      font-size: .82rem;
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* Winner team grid */
+    .team-pick-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      padding: 14px 18px;
+    }
+    @media (max-width: 580px) { .team-pick-grid { grid-template-columns: repeat(4,1fr); } }
+
+    .team-pick-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px 6px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      cursor: pointer;
+      transition: all var(--t-fast);
+      font-family: var(--font-main);
+    }
+    .team-pick-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .team-pick-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+    .team-pick-btn:disabled { cursor: not-allowed; opacity: .6; }
+    .team-pick-btn img {
+      width: 28px; height: 19px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+    }
+    .team-pick-name {
+      font-size: .6rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .team-pick-btn.selected .team-pick-name { color: var(--accent-dark); }
+
+    /* Distribution bars */
+    .dist-section {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .dist-title {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .dist-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .dist-flag {
+      width: 20px; height: 14px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .dist-name {
+      font-size: .75rem;
+      font-weight: 500;
+      width: 90px;
+      flex-shrink: 0;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dist-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-deep);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .dist-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      transition: width .6s ease;
+    }
+    .dist-bar-fill.mine { background: var(--gold); }
+    .dist-pct {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 32px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* Scorer picker */
+    .scorer-picker {
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .scorer-select {
+      background: var(--white);
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: .9rem;
+      padding: 9px 13px;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--t-fast);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b8f6e' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-color: var(--white);
+      padding-right: 34px;
+    }
+    .scorer-select:focus { border-color: var(--accent); }
+    .scorer-select:disabled { opacity: .6; cursor: not-allowed; }
+
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .player-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      cursor: pointer;
+      transition: all var(--t-fast);
+      font-family: var(--font-main);
+      text-align: left;
+    }
+    .player-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-bg); }
+    .player-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+    .player-btn:disabled { cursor: not-allowed; opacity: .6; }
+    .player-num {
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .player-name {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+    .player-btn.selected .player-name { color: var(--accent-dark); }
+    .bonus-save-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: .9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background var(--t-fast);
+    }
+    .bonus-save-btn:hover { background: var(--accent-dark); }
+    .bonus-save-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .bonus-current {
+      padding: 10px 14px;
+      background: var(--accent-bg);
+      border: 1px solid rgba(68,157,68,.2);
+      border-radius: var(--radius-md);
+      font-size: .82rem;
+      color: var(--green-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-logo" href="index.html">Napo<span>vednik</span><sup>2026</sup></a>
+      <div class="navbar-links" id="navbar-links">
+        <a class="navbar-link" href="index.html">🏠 Home</a>
+        <a class="navbar-link" href="predictions.html">📝 Moje napovedi</a>
+        <a class="navbar-link" href="napovedi.html">🌍 Vse napovedi</a>
+        <a class="navbar-link" href="rezultati.html">📊 Rezultati tekem</a>
+        <a class="navbar-link" href="leaderboard.html">🏆 Lestvica uporabnikov</a>
+        <a class="navbar-link navbar-link-selektor" id="navbar-selektor-link" href="selektor.html" style="display:none">⚙ Selektor</a>
+        <button class="navbar-link navbar-link-signout" onclick="NP.signOut()">🚪 Odjava</button>
+      </div>
+      <div class="navbar-right">
+        <a href="profil.html" class="user-chip" style="text-decoration:none;color:#fff">
+          <div class="user-avatar" id="nav-avatar">👤</div>
+          <span id="nav-name" style="color:#fff">...</span>
+        </a>
+        <button onclick="NP.signOut()" class="nav-signout-btn">Odjava</button>
+        <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Meni" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container page-wrap">
+
+    <!-- PAGE HEADER -->
+    <div class="pred-page-header">
+      <div class="pred-page-title-group">
+        <div class="pred-page-eyebrow">Napovedi</div>
+        <div class="pred-page-title">Tvoje napovedi</div>
+      </div>
+      <div class="pred-stats-trio">
+        <div class="pred-stat">
+          <div class="pred-stat-num" id="stat-oddanih">—</div>
+          <div class="pred-stat-label">Oddanih</div>
+        </div>
+        <div class="pred-stat caka">
+          <div class="pred-stat-num" id="stat-caka">—</div>
+          <div class="pred-stat-label">Čaka</div>
+        </div>
+        <div class="pred-stat tocke">
+          <div class="pred-stat-num" id="stat-tocke">—</div>
+          <div class="pred-stat-label">Točk</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="pred-tabs-nav">
+      <button class="pred-tab-btn active" data-tab="datumu">Vse napovedi</button>
+      <button class="pred-tab-btn" data-tab="skupini">Po skupinah</button>
+      <button class="pred-tab-btn" data-tab="prihodnje">Preostale</button>
+      <button class="pred-tab-btn" data-tab="zmagovalec">🏆 Zmagovalec</button>
+      <button class="pred-tab-btn" data-tab="strelec">⚽ Najboljši strelec</button>
+    </div>
+
+    <!-- TAB: PO DATUMU -->
+    <div class="pred-tab-pane active" id="tab-datumu">
+      <div id="datumu-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: PO SKUPINI -->
+    <div class="pred-tab-pane" id="tab-skupini">
+      <div id="skupini-content">
+        <div style="padding:30px;text-align:center;color:var(--muted);grid-column:1/-1">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: PRIHODNJE -->
+    <div class="pred-tab-pane" id="tab-prihodnje">
+      <div id="prihodnje-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+
+
+    <!-- TAB: ZMAGOVALEC -->
+    <div class="pred-tab-pane" id="tab-zmagovalec">
+      <div id="zmagovalec-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: NAJBOLJŠI STRELEC -->
+    <div class="pred-tab-pane" id="tab-strelec">
+      <div id="strelec-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast-container" id="toasts"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>window.__NP_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliaW56ZXd5eHVweW9qbGFtbHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODY4NzcsImV4cCI6MjA5NDE2Mjg3N30.n5-oSP7_7QvylacamMozjluh1fwgUKUb4yv_uEl0-pQ';</script>
+  <script src="js/utils.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/plugins.js"></script>
+  <script>
+  /* ── STATE ── */
+  let _profile, _state, _allMatches, _predMap, _multiplier;
+  const DAYS_SL = ['Ned','Pon','Tor','Sre','Čet','Pet','Sob'];
+  const MONTHS_SL = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+
+  /* ── INIT ── */
+  (async () => {
+    if (!NP.requireAuth()) return;
+    _profile = NP.getUserProfile();
+    _state   = await NP.getTournamentNow();
+    _multiplier = _state.multiplier ?? 1;
+
+    // Navbar
+    var __sl = document.getElementById('navbar-selektor-link'); if(__sl && NP.isAdmin()) __sl.style.display = 'flex';
+    document.getElementById('nav-name').textContent = NP.getAlias(_profile, _state, 'full');
+    document.getElementById('nav-avatar').textContent =
+      _state.isThemedDay && _state.themedDay?.theme_flag_iso2
+        ? _flagEmoji(_state.themedDay.theme_flag_iso2)
+        : _profile.display_name.charAt(0).toUpperCase();
+
+    // Load all data
+    await _loadData();
+
+    // Render active tab
+    _renderDatumu();
+
+    // Tab switching
+    document.querySelectorAll('.pred-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pred-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pred-tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'skupini')   _renderSkupini();
+        if (tab === 'prihodnje')  _renderPrihodnje();
+        if (tab === 'zmagovalec') _renderZmagovalec();
+        if (tab === 'strelec')    _renderStrelec();
+
+      });
+    });
+
+    // Hash navigation (from index.html "Napovej" button)
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#match-')) {
+      const matchId = parseInt(hash.replace('#match-', ''));
+      // Find the day containing this match and expand it
+      const m = _allMatches.find(m => m.id === matchId);
+      if (m) {
+        const dayKey = _localDateKey(m.kickoff_at);
+        setTimeout(() => {
+          const dayEl = document.getElementById('day-' + dayKey);
+          if (dayEl) {
+            dayEl.classList.add('open');
+            dayEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Focus the input for this match
+            setTimeout(() => {
+              const input = document.getElementById(`ph-${m.id}`);
+              if (input) input.focus();
+            }, 300);
+          }
+        }, 100);
+      }
+    }
+  })();
+
+  /* ── LOAD ALL DATA ── */
+  async function _loadData() {
+    // All group stage + next matches
+    const { data: matches } = await NP.db
+      .from('matches')
+      .select(`
+        id, kickoff_at, phase, group_name,
+        home_score_90, away_score_90, home_score_120, away_score_120,
+        home_team:teams!matches_home_team_id_fkey(id, name_sl, flag_code, fifa_code),
+        away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)
+      `)
+      .not('home_team_id', 'is', null)  // only matches with known teams
+      .order('kickoff_at');
+
+    _allMatches = matches ?? [];
+
+    // All user predictions
+    const matchIds = _allMatches.map(m => m.id);
+    const { data: preds } = await NP.db
+      .from('predictions')
+      .select('match_id, pred_home, pred_away, points_awarded')
+      .eq('user_id', _profile.id)
+      .in('match_id', matchIds);
+
+    _predMap = {};
+    (preds ?? []).forEach(p => { _predMap[p.match_id] = p; });
+
+    // Stats
+    const leaderboard = await NP.db
+      .from('leaderboard')
+      .select('total_points')
+      .eq('user_id', _profile.id)
+      .single();
+
+    const now = new Date();
+    const upcoming = _allMatches.filter(m =>
+      !NP.isPredictionLocked(m.kickoff_at) && m.home_score_90 === null
+    );
+    const missing = upcoming.filter(m => !_predMap[m.id]);
+    const oddanih = Object.keys(_predMap).length;
+
+    document.getElementById('stat-oddanih').textContent = oddanih;
+    document.getElementById('stat-caka').textContent    = missing.length;
+    document.getElementById('stat-tocke').textContent   = leaderboard.data?.total_points ?? 0;
+
+
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 1 — PO DATUMU
+     ══════════════════════════════════════════════════════ */
+  function _renderDatumu() {
+    // Group matches by local date
+    const byDay = {};
+    _allMatches.forEach(m => {
+      const key = _localDateKey(m.kickoff_at);
+      if (!byDay[key]) byDay[key] = [];
+      byDay[key].push(m);
+    });
+
+    const todayKey = _localDateKey(new Date().toISOString());
+    const days = Object.keys(byDay).sort();
+
+    let html = '';
+    days.forEach(key => {
+      const dayMatches = byDay[key];
+      const d = new Date(key + 'T12:00:00'); // noon local to avoid DST issues
+      const isToday = key === todayKey;
+      const dayName = DAYS_SL[d.getDay()];
+      const dateStr = `${d.getDate()}. ${MONTHS_SL[d.getMonth()]}`;
+
+      // Status for this day
+      const locked   = dayMatches.every(m => NP.isPredictionLocked(m.kickoff_at));
+      const finished = dayMatches.every(m => m.home_score_90 !== null);
+      const missing  = dayMatches.filter(m =>
+        !NP.isPredictionLocked(m.kickoff_at) && !_predMap[m.id]
+      ).length;
+      const pending  = dayMatches.filter(m =>
+        NP.isPredictionLocked(m.kickoff_at) && m.home_score_90 === null && !_predMap[m.id]
+      ).length;
+      const allDone  = dayMatches.every(m => _predMap[m.id] || NP.isPredictionLocked(m.kickoff_at));
+
+      let statusHtml = '';
+      if (finished) {
+        const correct = dayMatches.filter(m => {
+          const p = _predMap[m.id];
+          return p && NP.scoring.calcBasePoints(p, m) > 0;
+        }).length;
+        statusHtml = `<span class="acc-day-status all-done">✓ ${correct}/${dayMatches.length} pravilnih</span>`;
+      } else if (locked && pending > 0) {
+        statusHtml = `<span class="acc-day-status missing">${pending} brez napovedi</span>`;
+      } else if (missing > 0) {
+        statusHtml = `<span class="acc-day-status missing">${_nManjka(missing)}</span>`;
+      } else if (allDone) {
+        statusHtml = `<span class="acc-day-status all-done">✓ vse napovedano</span>`;
+      } else {
+        const submitted = dayMatches.filter(m => _predMap[m.id]).length;
+        statusHtml = `<span class="acc-day-status pending">${submitted}/${dayMatches.length} napovedano</span>`;
+      }
+
+      html += `
+        <div class="acc-day ${isToday ? 'open' : ''}" id="day-${key}">
+          <div class="acc-day-header" onclick="this.closest('.acc-day').classList.toggle('open')">
+            <div class="acc-day-date">
+              <div class="acc-day-date-main">${dateStr}</div>
+              <div class="acc-day-date-sub">${dayName}${isToday ? ' · DANES' : ''}</div>
+            </div>
+            ${isToday ? '<span class="acc-day-today-badge">danes</span>' : ''}
+            <div class="acc-day-spacer"></div>
+            <div class="acc-day-meta">
+              <span style="color:var(--muted);font-size:.75rem">${_nTekma(dayMatches.length)}</span>
+              ${statusHtml}
+            </div>
+            <span class="acc-day-arrow">▼</span>
+          </div>
+          <div class="acc-day-body">
+            ${dayMatches.map(m => _renderPredMatchRow(m)).join('')}
+          </div>
+        </div>`;
+    });
+
+    document.getElementById('datumu-content').innerHTML = html || '<div style="padding:30px;text-align:center;color:var(--muted)">Ni tekem za prikaz.</div>';
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 2 — PO SKUPINI
+     ══════════════════════════════════════════════════════ */
+  function _renderSkupini() {
+    const groups = {};
+    _allMatches.forEach(m => {
+      const g = m.group_name;
+      if (!g) return;
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(m);
+    });
+
+    const groupNames = Object.keys(groups).sort();
+    let html = '';
+
+    groupNames.forEach(g => {
+      const matches   = groups[g];
+      const predicted = matches.filter(m => _predMap[m.id]).length;
+      const total     = matches.length;
+      const missing   = matches.filter(m => !_predMap[m.id] && !NP.isPredictionLocked(m.kickoff_at)).length;
+      const allDone   = matches.every(m => _predMap[m.id] || NP.isPredictionLocked(m.kickoff_at));
+      const finished  = matches.every(m => m.home_score_90 !== null);
+
+      // Status pill
+      let statusHtml = '';
+      if (finished) {
+        statusHtml = '<span class="acc-day-status all-done">✓ končano</span>';
+      } else if (missing > 0) {
+        statusHtml = '<span class="acc-day-status missing">' + _nManjka(missing) + '</span>';
+      } else if (allDone) {
+        statusHtml = '<span class="acc-day-status all-done">✓ vse napovedano</span>';
+      } else {
+        statusHtml = '<span class="acc-day-status pending">' + predicted + '/' + total + ' napovedano</span>';
+      }
+
+      // Team flags + names — 2×2 grid, stacked vertically
+      const teamSet = {};
+      matches.forEach(m => {
+        if (m.home_team) teamSet[m.home_team.id] = m.home_team;
+        if (m.away_team) teamSet[m.away_team.id] = m.away_team;
+      });
+      const teamList = Object.values(teamSet).slice(0, 4);
+      const teamsHtml = '<div class="grp-team-grid">'
+        + teamList.map(t =>
+            '<div class="grp-team-chip">'
+            + '<img src="' + NP.flagUrl(t.flag_code) + '" '
+            + 'style="width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0" '
+            + 'onerror="this.style.display=\'none\'" alt="">'
+            + '<span>' + t.name_sl + '</span>'
+            + '</div>'
+          ).join('')
+        + '</div>';
+
+      // Match rows with date separators
+      const matchRowsHtml = _renderMatchesWithDateSeparators(matches);
+
+      // Build accordion
+      const header = '<div class="acc-day-header" onclick="this.closest(\'.acc-day\').classList.toggle(\'open\')">'
+        + '<div style="min-width:80px;flex-shrink:0">'
+        +   '<div class="acc-day-date-main">Skupina ' + g + '</div>'
+        +   '<div class="acc-day-date-sub">' + _nTekma(total) + '</div>'
+        + '</div>'
+        + teamsHtml
+        + '<div class="acc-day-meta">' + statusHtml + '</div>'
+        + '<span class="acc-day-arrow">▼</span>'
+        + '</div>';
+
+      html += '<div class="acc-day" id="grp-' + g + '">'
+        + header
+        + '<div class="acc-day-body">' + matchRowsHtml + '</div>'
+        + '</div>';
+    });
+
+    document.getElementById('skupini-content').innerHTML =
+      html || '<div style="padding:30px;text-align:center;color:var(--muted)">Ni tekem za prikaz.</div>';
+  }
+
+  function _openGroup(g) {
+    // Switch to "Po datumu" tab and scroll to first match of this group
+    document.querySelectorAll('.pred-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.pred-tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="datumu"]').classList.add('active');
+    document.getElementById('tab-datumu').classList.add('active');
+
+    // Find first match of group and open its day
+    const firstMatch = _allMatches.find(m => m.group_name === g);
+    if (firstMatch) {
+      const dayKey = _localDateKey(firstMatch.kickoff_at);
+      const dayEl  = document.getElementById('day-' + dayKey);
+      if (dayEl) {
+        dayEl.classList.add('open');
+        dayEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 3 — PRIHODNJE
+     ══════════════════════════════════════════════════════ */
+  function _renderPrihodnje() {
+    const now = new Date();
+    const upcoming = _allMatches.filter(m =>
+      new Date(m.kickoff_at) > now && m.home_score_90 === null
+    );
+
+    if (!upcoming.length) {
+      document.getElementById('prihodnje-content').innerHTML =
+        '<div style="padding:30px;text-align:center;color:var(--muted)">Ni prihodnjih tekem.</div>';
+      return;
+    }
+
+    // Find next deadline
+    const nextDeadlineMatch = upcoming
+      .filter(m => !NP.isPredictionLocked(m.kickoff_at))
+      .sort((a, b) => new Date(a.kickoff_at) - new Date(b.kickoff_at))[0];
+
+    let alertHtml = '';
+    if (nextDeadlineMatch) {
+      const deadline = new Date(nextDeadlineMatch.kickoff_at) - 3600000;
+      const minsLeft = Math.floor((deadline - Date.now()) / 60000);
+      if (minsLeft <= 180) {
+        const hasPred = !!_predMap[nextDeadlineMatch.id];
+        alertHtml = `
+          <div class="deadline-alert">
+            <span class="deadline-alert-icon">⏰</span>
+            <div class="deadline-alert-text">
+              <strong>Naslednji deadline: ${NP.formatKickoff(nextDeadlineMatch.kickoff_at, false)} (čez ${NP.formatCountdown(deadline)})</strong>
+              — ${nextDeadlineMatch.home_team?.name_sl} vs ${nextDeadlineMatch.away_team?.name_sl}
+            </div>
+            <a href="#match-${nextDeadlineMatch.id}" onclick="window.location.hash='match-${nextDeadlineMatch.id}'" class="btn btn-sm" style="background:var(--gold);color:white;border:none">
+              ${hasPred ? 'Spremeni →' : 'Napovej →'}
+            </a>
+          </div>`;
+      }
+    }
+
+    // Group by day
+    const byDay = {};
+    upcoming.forEach(m => {
+      const key = _localDateKey(m.kickoff_at);
+      if (!byDay[key]) byDay[key] = [];
+      byDay[key].push(m);
+    });
+
+    const todayKey = _localDateKey(new Date().toISOString());
+    let listHtml = '';
+    Object.keys(byDay).sort().forEach(key => {
+      const d = new Date(key + 'T12:00:00');
+      const isToday = key === todayKey;
+      listHtml += `
+        <div style="margin-bottom:16px">
+          <div style="font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-left:4px">
+            ${isToday ? 'Danes · ' : ''}${d.getDate()}. ${MONTHS_SL[d.getMonth()]} · ${DAYS_SL[d.getDay()]}
+          </div>
+          <div class="card" style="overflow:hidden">
+            ${byDay[key].map(m => _renderPredMatchRow(m)).join('')}
+          </div>
+        </div>`;
+    });
+
+    document.getElementById('prihodnje-content').innerHTML = alertHtml + listHtml;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 4 — NEPOPOLNE
+     ══════════════════════════════════════════════════════ */
+
+
+
+
+  /* ══════════════════════════════════════════════════════
+     MOBILE HELPERS
+     ══════════════════════════════════════════════════════ */
+  // 3-letter FIFA code for compact mobile display (e.g. "BRA", "FRA")
+  function _teamCode(team) {
+    return team?.fifa_code ?? team?.name_sl?.slice(0, 3).toUpperCase() ?? '—';
+  }
+
+  // Shorten result chip labels for mobile: "✓ Natančno · +3" → "✓ +3", "✗ Napačno" → "✗ 0"
+  function _compactResultLabel(label, type) {
+    if (type === 'exact' || type === 'correct') {
+      const m = String(label).match(/\+(\d+)/);
+      return m ? `✓ +${m[1]}` : '✓';
+    }
+    if (type === 'wrong') return '✗ 0';
+    return label;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     PREDICTION MATCH ROW
+     ══════════════════════════════════════════════════════ */
+  function _renderPredMatchRow(m) {
+    const pred     = _predMap[m.id] ?? null;
+    const locked   = NP.isPredictionLocked(m.kickoff_at);
+    const finished = m.home_score_90 !== null;
+    const deadline = new Date(m.kickoff_at) - 3600000;
+    const minsToDeadline = Math.floor((deadline - Date.now()) / 60000);
+    const deadlineSoon = !locked && minsToDeadline <= 180;
+
+    // Prediction preview pill (col left of outcome) — always show when pred exists
+    const predPreview = pred
+      ? `<span class="pred-chip pending" style="font-size:.7rem">${pred.pred_home ?? '?'}–${pred.pred_away ?? '?'}</span>`
+      : '';
+
+    // Right side content
+    let rightHtml = '';
+    if (finished) {
+      if (pred) {
+        const { label, type } = NP.scoring.getResultLabel(pred, m, _multiplier);
+        const shortLabel = _compactResultLabel(label, type);
+        rightHtml = `<div style="display:flex;align-items:center;gap:6px">${predPreview}<span class="pred-result-chip ${type}"><span class="result-full">${label}</span><span class="result-short">${shortLabel}</span></span></div>`;
+      } else {
+        rightHtml = `<span class="pred-result-chip missing"><span class="result-full">✗ Manjka</span><span class="result-short">✗</span></span>`;
+      }
+    } else if (locked) {
+      rightHtml = pred
+        ? `<span class="pred-result-chip locked">🔒 ${pred.pred_home}–${pred.pred_away}</span>`
+        : `<span class="pred-result-chip missing"><span class="result-full">✗ Manjka</span><span class="result-short">✗</span></span>`;
+    } else {
+      // Editable inputs — deadline pill LEFT of inputs
+      const ph = pred?.pred_home ?? '';
+      const pa = pred?.pred_away ?? '';
+      rightHtml = `
+        <div class="pred-inputs-wrap">
+          ${deadlineSoon ? `<span class="deadline-pill">⏰ ${NP.formatCountdown(deadline)}</span>` : ''}
+          <div class="pred-inputs">
+            <input class="pred-score-input ${pred ? 'saved' : ''}"
+              type="number" min="0" max="20" id="ph-${m.id}"
+              value="${ph}" placeholder="—" inputmode="numeric" pattern="[0-9]*"
+              oninput="_onPredChange(${m.id})" onchange="_onPredChange(${m.id})">
+            <span class="pred-sep">–</span>
+            <input class="pred-score-input ${pred ? 'saved' : ''}"
+              type="number" min="0" max="20" id="pa-${m.id}"
+              value="${pa}" placeholder="—" inputmode="numeric" pattern="[0-9]*"
+              oninput="_onPredChange(${m.id})" onchange="_onPredChange(${m.id})">
+            <span class="save-indicator" id="si-${m.id}"></span>
+          </div>
+        </div>`;
+    }
+
+    // Score display
+    const scoreHtml = finished
+      ? `<div class="pred-vs-score">${m.home_score_120 ?? m.home_score_90}–${m.away_score_120 ?? m.away_score_90}</div>`
+      : `<div class="pred-vs-time">${NP.formatKickoff(m.kickoff_at, false)}</div>`;
+
+    return `
+      <div class="pred-match-row ${deadlineSoon ? 'deadline-soon' : ''} ${locked && !finished ? 'locked' : ''}"
+           id="row-${m.id}">
+        <div class="pred-match-group">${m.group_name ? '<span class="sk-prefix">Sk. </span>' + m.group_name : m.phase}</div>
+
+        <!-- Desktop: teams wrapper (flex, display:contents won't work in a grid) -->
+        <div class="pred-match-teams">
+          <div class="pred-team">
+            <img src="${NP.flagUrl(m.home_team?.flag_code)}" class="flag" onerror="this.style.display='none'" alt="">
+            <span class="pred-team-name">${m.home_team?.name_sl ?? '—'}</span>
+          </div>
+          <div class="pred-vs">${scoreHtml}</div>
+          <div class="pred-team right">
+            <span class="pred-team-name">${m.away_team?.name_sl ?? '—'}</span>
+            <img src="${NP.flagUrl(m.away_team?.flag_code)}" class="flag" onerror="this.style.display='none'" alt="">
+          </div>
+        </div>
+
+        <!-- Mobile: direct grid children (shown only on ≤768px) -->
+        <div class="pred-mobile-team">
+          <span class="pred-team-name">${_teamCode(m.home_team)}</span>
+          <img src="${NP.flagUrl(m.home_team?.flag_code)}" class="flag" onerror="this.style.display='none'" alt="">
+        </div>
+        <div class="pred-vs-mobile">${scoreHtml}</div>
+        <div class="pred-mobile-team pred-mobile-team-away">
+          <img src="${NP.flagUrl(m.away_team?.flag_code)}" class="flag" onerror="this.style.display='none'" alt="">
+          <span class="pred-team-name">${_teamCode(m.away_team)}</span>
+        </div>
+
+        <div class="pred-match-right">${rightHtml}</div>
+      </div>`;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     PREDICTION SAVE — debounced auto-save
+     ══════════════════════════════════════════════════════ */
+  const _saveTimers = {};
+
+  function _onOutcomeChange(matchId) {
+    const ph = document.getElementById('ph-' + matchId)?.value;
+    const pa = document.getElementById('pa-' + matchId)?.value;
+    const outEl = document.getElementById('out-' + matchId);
+    if (!outEl) return;
+    if (ph === '' || pa === '') {
+      outEl.className = 'pred-outcome empty';
+      outEl.textContent = '';
+      return;
+    }
+    const outcome = _getOutcome(Number(ph), Number(pa));
+    outEl.className = `pred-outcome ${outcome}`;
+    outEl.textContent = outcome;
+  }
+
+  function _onPredChange(matchId) {
+    clearTimeout(_saveTimers[matchId]);
+    _saveTimers[matchId] = setTimeout(() => _savePred(matchId), 800);
+    // Show saving indicator
+    _setSaveIndicator(matchId, 'saving');
+  }
+
+  async function _savePred(matchId) {
+    const phEl = document.getElementById('ph-' + matchId);
+    const paEl = document.getElementById('pa-' + matchId);
+    if (!phEl || !paEl) return;
+
+    const ph = phEl.value.trim();
+    const pa = paEl.value.trim();
+
+    const hadPrediction = !!_predMap[matchId];
+
+    // Both empty + had prediction = delete
+    if (ph === '' && pa === '' && hadPrediction) {
+      await _deletePred(matchId);
+      return;
+    }
+
+    // Only one filled, or both empty without prior prediction = do nothing
+    if (ph === '' || pa === '') {
+      _setSaveIndicator(matchId, '');
+      return;
+    }
+
+    const predHome = parseInt(ph);
+    const predAway = parseInt(pa);
+
+    if (isNaN(predHome) || isNaN(predAway) || predHome < 0 || predAway < 0) {
+      _setSaveIndicator(matchId, 'error');
+      return;
+    }
+
+    // Double-check deadline not passed
+    const m = _allMatches.find(x => x.id === matchId);
+    if (m && NP.isPredictionLocked(m.kickoff_at)) {
+      _showToast('Rok za napoved je potekel.', 'error');
+      _setSaveIndicator(matchId, 'error');
+      return;
+    }
+
+    try {
+      const existing = _predMap[matchId];
+      const now = new Date().toISOString();
+
+      const { error } = await NP.db
+        .from('predictions')
+        .upsert({
+          user_id:      _profile.id,
+          match_id:     matchId,
+          pred_home:    predHome,
+          pred_away:    predAway,
+          submitted_at: existing ? existing.submitted_at : now,
+          updated_at:   now,
+        }, { onConflict: 'user_id,match_id' });
+
+      if (error) throw error;
+
+      // Update local cache
+      _predMap[matchId] = { match_id: matchId, pred_home: predHome, pred_away: predAway, points_awarded: null };
+
+      // Update input styles
+      [phEl, paEl].forEach(el => { el.classList.add('saved'); });
+      _setSaveIndicator(matchId, 'saved');
+
+      // Refresh day header live
+      const savedMatch = _allMatches.find(x => x.id === matchId);
+      if (savedMatch) _refreshDayHeader(_localDateKey(savedMatch.kickoff_at));
+
+      // Update stats
+      const missing = _allMatches.filter(m =>
+        !NP.isPredictionLocked(m.kickoff_at) && m.home_score_90 === null && !_predMap[m.id]
+      ).length;
+      document.getElementById('stat-oddanih').textContent = Object.keys(_predMap).length;
+      document.getElementById('stat-caka').textContent    = missing;
+
+      // Fade indicator after 2s
+      setTimeout(() => _setSaveIndicator(matchId, ''), 2000);
+
+    } catch (e) {
+      console.error('Save error:', e);
+      _setSaveIndicator(matchId, 'error');
+      _showToast('Napaka pri shranjevanju. Poskusi znova.', 'error');
+    }
+  }
+
+  async function _deletePred(matchId) {
+    const { error } = await NP.db
+      .from('predictions')
+      .delete()
+      .eq('user_id', _profile.id)
+      .eq('match_id', matchId);
+
+    if (error) {
+      _setSaveIndicator(matchId, 'error');
+      _showToast('Napaka pri brisanju.', 'error');
+      return;
+    }
+
+    // Remove from local cache
+    delete _predMap[matchId];
+
+    // Update input styles
+    ['ph-' + matchId, 'pa-' + matchId].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('saved');
+    });
+    _setSaveIndicator(matchId, '');
+
+    // Refresh day header + stats
+    const m = _allMatches.find(x => x.id === matchId);
+    if (m) _refreshDayHeader(_localDateKey(m.kickoff_at));
+
+    const missing = _allMatches.filter(m =>
+      !NP.isPredictionLocked(m.kickoff_at) && m.home_score_90 === null && !_predMap[m.id]
+    ).length;
+    document.getElementById('stat-oddanih').textContent = Object.keys(_predMap).length;
+    document.getElementById('stat-caka').textContent    = missing;
+  }
+
+  function _setSaveIndicator(matchId, state) {
+    const el = document.getElementById('si-' + matchId);
+    if (!el) return;
+    el.className = 'save-indicator' + (state ? ' ' + state : '');
+  }
+
+  /* ══════════════════════════════════════════════════════
+     HELPERS
+     ══════════════════════════════════════════════════════ */
+  function _localDateKey(iso) {
+    const d = new Date(iso);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function _getOutcome(h, a) {
+    if (h > a) return 'H';
+    if (h < a) return 'A';
+    return 'D';
+  }
+
+  function _flagEmoji(iso2) {
+    if (!iso2 || iso2.length !== 2) return '';
+    const base = 0x1F1E6 - 65;
+    return String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(0)) +
+           String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(1));
+  }
+
+  function _shortDate(iso) {
+    const d = new Date(iso);
+    return d.getDate() + '. ' + MONTHS_SL[d.getMonth()];
+  }
+
+  function _renderMatchesWithDateSeparators(matches) {
+    let html = '';
+    let lastDate = null;
+    matches.forEach(m => {
+      const dateKey = _localDateKey(m.kickoff_at);
+      const d = new Date(m.kickoff_at);
+      const dateLabel = d.getDate() + '. ' + MONTHS_SL[d.getMonth()].toUpperCase();
+      if (dateKey !== lastDate) {
+        html += '<div style="font-size:.65rem;font-weight:700;color:var(--muted);' +
+                'text-transform:uppercase;letter-spacing:.07em;' +
+                'padding:6px 18px 4px;background:var(--bg-deep);' +
+                'border-bottom:1px solid var(--border)">' + dateLabel + '</div>';
+        lastDate = dateKey;
+      }
+      html += _renderPredMatchRow(m);
+    });
+    return html;
+  }
+
+  function _nTekma(n) {
+    if (n === 1) return '1 tekma';
+    if (n === 2) return '2 tekmi';
+    if (n === 3) return '3 tekme';
+    if (n === 4) return '4 tekme';
+    return n + ' tekem';
+  }
+
+  function _nManjka(n) {
+    if (n === 1) return 'manjka 1 tekma';
+    if (n === 2) return 'manjkata 2 tekmi';
+    if (n === 3) return 'manjkajo 3 tekme';
+    if (n === 4) return 'manjkajo 4 tekme';
+    return 'manjka ' + n + ' tekem';
+  }
+
+  function _refreshDayHeader(dayKey) {
+    const dayEl = document.getElementById('day-' + dayKey);
+    if (!dayEl) return;
+    const dayMatches = _allMatches.filter(m => _localDateKey(m.kickoff_at) === dayKey);
+    if (!dayMatches.length) return;
+    const finished = dayMatches.every(m => m.home_score_90 !== null);
+    const locked   = dayMatches.every(m => NP.isPredictionLocked(m.kickoff_at));
+    const missingCount = dayMatches.filter(m => !NP.isPredictionLocked(m.kickoff_at) && !_predMap[m.id]).length;
+    const pendingCount = dayMatches.filter(m => NP.isPredictionLocked(m.kickoff_at) && m.home_score_90 === null && !_predMap[m.id]).length;
+    const allDone = dayMatches.every(m => _predMap[m.id] || NP.isPredictionLocked(m.kickoff_at));
+    let statusHtml = '';
+    if (finished) {
+      const correct = dayMatches.filter(m => { const p = _predMap[m.id]; return p && NP.scoring.calcBasePoints(p, m) > 0; }).length;
+      statusHtml = `<span class="acc-day-status all-done">✓ ${correct}/${dayMatches.length} pravilnih</span>`;
+    } else if (locked && pendingCount > 0) {
+      statusHtml = `<span class="acc-day-status missing">${_nManjka(pendingCount)}</span>`;
+    } else if (missingCount > 0) {
+      statusHtml = `<span class="acc-day-status missing">${_nManjka(missingCount)}</span>`;
+    } else if (allDone) {
+      statusHtml = `<span class="acc-day-status all-done">✓ vse napovedano</span>`;
+    } else {
+      const submitted = dayMatches.filter(m => _predMap[m.id]).length;
+      statusHtml = `<span class="acc-day-status pending">${submitted}/${dayMatches.length} napovedano</span>`;
+    }
+    const existingPill = dayEl.querySelector('.acc-day-status');
+    if (existingPill) existingPill.outerHTML = statusHtml;
+  }
+
+  
+  /* ══════════════════════════════════════════════════════
+     TAB 4 — ZMAGOVALEC (World Cup Winner)
+     +10 pts if correct
+     ══════════════════════════════════════════════════════ */
+  function _areBonusesLocked() {
+    // Locked if admin manually locked OR 1h before first match
+    if (_profile.bonuses_locked_at && new Date(_profile.bonuses_locked_at) < new Date()) return true;
+    if (_allMatches?.length) {
+      const firstMatch = _allMatches.reduce((a, b) =>
+        new Date(a.kickoff_at) < new Date(b.kickoff_at) ? a : b);
+      const deadline = new Date(firstMatch.kickoff_at) - 3600000; // 1h before
+      if (Date.now() >= deadline) return true;
+    }
+    return false;
+  }
+
+  function _areBonusesLocked() {
+    // Locked if admin manually locked OR 1h before first match
+    if (_profile.bonuses_locked_at && new Date(_profile.bonuses_locked_at) < new Date()) return true;
+    if (_allMatches?.length) {
+      const firstMatch = _allMatches.reduce((a,b) =>
+        new Date(a.kickoff_at) < new Date(b.kickoff_at) ? a : b);
+      if (Date.now() >= new Date(firstMatch.kickoff_at) - 3600000) return true;
+    }
+    return false;
+  }
+
+  async function _renderZmagovalec() {
+    const el = document.getElementById('zmagovalec-content');
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">Nalagam...</div>';
+
+    const locked = _areBonusesLocked();
+
+    // Load all teams + current pick + distribution
+    const [teamsRes, configRes, allUsersRes] = await Promise.all([
+      NP.db.from('teams').select('id, name_sl, fifa_code, flag_code').order('group_name').order('name_sl'),
+      NP.db.from('app_config').select('value').eq('key', 'winner_pundit_text').maybeSingle(),
+      NP.db.from('users').select('winner_pick_team_id').not('winner_pick_team_id', 'is', null),
+    ]);
+
+    const teams    = teamsRes.data ?? [];
+    const pundit   = configRes.data?.value ?? 'Večina strokovnjakov stavlja na Francijo, a Argentina brani naslov. Lahko Brazilija preseneti z mlado ekipo?';
+    const myPick   = _profile.winner_pick_team_id;
+    const allPicks = allUsersRes.data ?? [];
+
+    // Distribution (only shown after user has picked)
+    let distHtml = '';
+    if (myPick) {
+      const total = allPicks.length;
+      const countMap = {};
+      allPicks.forEach(u => {
+        countMap[u.winner_pick_team_id] = (countMap[u.winner_pick_team_id] ?? 0) + 1;
+      });
+      // Top 8 picks
+      const sorted = Object.entries(countMap)
+        .sort((a,b) => b[1]-a[1])
+        .slice(0, 8);
+      const topTeams = sorted.map(([tid, count]) => {
+        const t = teams.find(x => x.id === parseInt(tid));
+        return { team: t, count, pct: total ? Math.round(count/total*100) : 0 };
+      }).filter(x => x.team);
+
+      distHtml = `
+        <div class="dist-section">
+          <div class="dist-title">Kako so glasovali sodelavci (${total} glasov)</div>
+          ${topTeams.map(({ team, pct }) => `
+            <div class="dist-row">
+              <img class="dist-flag" src="${NP.flagUrl(team.flag_code)}" alt="" onerror="this.style.display='none'">
+              <span class="dist-name">${team.name_sl}</span>
+              <div class="dist-bar-wrap">
+                <div class="dist-bar-fill ${team.id === myPick ? 'mine' : ''}" style="width:${pct}%"></div>
+              </div>
+              <span class="dist-pct">${pct}%</span>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    // Current pick display
+    const myTeam = myPick ? teams.find(t => t.id === myPick) : null;
+    const currentHtml = myTeam ? `
+      <div style="padding:0 18px 14px">
+        <div class="bonus-current">
+          <img src="${NP.flagUrl(myTeam.flag_code)}" style="width:24px;height:16px;object-fit:cover;border-radius:2px;border:1px solid var(--border)" alt="">
+          <span>Tvoja napoved: <strong>${myTeam.name_sl}</strong></span>
+          ${!locked ? '<span style="margin-left:auto;font-size:.72rem;color:var(--muted)">Klikni drugo ekipo za spremembo</span>' : ''}
+        </div>
+      </div>` : '';
+
+    // Team grid
+    const teamGridHtml = `
+      <div class="team-pick-grid">
+        ${teams.map(t => `
+          <button class="team-pick-btn ${t.id === myPick ? 'selected' : ''}"
+            onclick="_pickWinner(${t.id})"
+            ${locked ? 'disabled' : ''}>
+            <img src="${NP.flagUrl(t.flag_code)}" alt="" onerror="this.style.display='none'">
+            <span class="team-pick-name">${t.name_sl}</span>
+          </button>`).join('')}
+      </div>`;
+
+    el.innerHTML = `
+      <div class="bonus-card">
+        <div class="bonus-card-header">
+          <div class="bonus-card-title">🏆 Zmagovalec Svetovnega prvenstva</div>
+          <span class="bonus-card-pts">+10 točk za pravilno napoved</span>
+        </div>
+        <div class="bonus-pundit">💬 ${pundit}</div>
+        ${locked ? '<div class="bonus-locked-banner">🔒 Napovedi so zaklenjene.</div>' : ''}
+        ${currentHtml}
+        ${teamGridHtml}
+        ${distHtml}
+      </div>`;
+  }
+
+  async function _pickWinner(teamId) {
+    const { error } = await NP.db
+      .from('users')
+      .update({ winner_pick_team_id: teamId })
+      .eq('id', _profile.id);
+    if (error) { _showToast('Napaka pri shranjevanju.', 'error'); return; }
+    _profile.winner_pick_team_id = teamId;
+    await NP.refreshUserProfile();
+    _showToast('Napoved shranjena! 🏆', 'success');
+    _renderZmagovalec();
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 5 — NAJBOLJŠI STRELEC (Top Scorer)
+     +8 pts exact, +3 pts if in top scorer group
+     ══════════════════════════════════════════════════════ */
+  async function _renderStrelec() {
+    const el = document.getElementById('strelec-content');
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">Nalagam...</div>';
+
+    const locked = _areBonusesLocked();
+
+    const [teamsRes, configRes, allUsersRes] = await Promise.all([
+      NP.db.from('teams').select('id, name_sl, fifa_code, flag_code').order('name_sl'),
+      NP.db.from('app_config').select('value').eq('key', 'scorer_pundit_text').maybeSingle(),
+      NP.db.from('users').select('top_scorer_pick_player_id').not('top_scorer_pick_player_id', 'is', null),
+    ]);
+
+    const teams    = teamsRes.data ?? [];
+    const pundit   = configRes.data?.value ?? 'Večina strokovnjakov stavlja na Mbappéja, a Kane je v stalni formi. Lahko Neymar ali Haaland preseneti?';
+    const myPickId = _profile.top_scorer_pick_player_id;
+    const allPicks = allUsersRes.data ?? [];
+
+    // Find which team my pick belongs to (for pre-selecting dropdown)
+    let myPlayerTeamId = null;
+    let myPlayer = null;
+    if (myPickId) {
+      const { data: p } = await NP.db.from('players').select('id, name, name_short, shirt_number, team_id').eq('id', myPickId).single();
+      myPlayer = p;
+      myPlayerTeamId = p?.team_id;
+    }
+
+    // Distribution (only shown after pick)
+    let distHtml = '';
+    if (myPickId) {
+      const total = allPicks.length;
+      const countMap = {};
+      allPicks.forEach(u => {
+        countMap[u.top_scorer_pick_player_id] = (countMap[u.top_scorer_pick_player_id] ?? 0) + 1;
+      });
+      const sorted = Object.entries(countMap).sort((a,b) => b[1]-a[1]).slice(0, 8);
+      // Fetch player names for top picks
+      const playerIds = sorted.map(([id]) => parseInt(id));
+      const { data: topPlayers } = await NP.db
+        .from('players')
+        .select('id, name, name_short, team_id, teams(name_sl, flag_code)')
+        .in('id', playerIds);
+      const playerMap = {};
+      (topPlayers ?? []).forEach(p => { playerMap[p.id] = p; });
+
+      distHtml = `
+        <div class="dist-section">
+          <div class="dist-title">Kako so glasovali sodelavci (${total} glasov)</div>
+          ${sorted.map(([pid, count]) => {
+            const p   = playerMap[parseInt(pid)];
+            if (!p) return '';
+            const pct = total ? Math.round(count/total*100) : 0;
+            return `
+              <div class="dist-row">
+                <img class="dist-flag" src="${NP.flagUrl(p.teams?.flag_code)}" alt="" onerror="this.style.display='none'">
+                <span class="dist-name">${p.name_short ?? p.name}</span>
+                <div class="dist-bar-wrap">
+                  <div class="dist-bar-fill ${parseInt(pid) === myPickId ? 'mine' : ''}" style="width:${pct}%"></div>
+                </div>
+                <span class="dist-pct">${pct}%</span>
+              </div>`;
+          }).join('')}
+        </div>`;
+    }
+
+    // Current pick
+    const currentHtml = myPlayer ? `
+      <div style="padding:0 18px 14px">
+        <div class="bonus-current">
+          <span>⚽ Tvoja napoved: <strong>${myPlayer.name}</strong></span>
+          ${!locked ? '<span style="margin-left:auto;font-size:.72rem;color:var(--muted)">Izberi drugega za spremembo</span>' : ''}
+        </div>
+      </div>` : '';
+
+    // Team dropdown + player list (rendered dynamically)
+    const pickerHtml = `
+      <div class="scorer-picker">
+        <select class="scorer-select" id="scorer-team-select"
+          onchange="_loadScorersForTeam(this.value)"
+          ${locked ? 'disabled' : ''}>
+          <option value="">— Izberi ekipo —</option>
+          ${teams.map(t => `<option value="${t.id}" ${t.id === myPlayerTeamId ? 'selected' : ''}>${t.name_sl}</option>`).join('')}
+        </select>
+        <div id="player-grid-wrap"></div>
+        <div id="scorer-save-wrap"></div>
+      </div>`;
+
+    el.innerHTML = `
+      <div class="bonus-card">
+        <div class="bonus-card-header">
+          <div class="bonus-card-title">⚽ Najboljši strelec SP 2026</div>
+          <span class="bonus-card-pts">+8 točk točen zadetek · +3 točke delni zadetek</span>
+        </div>
+        <div class="bonus-pundit">💬 ${pundit}</div>
+        ${locked ? '<div class="bonus-locked-banner">🔒 Napovedi so zaklenjene.</div>' : ''}
+        ${currentHtml}
+        ${pickerHtml}
+        ${distHtml}
+      </div>`;
+
+    // If user already has a team selected, load players immediately
+    if (myPlayerTeamId) {
+      await _loadScorersForTeam(myPlayerTeamId, myPickId);
+    }
+  }
+
+  async function _loadScorersForTeam(teamId, preselectedId) {
+    const wrap = document.getElementById('player-grid-wrap');
+    const saveWrap = document.getElementById('scorer-save-wrap');
+    if (!wrap) return;
+    if (!teamId) { wrap.innerHTML = ''; saveWrap && (saveWrap.innerHTML = ''); return; }
+
+    wrap.innerHTML = '<div style="padding:10px;text-align:center;color:var(--muted);font-size:.8rem">Nalagam...</div>';
+
+    const { data: players } = await NP.db
+      .from('players')
+      .select('id, name, name_short, shirt_number')
+      .eq('team_id', teamId)
+      .eq('is_placeholder', false)
+      .order('shirt_number');
+
+    if (!players?.length) {
+      wrap.innerHTML = '<div style="padding:10px;color:var(--muted);font-size:.8rem">Ni podatkov o igralcih.</div>';
+      return;
+    }
+
+    const myPickId = _profile.top_scorer_pick_player_id;
+    const locked   = _profile.bonuses_locked_at && new Date(_profile.bonuses_locked_at) < new Date();
+    const selected = preselectedId ?? myPickId;
+
+    wrap.innerHTML = `
+      <div class="player-grid">
+        ${players.map(p => `
+          <button class="player-btn ${p.id === selected ? 'selected' : ''}"
+            id="pb-${p.id}"
+            onclick="_selectPlayer(${p.id})"
+            ${locked ? 'disabled' : ''}>
+            <span class="player-num">${p.shirt_number ?? ''}</span>
+            <span class="player-name">${p.name_short ?? p.name}</span>
+          </button>`).join('')}
+      </div>`;
+  }
+
+  let _selectedPlayerId = null;
+
+  function _selectPlayer(playerId) {
+    // Deselect all, select clicked
+    document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('selected'));
+    const btn = document.getElementById('pb-' + playerId);
+    if (btn) btn.classList.add('selected');
+    _selectedPlayerId = playerId;
+
+    // Show save button
+    const saveWrap = document.getElementById('scorer-save-wrap');
+    if (saveWrap) {
+      saveWrap.innerHTML = `
+        <button class="bonus-save-btn" onclick="_saveStrelec()">
+          Shrani napoved →
+        </button>`;
+    }
+  }
+
+  async function _saveStrelec() {
+    if (!_selectedPlayerId) return;
+    const { error } = await NP.db
+      .from('users')
+      .update({ top_scorer_pick_player_id: _selectedPlayerId })
+      .eq('id', _profile.id);
+    if (error) { _showToast('Napaka pri shranjevanju.', 'error'); return; }
+    _profile.top_scorer_pick_player_id = _selectedPlayerId;
+    await NP.refreshUserProfile();
+    _showToast('Napoved shranjena! ⚽', 'success');
+    _renderStrelec();
+  }
+
+  function _showToast(msg, type = 'success') {
+    const c = document.getElementById('toasts');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+  </script>
+
+  <script>
+    (function(){
+      var btn   = document.getElementById('nav-menu-btn');
+      var links = document.getElementById('navbar-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = links.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+        btn.textContent = open ? '\u2715' : '\u2630';
+      });
+      document.addEventListener('click', function(e){
+        if (!links.contains(e.target) && e.target !== btn) {
+          links.classList.remove('open');
+          btn.setAttribute('aria-expanded', false);
+          btn.textContent = '\u2630';
+        }
+      });
+      links.querySelectorAll('.navbar-link').forEach(function(a){
+        a.addEventListener('click', function(){
+          links.classList.remove('open');
+          btn.textContent = '\u2630';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

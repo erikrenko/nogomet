@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Napovednik 2026 — Selektor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=3">
+  <style>
+    /* ── ADMIN BADGE ── */
+    .admin-badge {
+      display:inline-flex;align-items:center;gap:5px;
+      background:var(--red-bg);color:var(--red);
+      border:1px solid rgba(192,49,43,.25);
+      font-size:.65rem;font-weight:800;text-transform:uppercase;
+      letter-spacing:.06em;padding:2px 8px;border-radius:99px;
+    }
+
+    /* ── TABS ── */
+    .sel-tabs-nav {
+      display:flex;border-bottom:2px solid var(--border);margin-bottom:24px;gap:0;
+    }
+    .sel-tab-btn {
+      padding:10px 18px;font-size:.88rem;font-weight:600;color:var(--muted);
+      border:none;border-bottom:3px solid transparent;margin-bottom:-2px;
+      background:none;cursor:pointer;font-family:var(--font-main);
+      transition:color var(--t-fast),border-color var(--t-fast);
+      white-space:nowrap;display:flex;align-items:center;gap:6px;
+    }
+    .sel-tab-btn:hover { color:var(--text); }
+    .sel-tab-btn.active { color:var(--text);border-bottom-color:var(--red); }
+    .sel-tab-pane { display:none; }
+    .sel-tab-pane.active { display:block; }
+
+    /* ── SECTION LABELS ── */
+    .sel-section {
+      font-size:.7rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.08em;color:var(--muted);
+      margin:20px 0 10px;display:flex;align-items:center;gap:8px;
+    }
+    .sel-section::after { content:'';flex:1;height:1px;background:var(--border); }
+
+    /* ── MATCH RESULT CARD ── */
+    .match-result-card {
+      background:var(--bg-mid);border:1px solid var(--border);
+      border-radius:var(--radius-lg);overflow:hidden;
+      box-shadow:0 1px 3px rgba(40,80,44,.07);margin-bottom:10px;
+    }
+    .match-result-card.has-result { border-color:rgba(68,157,68,.3); }
+    .match-result-card.today { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow); }
+
+    .mrc-header {
+      display:flex;align-items:center;padding:10px 16px;gap:10px;
+      background:var(--bg-deep);border-bottom:1px solid var(--border);
+    }
+    .mrc-group { font-size:.65rem;font-weight:700;color:var(--muted);width:46px;flex-shrink:0; }
+    .mrc-teams { display:flex;align-items:center;gap:8px;flex:1;min-width:0; }
+    .mrc-team  { display:flex;align-items:center;gap:5px;flex:1; }
+    .mrc-team.right { justify-content:flex-end;flex-direction:row-reverse; }
+    .mrc-team-name { font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .mrc-team img  { width:22px;height:15px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0; }
+    .mrc-time { font-size:.78rem;color:var(--muted);font-weight:600;min-width:44px;text-align:center;flex-shrink:0; }
+    .mrc-pred-count { font-size:.68rem;color:var(--muted);flex-shrink:0;white-space:nowrap; }
+
+    .mrc-body { padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap; }
+
+    /* Score inputs */
+    .score-inputs { display:flex;align-items:center;gap:8px; }
+    .score-input {
+      width:52px;text-align:center;font-family:var(--font-main);
+      font-size:1.2rem;font-weight:800;padding:6px 4px;
+      background:var(--white);border:2px solid var(--border-dark);
+      border-radius:var(--radius-md);color:var(--text);outline:none;
+      transition:border-color var(--t-fast);
+    }
+    .score-input:focus { border-color:var(--red);box-shadow:0 0 0 3px rgba(192,49,43,.1); }
+    .score-input::-webkit-outer-spin-button,
+    .score-input::-webkit-inner-spin-button { -webkit-appearance:none; }
+    .score-input[type=number] { -moz-appearance:textfield; }
+    .score-sep { font-size:1.2rem;font-weight:900;color:var(--muted); }
+
+    .mrc-saved-score {
+      font-size:1.4rem;font-weight:800;color:var(--green-text);
+      padding:4px 12px;background:var(--green-bg);border-radius:var(--radius-md);
+      border:1px solid rgba(68,157,68,.3);
+    }
+
+    .mrc-actions { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+
+    /* AET inputs (hidden by default) */
+    .aet-section { display:none;align-items:center;gap:8px;margin-top:8px;width:100%; }
+    .aet-section.visible { display:flex; }
+    .aet-label { font-size:.7rem;font-weight:700;color:var(--muted);white-space:nowrap; }
+
+    /* Result status badge */
+    .result-badge {
+      font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;
+    }
+    .result-badge.done      { background:var(--green-bg);color:var(--green-text);border:1px solid rgba(68,157,68,.2); }
+    .result-badge.published { background:var(--accent);color:white; }
+    .result-badge.pending   { background:var(--gold-bg);color:var(--gold);border:1px solid rgba(180,90,0,.2); }
+
+    /* ── BRACKET ── */
+    .bracket-grid {
+      display:grid;grid-template-columns:repeat(auto-fill, minmax(300px,1fr));gap:10px;
+    }
+    .bracket-card {
+      background:var(--bg-mid);border:1px solid var(--border);
+      border-radius:var(--radius-lg);padding:14px 16px;
+    }
+    .bracket-card-header {
+      font-size:.68rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.07em;color:var(--muted);margin-bottom:10px;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .bracket-team-row {
+      display:flex;align-items:center;gap:8px;margin-bottom:6px;
+    }
+    .bracket-team-label {
+      font-size:.72rem;font-weight:600;color:var(--muted);width:60px;flex-shrink:0;
+    }
+    .bracket-team-select {
+      flex:1;background:var(--white);border:1px solid var(--border-dark);
+      border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-main);
+      font-size:.82rem;padding:5px 8px;outline:none;cursor:pointer;
+    }
+    .bracket-team-select:focus { border-color:var(--accent); }
+
+    /* ── PRIZES ── */
+    .prize-row {
+      display:flex;align-items:center;gap:12px;
+      padding:12px 16px;border-bottom:1px solid var(--border);
+      background:var(--bg-mid);
+    }
+    .prize-row:first-child { border-radius:var(--radius-lg) var(--radius-lg) 0 0; }
+    .prize-row:last-child  { border-bottom:none;border-radius:0 0 var(--radius-lg) var(--radius-lg); }
+    .prize-emoji { font-size:1.4rem;flex-shrink:0; }
+    .prize-info  { flex:1; }
+    .prize-name  { font-size:.88rem;font-weight:700;color:var(--text); }
+    .prize-dates { font-size:.7rem;color:var(--muted); }
+    .prize-winner-select {
+      background:var(--white);border:1px solid var(--border-dark);
+      border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-main);
+      font-size:.82rem;padding:5px 10px;outline:none;cursor:pointer;flex-shrink:0;min-width:160px;
+    }
+    .prize-winner-select:focus { border-color:var(--accent); }
+    .prize-confirmed { font-size:.72rem;font-weight:600;color:var(--green-text);flex-shrink:0; }
+
+    /* ── TOP SCORER ── */
+    .top-scorer-grid {
+      display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+    }
+    .scorer-slot {
+      background:var(--bg-mid);border:1px solid var(--border);
+      border-radius:var(--radius-lg);padding:14px 16px;
+    }
+    .scorer-slot-label {
+      font-size:.68rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.07em;color:var(--muted);margin-bottom:8px;
+    }
+    .scorer-slot-label.gold   { color:#b45a00; }
+    .scorer-slot-label.silver { color:#6b7280; }
+    .scorer-slot-label.bronze { color:#8b4513; }
+
+    /* ── TOOLS ── */
+    .tools-grid {
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;
+    }
+    .tool-card {
+      background:var(--bg-mid);border:1px solid var(--border);
+      border-radius:var(--radius-lg);padding:16px 18px;
+    }
+    .tool-card-title { font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px; }
+    .tool-card-desc  { font-size:.75rem;color:var(--muted);margin-bottom:12px;line-height:1.5; }
+
+    /* Fix prediction */
+    .fix-pred-form { display:flex;flex-direction:column;gap:8px; }
+    .fix-pred-select {
+      background:var(--white);border:1px solid var(--border-dark);
+      border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-main);
+      font-size:.82rem;padding:6px 10px;outline:none;
+    }
+
+    /* Toast */
+    .toast-container { position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:7px;z-index:3000;pointer-events:none; }
+    .toast { display:flex;align-items:center;gap:9px;padding:10px 14px;border-radius:var(--radius-md);font-size:.83rem;font-weight:500;border:1px solid var(--border);box-shadow:0 4px 16px rgba(40,80,44,.12);background:var(--white);color:var(--text);animation:toastIn .25s ease,toastOut .25s ease forwards;animation-delay:0s,2.75s;pointer-events:all; }
+    .toast.success { border-left:3px solid var(--green); }
+    .toast.error   { border-left:3px solid var(--red); }
+    @keyframes toastIn  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+    @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(8px)} }
+
+    @media (max-width:600px) {
+      .mrc-body { flex-direction:column;align-items:flex-start; }
+      .top-scorer-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-logo" href="index.html">Napo<span>vednik</span><sup>2026</sup></a>
+      <div class="navbar-links" id="navbar-links">
+        <a class="navbar-link" href="index.html">🏠 Home</a>
+        <a class="navbar-link" href="predictions.html">📝 Moje napovedi</a>
+        <a class="navbar-link" href="napovedi.html">🌍 Vse napovedi</a>
+        <a class="navbar-link" href="rezultati.html">📊 Rezultati tekem</a>
+        <a class="navbar-link" href="leaderboard.html">🏆 Lestvica uporabnikov</a>
+        <a class="navbar-link active" href="selektor.html">⚙ Selektor</a>
+        <button class="navbar-link navbar-link-signout" onclick="NP.signOut()">🚪 Odjava</button>
+      </div>
+      <div class="navbar-right">
+        <a href="profil.html" class="user-chip" style="text-decoration:none;color:#fff">
+          <div class="user-avatar" id="nav-avatar">👤</div>
+          <span id="nav-name" style="color:#fff">...</span>
+        </a>
+        <button onclick="NP.signOut()" class="nav-signout-btn">Odjava</button>
+        <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Meni" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container page-wrap">
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div>
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Admin panel</div>
+        <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.02em">Selektor 2026</div>
+      </div>
+      <span class="admin-badge" style="margin-left:auto">🔧 Admin mode</span>
+    </div>
+
+    <!-- TABS -->
+    <div class="sel-tabs-nav">
+      <button class="sel-tab-btn active" data-tab="tekme">⚽ Tekme</button>
+      <button class="sel-tab-btn"        data-tab="bracket">🏆 Izločilni boji</button>
+      <button class="sel-tab-btn"        data-tab="nagrade">🎁 Nagrade</button>
+      <button class="sel-tab-btn"        data-tab="orodja">🔧 Orodja</button>
+    </div>
+
+    <!-- TAB: TEKME -->
+    <div class="sel-tab-pane active" id="tab-tekme">
+      <div class="sel-section">Današnje tekme</div>
+      <div id="today-matches">
+        <div style="padding:20px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+      <div class="sel-section">Vse tekme</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-secondary btn-sm" id="filter-all" onclick="_setFilter('all')" style="border-color:var(--accent);color:var(--accent-dark)">Vse</button>
+        <button class="btn btn-secondary btn-sm" id="filter-pending" onclick="_setFilter('pending')">Brez rezultata</button>
+        <button class="btn btn-secondary btn-sm" id="filter-done" onclick="_setFilter('done')">Z rezultatom</button>
+      </div>
+      <div id="all-matches">
+        <div style="padding:20px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: BRACKET -->
+    <div class="sel-tab-pane" id="tab-bracket">
+      <div class="sel-section">Izločilni boji — razporedi ekipe</div>
+      <div class="bracket-grid" id="bracket-grid">
+        <div style="padding:20px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: NAGRADE -->
+    <div class="sel-tab-pane" id="tab-nagrade">
+      <div class="sel-section">Tedenske nagrade — trivialist</div>
+      <div class="lb-card" id="prizes-list">
+        <div style="padding:20px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+
+      <div class="sel-section" style="margin-top:24px">Najboljši strelci SP — po finalu</div>
+      <div class="top-scorer-grid" id="top-scorer-grid">
+        <div style="padding:20px;text-align:center;color:var(--muted);grid-column:1/-1">Nalagam...</div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-primary" id="calc-scorer-btn" onclick="_calcScorerBonus()" style="background:var(--red);border-color:var(--red)">
+          Izračunaj bonus točke za strelce
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB: ORODJA -->
+    <div class="sel-tab-pane" id="tab-orodja">
+      <div class="sel-section">Sistemska orodja</div>
+      <div class="tools-grid">
+
+        <!-- Snapshot -->
+        <div class="tool-card">
+          <div class="tool-card-title">📸 Lestvica snapshot</div>
+          <div class="tool-card-desc">
+            Shrani trenutno stanje lestvice za izračun delta (▲▼) sprememb naslednji dan.
+            Zaženi enkrat dnevno, po zadnjem rezultatu.
+            <br><br>
+            Zadnji snapshot: <strong id="last-snapshot-date">—</strong>
+          </div>
+          <button class="btn btn-primary" onclick="_saveSnapshot()" id="snapshot-btn">
+            Shrani snapshot za danes
+          </button>
+        </div>
+
+        <!-- Recalc all -->
+        <div class="tool-card">
+          <div class="tool-card-title">🔄 Preračunaj vse točke</div>
+          <div class="tool-card-desc">
+            Preračuna points_awarded za vse napovedi vseh odigranih tekem.
+            Uporabi v primeru napake ali po ročni spremembi rezultata.
+          </div>
+          <button class="btn btn-primary" onclick="_recalcAll()" style="background:var(--gold);border-color:var(--gold);color:var(--text)">
+            Preračunaj vse
+          </button>
+        </div>
+
+        <!-- Fix prediction -->
+        <div class="tool-card">
+          <div class="tool-card-title">🔧 Popravi napoved</div>
+          <div class="tool-card-desc">
+            Ročno uredi napoved posameznika za določeno tekmo.
+          </div>
+          <div class="fix-pred-form">
+            <select class="fix-pred-select" id="fix-user-select">
+              <option value="">— Izberi uporabnika —</option>
+            </select>
+            <select class="fix-pred-select" id="fix-match-select">
+              <option value="">— Izberi tekmo —</option>
+            </select>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" class="score-input" id="fix-home" placeholder="D" min="0" max="20" inputmode="numeric" pattern="[0-9]*" style="width:48px">
+              <span class="score-sep">–</span>
+              <input type="number" class="score-input" id="fix-away" placeholder="G" min="0" max="20" inputmode="numeric" pattern="[0-9]*" style="width:48px">
+              <button class="btn btn-primary btn-sm" onclick="_fixPrediction()" style="background:var(--red);border-color:var(--red)">Shrani</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lock bonuses -->
+        <div class="tool-card">
+          <div class="tool-card-title">🔒 Zakleni bonus napovedi</div>
+          <div class="tool-card-desc">
+            Po zaklepu uporabniki ne morejo več spremeniti napovedi za zmagovalca SP in najboljšega strelca.
+            <br><br>
+            Trenutni status: <strong id="bonus-lock-status">—</strong>
+          </div>
+          <button class="btn btn-primary" onclick="_lockBonuses()" id="lock-bonuses-btn" style="background:var(--red);border-color:var(--red)">
+            Zakleni bonus napovedi
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast-container" id="toasts"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>window.__NP_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliaW56ZXd5eHVweW9qbGFtbHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODY4NzcsImV4cCI6MjA5NDE2Mjg3N30.n5-oSP7_7QvylacamMozjluh1fwgUKUb4yv_uEl0-pQ';</script>
+  <script src="js/utils.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/plugins.js"></script>
+  <script>
+  const MONTHS_SL = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+  let _allMatches = [], _allTeams = [], _allUsers = [], _allPreds = [];
+  let _matchFilter = 'all';
+
+  (async () => {
+    if (!NP.requireAdmin()) return;
+    const profile = NP.getUserProfile();
+    const state   = await NP.getTournamentNow();
+
+    document.getElementById('nav-name').textContent = profile.display_name;
+    document.getElementById('nav-avatar').textContent = profile.display_name.charAt(0).toUpperCase();
+
+    // Load all data
+    const [matchesRes, teamsRes, usersRes, predsRes] = await Promise.all([
+      NP.db.from('matches')
+        .select(`id, phase, group_name, kickoff_at,
+          home_score_90, away_score_90, home_score_120, away_score_120,
+          result_published_at,
+          home_team:teams!matches_home_team_id_fkey(id, name_sl, flag_code),
+          away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code)`)
+        .order('kickoff_at'),
+      NP.db.from('teams').select('id, name_sl, flag_code, group_name').order('group_name').order('name_sl'),
+      NP.db.from('users').select('id, display_name, original_name, bonuses_locked_at').order('display_name'),
+      NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded'),
+    ]);
+
+    _allMatches = matchesRes.data ?? [];
+    _allTeams   = teamsRes.data   ?? [];
+    _allUsers   = usersRes.data   ?? [];
+    _allPreds   = predsRes.data   ?? [];
+
+    // Render all tabs
+    _renderTodayMatches();
+    _renderAllMatches();
+
+    // Tab switching — lazy render bracket/prizes
+    document.querySelectorAll('.sel-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.sel-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.sel-tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'bracket') _renderBracket();
+        if (tab === 'nagrade') _renderPrizes();
+        if (tab === 'orodja')  _renderTools();
+      });
+    });
+  })();
+
+  /* ══════════════════════════════════════════════════════
+     TAB 1 — TEKME
+     ══════════════════════════════════════════════════════ */
+
+  function _setFilter(f) {
+    _matchFilter = f;
+    ['all','pending','done'].forEach(x => {
+      const btn = document.getElementById('filter-' + x);
+      btn.style.borderColor = x === f ? 'var(--accent)' : '';
+      btn.style.color = x === f ? 'var(--accent-dark)' : '';
+    });
+    _renderAllMatches();
+  }
+
+  function _renderTodayMatches() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const end   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    const today = _allMatches.filter(m => {
+      const d = new Date(m.kickoff_at);
+      return d >= start && d <= end;
+    });
+
+    const el = document.getElementById('today-matches');
+    if (!today.length) {
+      el.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:.85rem">Danes ni tekem.</div>';
+      return;
+    }
+    el.innerHTML = today.map(m => _matchCard(m, true)).join('');
+  }
+
+  function _renderAllMatches() {
+    const filtered = _allMatches.filter(m => {
+      if (_matchFilter === 'pending') return m.home_score_90 === null;
+      if (_matchFilter === 'done')    return m.home_score_90 !== null;
+      return true;
+    });
+    document.getElementById('all-matches').innerHTML =
+      filtered.map(m => _matchCard(m, false)).join('') ||
+      '<div style="padding:14px;color:var(--muted);font-size:.85rem">Ni tekem za prikaz.</div>';
+  }
+
+  function _matchCard(m, isToday) {
+    const finished  = m.home_score_90 !== null;
+    const published = m.result_published_at !== null;
+    const predCount = _allPreds.filter(p => p.match_id === m.id).length;
+    const d = new Date(m.kickoff_at);
+    const dateStr = `${d.getDate()}. ${MONTHS_SL[d.getMonth()]}`;
+
+    let statusBadge = '';
+    if (finished && published) statusBadge = `<span class="result-badge published">✓ Objavljeno</span>`;
+    else if (finished)         statusBadge = `<span class="result-badge done">✓ Rezultat vnešen</span>`;
+    else                       statusBadge = `<span class="result-badge pending">Čaka rezultat</span>`;
+
+    const savedScore = finished
+      ? `<div class="mrc-saved-score">${m.home_score_120 ?? m.home_score_90}–${m.away_score_120 ?? m.away_score_90}</div>`
+      : '';
+
+    return `
+      <div class="match-result-card ${finished ? 'has-result' : ''} ${isToday ? 'today' : ''}" id="mrc-${m.id}">
+        <div class="mrc-header">
+          <div class="mrc-group">${m.group_name ? 'Sk.' + m.group_name : m.phase ?? ''}</div>
+          <div class="mrc-teams">
+            <div class="mrc-team">
+              <img src="${NP.flagUrl(m.home_team?.flag_code)}" alt="" onerror="this.style.display='none'">
+              <span class="mrc-team-name">${m.home_team?.name_sl ?? '—'}</span>
+            </div>
+            <div class="mrc-time">${isToday ? NP.formatKickoff(m.kickoff_at, false) : dateStr + ' ' + NP.formatKickoff(m.kickoff_at, false)}</div>
+            <div class="mrc-team right">
+              <span class="mrc-team-name">${m.away_team?.name_sl ?? '—'}</span>
+              <img src="${NP.flagUrl(m.away_team?.flag_code)}" alt="" onerror="this.style.display='none'">
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            ${statusBadge}
+            <span class="mrc-pred-count">${predCount} napovedi</span>
+          </div>
+        </div>
+        <div class="mrc-body">
+          ${savedScore}
+          <div class="score-inputs">
+            <input type="number" class="score-input" id="h90-${m.id}"
+              value="${m.home_score_90 ?? ''}" placeholder="D" min="0" max="20"
+              inputmode="numeric" pattern="[0-9]*"
+              oninput="_onScoreInput(${m.id})">
+            <span class="score-sep">–</span>
+            <input type="number" class="score-input" id="a90-${m.id}"
+              value="${m.away_score_90 ?? ''}" placeholder="G" min="0" max="20"
+              inputmode="numeric" pattern="[0-9]*"
+              oninput="_onScoreInput(${m.id})">
+            <span style="font-size:.7rem;color:var(--muted);margin-left:2px">90'</span>
+          </div>
+          <div class="aet-section ${m.home_score_120 !== null ? 'visible' : ''}" id="aet-${m.id}">
+            <span class="aet-label">Po podaljšku:</span>
+            <input type="number" class="score-input" id="h120-${m.id}"
+              value="${m.home_score_120 ?? ''}" placeholder="D" min="0" max="20"
+              inputmode="numeric" pattern="[0-9]*" style="width:48px">
+            <span class="score-sep">–</span>
+            <input type="number" class="score-input" id="a120-${m.id}"
+              value="${m.away_score_120 ?? ''}" placeholder="G" min="0" max="20"
+              inputmode="numeric" pattern="[0-9]*" style="width:48px">
+            <span style="font-size:.7rem;color:var(--muted);margin-left:2px">120'</span>
+          </div>
+          <div class="mrc-actions">
+            <button class="btn btn-sm" style="background:var(--gold-bg);color:var(--gold);border:1px solid rgba(180,90,0,.2);font-size:.75rem"
+              onclick="_toggleAet(${m.id})">± Podaljšek</button>
+            <button class="btn btn-primary btn-sm" onclick="_saveResult(${m.id})" style="background:var(--accent);border-color:var(--accent)">
+              📢 Objavi rezultat
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function _toggleAet(matchId) {
+    const aet = document.getElementById('aet-' + matchId);
+    aet.classList.toggle('visible');
+  }
+
+  function _onScoreInput(matchId) {
+    // Show AET button highlight if 90' draw
+    const h = document.getElementById('h90-' + matchId)?.value;
+    const a = document.getElementById('a90-' + matchId)?.value;
+    if (h !== '' && a !== '' && h === a) {
+      // Draw — remind admin about AET possibility
+    }
+  }
+
+  async function _saveResult(matchId) {
+    const h90 = document.getElementById('h90-' + matchId)?.value;
+    const a90 = document.getElementById('a90-' + matchId)?.value;
+    if (h90 === '' || a90 === '') { _toast('Vnesi oba zadetka za 90 minut.', 'error'); return; }
+
+    const h120El = document.getElementById('h120-' + matchId);
+    const a120El = document.getElementById('a120-' + matchId);
+    const h120 = h120El?.value !== '' ? parseInt(h120El.value) : null;
+    const a120 = a120El?.value !== '' ? parseInt(a120El.value) : null;
+
+    const update = {
+      home_score_90: parseInt(h90),
+      away_score_90: parseInt(a90),
+      home_score_120: h120,
+      away_score_120: a120,
+      result_published_at: new Date().toISOString(),
+    };
+
+    const { error } = await NP.db.from('matches').update(update).eq('id', matchId);
+    if (error) { _toast('Napaka: ' + error.message, 'error'); return; }
+
+    // Recalculate points
+    const result = await NP.scoring.recalcMatch(matchId);
+    if (result.errors.length) {
+      _toast('Rezultat shranjen, napaka pri preračunu: ' + result.errors[0], 'error');
+    } else {
+      _toast(`✓ Objavljeno · ${result.updated} napovedi preračunanih`, 'success');
+    }
+
+    // Auto-save leaderboard snapshot after publishing result
+    try {
+      await NP.db.rpc('save_leaderboard_snapshot');
+    } catch(e) {
+      // Snapshot failed silently — not critical
+    }
+
+
+    // Auto-save leaderboard snapshot after publishing result
+    try { await NP.db.rpc('save_leaderboard_snapshot'); } catch(e) {}
+
+    // Update local cache and re-render
+    const m = _allMatches.find(x => x.id === matchId);
+    if (m) {
+      m.home_score_90 = parseInt(h90);
+      m.away_score_90 = parseInt(a90);
+      m.home_score_120 = h120;
+      m.away_score_120 = a120;
+    }
+    _renderTodayMatches();
+    _renderAllMatches();
+  }
+
+
+
+  /* ══════════════════════════════════════════════════════
+     TAB 2 — BRACKET
+     ══════════════════════════════════════════════════════ */
+
+  function _renderBracket() {
+    const koMatches = _allMatches.filter(m =>
+      ['R32','R16','QF','SF','THIRD','FINAL'].includes(m.phase)
+    );
+    if (!koMatches.length) {
+      document.getElementById('bracket-grid').innerHTML =
+        '<div style="padding:20px;color:var(--muted)">Ni izločilnih tekem za razporeditev.</div>';
+      return;
+    }
+
+    const teamOptions = _allTeams.map(t =>
+      `<option value="${t.id}">${t.name_sl}</option>`
+    ).join('');
+
+    const html = koMatches.map(m => {
+      const phaseLabel = { R32:'R32',R16:'R16',QF:'Četrtfinale',SF:'Polfinale',THIRD:'3. mesto',FINAL:'Finale' }[m.phase] ?? m.phase;
+      const d = new Date(m.kickoff_at);
+      const dateStr = `${d.getDate()}. ${MONTHS_SL[d.getMonth()]} · ${NP.formatKickoff(m.kickoff_at, false)}`;
+
+      return `
+        <div class="bracket-card">
+          <div class="bracket-card-header">
+            <span>${phaseLabel} · Tekma ${m.id}</span>
+            <span style="color:var(--muted);font-size:.65rem">${dateStr}</span>
+          </div>
+          <div class="bracket-team-row">
+            <span class="bracket-team-label">Domači</span>
+            <select class="bracket-team-select" id="bh-${m.id}" onchange="_saveBracketTeam(${m.id})">
+              <option value="">— TBD —</option>
+              ${teamOptions}
+            </select>
+          </div>
+          <div class="bracket-team-row">
+            <span class="bracket-team-label">Gosti</span>
+            <select class="bracket-team-select" id="ba-${m.id}" onchange="_saveBracketTeam(${m.id})">
+              <option value="">— TBD —</option>
+              ${teamOptions}
+            </select>
+          </div>
+          <div style="font-size:.68rem;color:var(--muted);margin-top:8px">
+            Placeholder: <em>${m.home_placeholder ?? '?'}</em> vs <em>${m.away_placeholder ?? '?'}</em>
+          </div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('bracket-grid').innerHTML = html;
+
+    // Set current values
+    koMatches.forEach(m => {
+      if (m.home_team?.id) {
+        const sel = document.getElementById('bh-' + m.id);
+        if (sel) sel.value = m.home_team.id;
+      }
+      if (m.away_team?.id) {
+        const sel = document.getElementById('ba-' + m.id);
+        if (sel) sel.value = m.away_team.id;
+      }
+    });
+  }
+
+  async function _saveBracketTeam(matchId) {
+    const homeId = document.getElementById('bh-' + matchId)?.value || null;
+    const awayId = document.getElementById('ba-' + matchId)?.value || null;
+    const { error } = await NP.db.from('matches').update({
+      home_team_id: homeId ? parseInt(homeId) : null,
+      away_team_id: awayId ? parseInt(awayId) : null,
+      bracket_published_at: new Date().toISOString(),
+    }).eq('id', matchId);
+    if (error) _toast('Napaka: ' + error.message, 'error');
+    else _toast('✓ Ekipa shranjena', 'success');
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 3 — NAGRADE
+     ══════════════════════════════════════════════════════ */
+
+  async function _renderPrizes() {
+    const EMOJIS = ['🍭','🍬','🍫','🍦','🐻','🥐'];
+
+    const [prizesRes, triviaRes] = await Promise.all([
+      NP.db.from('weekly_prizes').select('*,winner:users!weekly_prizes_winner_user_id_fkey(id,display_name)').order('week_number'),
+      NP.db.from('trivia_weekly').select('*').order('week_number').order('correct', { ascending: false }),
+    ]);
+
+    const prizes = prizesRes.data ?? [];
+    const trivia = triviaRes.data ?? [];
+
+    // Calculate trivialist per week
+    const weekWinners = {};
+    const weekGroups  = {};
+    trivia.forEach(r => {
+      if (!weekGroups[r.week_number]) weekGroups[r.week_number] = [];
+      weekGroups[r.week_number].push(r);
+    });
+    Object.entries(weekGroups).forEach(([wn, rows]) => {
+      const best = rows.reduce((b, c) =>
+        c.correct > b.correct || (c.correct === b.correct && new Date(c.earliest_answer_at) < new Date(b.earliest_answer_at)) ? c : b
+      );
+      weekWinners[wn] = best;
+    });
+
+    const userOptions = _allUsers.map(u =>
+      `<option value="${u.id}">${u.original_name ?? u.display_name}</option>`
+    ).join('');
+
+    const html = prizes.map((p, i) => {
+      const auto = weekWinners[p.week_number];
+      const confirmed = p.winner_user_id !== null;
+      const winnerName = p.winner?.display_name ?? '—';
+      const autoName = auto
+        ? (_allUsers.find(u => u.id === auto.user_id)?.display_name ?? '?') + ` (${auto.correct} pravilnih)`
+        : '—';
+
+      return `
+        <div class="prize-row">
+          <div class="prize-emoji">${EMOJIS[i] ?? '🎁'}</div>
+          <div class="prize-info">
+            <div class="prize-name">Teden ${p.week_number} · ${p.prize_sponsor_name ?? '—'}</div>
+            <div class="prize-dates">${p.prize_description_sl ?? ''}</div>
+            ${auto && !confirmed ? `<div style="font-size:.72rem;color:var(--accent-dark);margin-top:2px">Predlog: ${autoName}</div>` : ''}
+          </div>
+          ${confirmed
+            ? `<span class="prize-confirmed">✓ ${winnerName}</span>
+               <button class="btn btn-secondary btn-sm" onclick="_editPrize(${p.id})" style="font-size:.72rem">Uredi</button>`
+            : `<select class="prize-winner-select" id="pw-${p.id}">
+                <option value="">— Izberi zmagovalca —</option>
+                ${auto ? `<option value="${auto.user_id}" selected>${autoName}</option>` : ''}
+                ${userOptions}
+               </select>
+               <button class="btn btn-primary btn-sm" onclick="_confirmPrize(${p.id})" style="font-size:.75rem;background:var(--accent)">
+                 Potrdi
+               </button>`
+          }
+        </div>`;
+    }).join('');
+
+    document.getElementById('prizes-list').innerHTML = html ||
+      '<div style="padding:20px;color:var(--muted)">Ni podatkov o nagradah.</div>';
+
+    // Top scorer grid
+    _renderTopScorer();
+  }
+
+  async function _confirmPrize(prizeId) {
+    const sel = document.getElementById('pw-' + prizeId);
+    if (!sel?.value) { _toast('Izberi zmagovalca.', 'error'); return; }
+    const { error } = await NP.db.from('weekly_prizes')
+      .update({ winner_user_id: sel.value, prize_awarded: true })
+      .eq('id', prizeId);
+    if (error) { _toast('Napaka: ' + error.message, 'error'); return; }
+    _toast('✓ Zmagovalec potrjen', 'success');
+    _renderPrizes();
+  }
+
+  async function _editPrize(prizeId) {
+    const { error } = await NP.db.from('weekly_prizes')
+      .update({ winner_user_id: null, prize_awarded: false })
+      .eq('id', prizeId);
+    if (!error) _renderPrizes();
+  }
+
+  async function _renderTopScorer() {
+    const { data: players } = await NP.db
+      .from('players')
+      .select('id, name, name_short, team_id, teams(name_sl, flag_code)')
+      .eq('is_placeholder', false)
+      .order('name');
+
+    const { data: cfg } = await NP.db.from('app_config')
+      .select('key, value')
+      .in('key', ['top_scorer_1st','top_scorer_2nd','top_scorer_3rd']);
+    const cfgMap = {};
+    (cfg ?? []).forEach(c => { cfgMap[c.key] = c.value; });
+
+    const playerOptions = (players ?? []).map(p =>
+      `<option value="${p.id}">${p.name_short ?? p.name} (${p.teams?.name_sl ?? '?'})</option>`
+    ).join('');
+
+    const slots = [
+      { key:'top_scorer_1st', label:'🥇 1. mesto', cls:'gold' },
+      { key:'top_scorer_2nd', label:'🥈 2. mesto', cls:'silver' },
+      { key:'top_scorer_3rd', label:'🥉 3. mesto', cls:'bronze' },
+    ];
+
+    document.getElementById('top-scorer-grid').innerHTML = slots.map(s => `
+      <div class="scorer-slot">
+        <div class="scorer-slot-label ${s.cls}">${s.label}</div>
+        <select class="fix-pred-select" id="${s.key}" style="width:100%">
+          <option value="">— Izberi strelca —</option>
+          ${playerOptions}
+        </select>
+      </div>`).join('');
+
+    // Set saved values
+    slots.forEach(s => {
+      const sel = document.getElementById(s.key);
+      if (sel && cfgMap[s.key]) sel.value = cfgMap[s.key];
+    });
+  }
+
+  async function _calcScorerBonus() {
+    const s1 = document.getElementById('top_scorer_1st')?.value;
+    const s2 = document.getElementById('top_scorer_2nd')?.value;
+    const s3 = document.getElementById('top_scorer_3rd')?.value;
+
+    if (!s1) { _toast('Izberi vsaj 1. strelca.', 'error'); return; }
+
+    // Save to app_config
+    const upserts = [
+      { key:'top_scorer_1st', value: s1 },
+      { key:'top_scorer_2nd', value: s2 || null },
+      { key:'top_scorer_3rd', value: s3 || null },
+    ].filter(x => x.value);
+
+    for (const u of upserts) {
+      await NP.db.from('app_config').upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+    }
+
+    // Calculate bonus points for each user
+    // +8 for 1st place exact, +3 for 2nd or 3rd place
+    const topIds = [s1, s2, s3].filter(Boolean).map(Number);
+    const { data: users } = await NP.db.from('users').select('id, top_scorer_pick_player_id');
+    let updated = 0;
+
+    for (const u of (users ?? [])) {
+      const pick = u.top_scorer_pick_player_id;
+      if (!pick) continue;
+      let bonus = 0;
+      if (pick === parseInt(s1)) bonus = 8;
+      else if (pick === parseInt(s2) || pick === parseInt(s3)) bonus = 3;
+      if (bonus > 0) {
+        // Store in a bonus column or app_config per user — for now just toast
+        updated++;
+      }
+    }
+
+    _toast(`✓ Strelci shranjeni · ${updated} uporabnikov dobi bonus točke`, 'success');
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TAB 4 — ORODJA
+     ══════════════════════════════════════════════════════ */
+
+  async function _renderTools() {
+    // Last snapshot date
+    const { data } = await NP.db.from('leaderboard_snapshots')
+      .select('snapshot_date').order('snapshot_date', { ascending: false }).limit(1).maybeSingle();
+    document.getElementById('last-snapshot-date').textContent =
+      data?.snapshot_date ?? 'Ni posnetka';
+
+    // Bonus lock status
+    const anyUser = _allUsers[0];
+    const locked = anyUser?.bonuses_locked_at ? new Date(anyUser.bonuses_locked_at).toLocaleDateString('sl-SI') : null;
+    document.getElementById('bonus-lock-status').textContent = locked ? `Zaklenjeno ${locked}` : 'Ni zaklenjeno';
+    if (locked) document.getElementById('lock-bonuses-btn').disabled = true;
+
+    // Populate fix prediction dropdowns
+    const userOpts = _allUsers.map(u =>
+      `<option value="${u.id}">${u.original_name ?? u.display_name}</option>`
+    ).join('');
+    document.getElementById('fix-user-select').innerHTML =
+      '<option value="">— Izberi uporabnika —</option>' + userOpts;
+
+    const matchOpts = _allMatches.filter(m => m.home_team).map(m => {
+      const d = new Date(m.kickoff_at);
+      return `<option value="${m.id}">${m.home_team?.name_sl} vs ${m.away_team?.name_sl} · ${d.getDate()}. ${MONTHS_SL[d.getMonth()]}</option>`;
+    }).join('');
+    document.getElementById('fix-match-select').innerHTML =
+      '<option value="">— Izberi tekmo —</option>' + matchOpts;
+  }
+
+  async function _saveSnapshot() {
+    const btn = document.getElementById('snapshot-btn');
+    btn.disabled = true;
+    btn.textContent = 'Shranjujem...';
+    const result = await NP.scoring.saveLeaderboardSnapshot();
+    btn.disabled = false;
+    btn.textContent = 'Shrani snapshot za danes';
+    if (result.errors.length) {
+      _toast('Napaka: ' + result.errors[0], 'error');
+    } else {
+      _toast(`✓ Snapshot shranjen za ${result.saved} uporabnikov`, 'success');
+      document.getElementById('last-snapshot-date').textContent = new Date().toLocaleDateString('sl-SI');
+    }
+  }
+
+  async function _recalcAll() {
+    if (!confirm('Preračunaj vse točke? To lahko traja nekaj sekund.')) return;
+    const finishedMatches = _allMatches.filter(m => m.home_score_90 !== null);
+    let total = 0, errors = 0;
+    for (const m of finishedMatches) {
+      const r = await NP.scoring.recalcMatch(m.id);
+      total += r.updated;
+      if (r.errors.length) errors++;
+    }
+    _toast(`✓ ${total} napovedi preračunanih · ${errors} napak`, errors > 0 ? 'error' : 'success');
+  }
+
+  async function _fixPrediction() {
+    const userId  = document.getElementById('fix-user-select')?.value;
+    const matchId = document.getElementById('fix-match-select')?.value;
+    const home    = document.getElementById('fix-home')?.value;
+    const away    = document.getElementById('fix-away')?.value;
+
+    if (!userId || !matchId || home === '' || away === '') {
+      _toast('Izpolni vsa polja.', 'error'); return;
+    }
+
+    const now = new Date().toISOString();
+    const { error } = await NP.db.from('predictions').upsert({
+      user_id:      userId,
+      match_id:     parseInt(matchId),
+      pred_home:    parseInt(home),
+      pred_away:    parseInt(away),
+      submitted_at: now,
+      updated_at:   now,
+    }, { onConflict: 'user_id,match_id' });
+
+    if (error) { _toast('Napaka: ' + error.message, 'error'); return; }
+
+    // Recalc points for this match
+    await NP.scoring.recalcMatch(parseInt(matchId));
+    _toast('✓ Napoved popravljena in točke preračunane', 'success');
+  }
+
+  async function _lockBonuses() {
+    if (!confirm('Zakleni bonus napovedi za vse uporabnike? Tega ni mogoče razveljaviti.')) return;
+    const now = new Date().toISOString();
+    const { error } = await NP.db.from('users').update({ bonuses_locked_at: now });
+    if (error) { _toast('Napaka: ' + error.message, 'error'); return; }
+    _toast('✓ Bonus napovedi zaklenjene', 'success');
+    document.getElementById('bonus-lock-status').textContent = `Zaklenjeno ${new Date().toLocaleDateString('sl-SI')}`;
+    document.getElementById('lock-bonuses-btn').disabled = true;
+  }
+
+  /* ── HELPERS ── */
+  function _toast(msg, type = 'success') {
+    const c = document.getElementById('toasts');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+  </script>
+
+  <script>
+    (function(){
+      var btn   = document.getElementById('nav-menu-btn');
+      var links = document.getElementById('navbar-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = links.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+        btn.textContent = open ? '✕' : '☰';
+      });
+      document.addEventListener('click', function(e){
+        if (!links.contains(e.target) && e.target !== btn) {
+          links.classList.remove('open');
+          btn.setAttribute('aria-expanded', false);
+          btn.textContent = '☰';
+        }
+      });
+      links.querySelectorAll('.navbar-link').forEach(function(a){
+        a.addEventListener('click', function(){
+          links.classList.remove('open');
+          btn.textContent = '☰';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

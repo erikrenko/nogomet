@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Napovednik 2026 — Lestvica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=3">
+  <style>
+    /* ── PAGE HEADER ── */
+    .lb-page-header { margin-bottom: 20px; }
+    .lb-eyebrow { font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px; }
+    .lb-title   { font-size:1.6rem;font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.1; }
+
+    /* ── TABS ── */
+    .lb-tabs-nav { display:flex;border-bottom:2px solid var(--border);margin-bottom:20px; }
+    .lb-tab-btn {
+      padding:10px 18px;font-size:.88rem;font-weight:600;color:var(--muted);
+      border:none;border-bottom:3px solid transparent;margin-bottom:-2px;
+      background:none;cursor:pointer;font-family:var(--font-main);
+      transition:color var(--t-fast),border-color var(--t-fast);
+      display:flex;align-items:center;gap:6px;white-space:nowrap;
+    }
+    .lb-tab-btn:hover { color:var(--text); }
+    .lb-tab-btn.active { color:var(--text);border-bottom-color:var(--accent); }
+    .lb-tab-pane { display:none; }
+    .lb-tab-pane.active { display:block; }
+
+    /* ── LEADERBOARD ROW ── */
+    .lb-card { background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 3px rgba(40,80,44,.07); }
+
+    .leaderboard-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 20px;
+      background:var(--bg-mid);
+      border-bottom:1px solid var(--border);
+      transition:background var(--t-fast);
+    }
+    .leaderboard-row:last-child { border-bottom:none; }
+    .leaderboard-row:hover { background:var(--bg-deep); }
+
+    /* LEFT */
+    .player-info {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .player-rank {
+      font-size:.9rem;font-weight:800;
+      width:32px;text-align:center;flex-shrink:0;
+    }
+    .player-rank.r1 { color:#b45a00;font-size:1rem; }
+    .player-rank.r2 { color:#6b7280; }
+    .player-rank.r3 { color:#8b4513; }
+    .player-flag {
+      width:26px;height:18px;object-fit:cover;
+      border-radius:2px;border:1px solid var(--border);flex-shrink:0;
+    }
+    .player-name {
+      font-size:.88rem;font-weight:500;color:var(--text);
+      white-space:nowrap;
+    }
+    .player-you {
+      font-size:.6rem;font-weight:700;
+      padding:1px 6px;border-radius:99px;
+      background:var(--accent-bg);color:var(--accent-dark);
+      border:1px solid rgba(68,157,68,.25);
+      flex-shrink:0;
+    }
+    .player-streak {
+      font-size:.65rem;font-weight:700;
+      padding:1px 5px;border-radius:4px;
+      background:var(--orange-bg);color:var(--orange);
+      border:1px solid rgba(212,82,10,.2);flex-shrink:0;
+    }
+
+    /* RIGHT */
+    .player-stats {
+      display:flex;
+      align-items:center;
+      gap:0;
+      margin-left:auto;
+      flex-shrink:0;
+    }
+    .player-total {
+      font-size:1rem;font-weight:800;color:var(--text);
+      width:40px;text-align:right;
+      font-variant-numeric:tabular-nums;
+      padding-right:8px;
+    }
+    .player-delta {
+      font-size:.72rem;font-weight:700;
+      width:28px;text-align:right;flex-shrink:0;
+      padding-right:16px;
+    }
+    .player-delta.up   { color:var(--green); }
+    .player-delta.down { color:var(--red); }
+    .player-delta.same { color:var(--muted);opacity:.5; }
+
+    .stat {
+      display:flex;flex-direction:column;gap:3px;
+      padding:0 14px;
+      border-left:1px solid var(--border);
+      background:transparent;
+    }
+    .stat-label {
+      font-size:.58rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.07em;
+      color:var(--muted);white-space:nowrap;
+    }
+    .stat-value {
+      font-size:.82rem;font-weight:600;
+      color:var(--text);white-space:nowrap;
+      background:transparent;
+    }
+    .stat-value.muted { color:var(--muted);font-style:italic;font-weight:400; }
+    .stat-value.accent { color:var(--accent-dark); }
+
+    .bonus-status {
+      display:inline-flex;align-items:center;gap:4px;
+      font-size:.78rem;font-weight:500;color:var(--text);
+    }
+    .bonus-pending { color:var(--muted);font-style:italic; }
+    .bonus-check   { color:var(--green);font-weight:700; }
+
+    /* ── TRIVIA LEADERBOARD ── */
+    .trivia-lb-row {
+      display:flex;align-items:center;padding:10px 16px;gap:10px;
+      border-bottom:1px solid var(--border);
+      background:var(--bg-mid);
+      transition:background var(--t-fast);
+    }
+    .trivia-lb-row:last-child { border-bottom:none; }
+    .trivia-lb-row:hover { background:var(--bg-deep); }
+    .trivia-badges { display:flex;gap:4px;flex-wrap:wrap; }
+    .trivia-week-badge {
+      font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:4px;
+      background:var(--gold-bg);color:var(--gold);border:1px solid rgba(180,90,0,.2);
+    }
+    .trivia-accuracy { font-size:.78rem;font-weight:600;color:var(--muted);flex-shrink:0;min-width:40px;text-align:right; }
+    .lb-rank { font-size:.85rem;font-weight:800;width:26px;text-align:center;flex-shrink:0; }
+    .lb-rank.r1 { color:#b45a00;font-size:1rem; }
+    .lb-rank.r2 { color:#6b7280;font-size:.95rem; }
+    .lb-rank.r3 { color:#8b4513;font-size:.9rem; }
+    .lb-avatar { width:28px;height:19px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0; }
+    .lb-avatar-ph { width:28px;height:19px;background:var(--bg-deep);border-radius:2px;border:1px solid var(--border);flex-shrink:0; }
+    .lb-name-col { flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+    .lb-name { font-size:.88rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .lb-you-tag { font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:99px;background:var(--accent-bg);color:var(--accent-dark);border:1px solid rgba(68,157,68,.25); }
+    .lb-pts { font-size:.95rem;font-weight:800;color:var(--text);width:40px;text-align:right;font-variant-numeric:tabular-nums;flex-shrink:0; }
+    .lb-delta { font-size:.72rem;font-weight:700;width:30px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums; }
+    .lb-delta.up { color:var(--green); }
+    .lb-delta.down { color:var(--red); }
+    .lb-delta.same { color:var(--muted);opacity:.5; }
+
+    /* ── WEEKLY PRIZES ── */
+    .weekly-grid { display:flex;flex-direction:column;gap:10px; }
+    .week-row { background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 3px rgba(40,80,44,.06); }
+    .week-row.current { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow); }
+    .week-row.past    { opacity:.75; }
+    .week-row-inner { display:flex;align-items:center;padding:14px 18px;gap:16px; }
+    .week-emoji { font-size:1.6rem;flex-shrink:0; }
+    .week-info  { flex:1; }
+    .week-label { font-size:.92rem;font-weight:700;color:var(--text); }
+    .week-dates { font-size:.72rem;color:var(--muted);margin-top:2px; }
+    .week-status { flex-shrink:0;text-align:right; }
+    .week-badge-current { display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:white;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:99px; }
+    .week-badge-past { display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);color:var(--green-text);border:1px solid rgba(68,157,68,.2);font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:99px; }
+    .week-badge-future { font-size:.72rem;color:var(--muted);font-style:italic; }
+    .week-winner-name { font-size:.82rem;font-weight:600;color:var(--text); }
+    .week-winner-sub  { font-size:.7rem;color:var(--muted);margin-top:1px; }
+    .week-progress-bar { height:3px;background:var(--accent);transition:width .6s ease; }
+
+    /* ── RULES BOX ── */
+    .rules-box { margin-top:28px;background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 3px rgba(40,80,44,.06); }
+    .rules-box-header { display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--bg-deep);border-bottom:1px solid var(--border);cursor:pointer;user-select:none; }
+    .rules-box-header:hover { background:var(--border); }
+    .rules-box-title { font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:6px; }
+    .rules-box-arrow { font-size:.65rem;color:var(--muted);transition:transform var(--t-base); }
+    .rules-box.open .rules-box-arrow { transform:rotate(180deg); }
+
+    /* ── LEADERBOARD MOBILE ── */
+    @media (max-width: 768px) {
+      .lb-title { font-size: 1.35rem; }
+
+      /* Tabs: scrollable */
+      .lb-tabs-nav { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .lb-tabs-nav::-webkit-scrollbar { display: none; }
+      .lb-tab-btn { padding: 10px 14px; font-size: .82rem; }
+
+      /* Main row: rank + flag + name on left, pts + delta on right */
+      .leaderboard-row { padding: 10px 14px; }
+      .player-info { gap: 8px; flex: 1; min-width: 0; }
+      .player-rank { font-size: .85rem; width: 26px; }
+      .player-flag { width: 22px; height: 15px; }
+      .player-name { font-size: .84rem; }
+
+      /* Hide secondary stat columns on mobile */
+      .stat { display: none !important; }
+
+      /* Keep total + delta visible */
+      .player-total { font-size: .95rem; width: 34px; padding-right: 6px; }
+      .player-delta { width: 24px; padding-right: 8px; font-size: .68rem; }
+
+      /* Trivia rows */
+      .trivia-lb-row { padding: 9px 14px; }
+      .lb-name { font-size: .84rem; }
+      .lb-pts  { font-size: .9rem; width: 34px; }
+      .lb-delta { width: 24px; font-size: .68rem; }
+      .trivia-badges { display: none; }
+
+      /* Weekly prizes */
+      .week-row-inner { padding: 12px 14px; gap: 10px; }
+      .week-emoji { font-size: 1.3rem; }
+      .week-label { font-size: .85rem; }
+      .week-dates { font-size: .68rem; }
+    }
+
+    @media (max-width: 480px) {
+      .player-name { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+      .lb-name     { max-width: 130px; }
+    }
+    .rules-box-body { display:none;padding:16px 20px;font-size:.82rem;color:var(--text-mid);line-height:1.7; }
+    .rules-box.open .rules-box-body { display:block; }
+    .rules-row { display:flex;align-items:baseline;gap:8px;margin-bottom:6px; }
+    .rules-pts { font-size:.78rem;font-weight:800;color:var(--accent-dark);white-space:nowrap;flex-shrink:0; }
+    .rules-section-title { font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 6px; }
+    .rules-section-title:first-child { margin-top:0; }
+    .rules-ordered { margin:4px 0 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px; }
+    .rules-ordered li { font-size:.82rem;color:var(--text-mid); }
+    .rules-footer { margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted);font-style:italic; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-logo" href="index.html">Napo<span>vednik</span><sup>2026</sup></a>
+      <div class="navbar-links" id="navbar-links">
+        <a class="navbar-link" href="index.html">🏠 Home</a>
+        <a class="navbar-link" href="predictions.html">📝 Moje napovedi</a>
+        <a class="navbar-link" href="napovedi.html">🌍 Vse napovedi</a>
+        <a class="navbar-link" href="rezultati.html">📊 Rezultati tekem</a>
+        <a class="navbar-link" href="leaderboard.html">🏆 Lestvica uporabnikov</a>
+        <a class="navbar-link navbar-link-selektor" id="navbar-selektor-link" href="selektor.html" style="display:none">⚙ Selektor</a>
+        <button class="navbar-link navbar-link-signout" onclick="NP.signOut()">🚪 Odjava</button>
+      </div>
+      <div class="navbar-right">
+        <a href="profil.html" class="user-chip" style="text-decoration:none;color:#fff">
+          <div class="user-avatar" id="nav-avatar">👤</div>
+          <span id="nav-name" style="color:#fff">...</span>
+        </a>
+        <button onclick="NP.signOut()" class="nav-signout-btn">Odjava</button>
+        <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Meni" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container page-wrap">
+
+    <div class="lb-page-header">
+      <div class="lb-eyebrow">Lestvica</div>
+      <div class="lb-title">Skupna lestvica</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="lb-tabs-nav">
+      <button class="lb-tab-btn active" data-tab="main">🏆 Skupna</button>
+      <button class="lb-tab-btn"        data-tab="trivia">🎯 Trivia</button>
+      <button class="lb-tab-btn"        data-tab="prizes">🎁 Tedenske nagrade</button>
+    </div>
+
+    <!-- TAB: MAIN LEADERBOARD -->
+    <div class="lb-tab-pane active" id="tab-main">
+      <div class="lb-card" id="main-lb-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: TRIVIA -->
+    <div class="lb-tab-pane" id="tab-trivia">
+      <div class="lb-card" id="trivia-lb-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: WEEKLY PRIZES -->
+    <div class="lb-tab-pane" id="tab-prizes">
+      <div class="weekly-grid" id="prizes-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- RULES BOX -->
+    <div class="rules-box" id="rules-box">
+      <div class="rules-box-header" onclick="document.getElementById('rules-box').classList.toggle('open')">
+        <div class="rules-box-title">📋 Pravila točkovanja</div>
+        <span class="rules-box-arrow">▼</span>
+      </div>
+      <div class="rules-box-body">
+
+        <div class="rules-section-title">Točkovanje tekem</div>
+        <div class="rules-row"><span class="rules-pts">+3 točke</span> Točen rezultat (npr. 2–1)</div>
+        <div class="rules-row"><span class="rules-pts">+1 točka</span> Pravilen izid (1, X ali 2)</div>
+        <div class="rules-row"><span class="rules-pts">0 točk</span> Napačna napoved</div>
+
+        <div class="rules-section-title">Množitelj v izločilnih bojih</div>
+        <div class="rules-row"><span class="rules-pts">×2</span> Četrtfinale, polfinale in tekma za 3. mesto</div>
+        <div class="rules-row"><span class="rules-pts">×3</span> Finale</div>
+
+        <div class="rules-section-title">Rok za oddajo</div>
+        <div style="font-size:.82rem;color:var(--text-mid)">
+          Napoved je potrebno oddati vsaj <strong>1 uro pred začetkom tekme</strong>. Po poteku roka spremembe niso možne.
+        </div>
+
+        <div class="rules-section-title">Bonus napovedi <span style="font-weight:400;text-transform:none;letter-spacing:0">(oddati pred začetkom SP)</span></div>
+        <div class="rules-row"><span class="rules-pts">+10 točk</span> Zmagovalec SP</div>
+        <div class="rules-row"><span class="rules-pts">+8 točk</span> Pravilno napovedan najboljši strelec</div>
+        <div class="rules-row"><span class="rules-pts">+3 točke</span> Napovedani strelec na drugem ali tretjem mestu</div>
+
+        <div class="rules-section-title">Razvrstitev ob enakem številu točk</div>
+        <ol class="rules-ordered">
+          <li>Skupno število točk</li>
+          <li>Točke iz napovedi tekem</li>
+          <li>Število točnih rezultatov</li>
+          <li>Čas zadnje oddane napovedi (prej = bolje)</li>
+        </ol>
+
+        <div class="rules-footer">
+          Organizator si pridržuje pravico do sprememb pravil. V primeru tehničnih težav odloča organizator (mogoče z metom kocke). 🎲
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>window.__NP_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliaW56ZXd5eHVweW9qbGFtbHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODY4NzcsImV4cCI6MjA5NDE2Mjg3N30.n5-oSP7_7QvylacamMozjluh1fwgUKUb4yv_uEl0-pQ';</script>
+  <script src="js/utils.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/plugins.js"></script>
+  <script>
+  const MONTHS_SL = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+
+  (async () => {
+    if (!NP.requireAuth()) return;
+    const profile = NP.getUserProfile();
+    const state   = await NP.getTournamentNow();
+
+    // Navbar
+    var __sl = document.getElementById('navbar-selektor-link'); if(__sl && NP.isAdmin()) __sl.style.display = 'flex';
+    document.getElementById('nav-name').textContent = NP.getAlias(profile, state, 'full');
+    document.getElementById('nav-avatar').textContent =
+      state.isThemedDay && state.themedDay?.theme_flag_iso2
+        ? _flagEmoji(state.themedDay.theme_flag_iso2)
+        : profile.display_name.charAt(0).toUpperCase();
+
+    // Load main leaderboard immediately
+    await _renderMainLb(profile, state);
+
+    // Tab switching
+    document.querySelectorAll('.lb-tab-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        document.querySelectorAll('.lb-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.lb-tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'trivia')  await _renderTriviaLb(profile, state);
+        if (tab === 'prizes')  await _renderPrizes(profile);
+      });
+    });
+  })();
+
+  /* ══════════════════════════════════════════════════════
+     MAIN LEADERBOARD
+     ══════════════════════════════════════════════════════ */
+  async function _renderMainLb(profile, state) {
+    const el = document.getElementById('main-lb-content');
+
+    // Load leaderboard + all users' bonus picks + teams for bonus display
+    const [lbRes, usersRes, teamsRes, finalRes, playersRes] = await Promise.all([
+      NP.db.from('leaderboard')
+        .select('user_id, rank, display_name, aliases, flag_iso2, total_points, match_points, trivia_points, correct_scores, delta')
+        .order('rank'),
+      NP.db.from('users')
+        .select('id, original_name, winner_pick_team_id, top_scorer_pick_player_id'),
+      NP.db.from('teams').select('id, name_sl, flag_code'),
+      NP.db.from('matches')
+        .select('home_team_id, away_team_id, home_score_90, away_score_90, home_score_120, away_score_120')
+        .eq('phase', 'FINAL')
+        .maybeSingle(),
+      NP.db.from('players').select('id, name, name_short'),
+    ]);
+
+    const rows    = lbRes.data    ?? [];
+    const users   = usersRes.data ?? [];
+    const teams   = teamsRes.data ?? [];
+    const finalM  = finalRes.data;
+
+    const userMap = {};
+    users.forEach(u => { userMap[u.id] = u; });
+    const teamMap = {};
+    teams.forEach(t => { teamMap[t.id] = t; });
+    const playerMap = {};
+    (playersRes.data ?? []).forEach(p => { playerMap[p.id] = p; });
+
+    // Determine tournament winner from final match
+    let winnerTeamId = null;
+    if (finalM?.home_score_90 !== null && finalM?.home_score_90 !== undefined) {
+      const fh = finalM.home_score_120 ?? finalM.home_score_90;
+      const fa = finalM.away_score_120 ?? finalM.away_score_90;
+      winnerTeamId = fh >= fa ? finalM.home_team_id : finalM.away_team_id;
+    }
+    const tournamentDone = winnerTeamId !== null;
+
+    if (!rows.length) {
+      el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Lestvica še ni na voljo.</div>';
+      return;
+    }
+
+    // Calculate streaks from correct_scores (simple: consecutive exact predictions)
+    // We don't have match-by-match data here, so just show streak badge for top predictors
+    // as a decoration — a proper streak requires match-order data which is a heavier query
+
+    let html = '';
+    rows.forEach((row, i) => {
+      const isMe     = row.user_id === profile.id;
+      const rankCls  = row.rank === 1 ? 'r1' : row.rank === 2 ? 'r2' : row.rank === 3 ? 'r3' : '';
+      const delta    = row.delta ?? 0;
+      const deltaCls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
+      const deltaStr = delta > 0 ? `▲${delta}` : delta < 0 ? `▼${Math.abs(delta)}` : '—';
+
+      const userData = userMap[row.user_id];
+      // On national day with alias_names plugin: show alias
+      // Otherwise: show original_name (full name)
+      let displayName;
+      if (state.isThemedDay && state.plugins.alias_names && row.aliases) {
+        const code  = state.themedDay?.theme_code;
+        const entry = row.aliases?.[code];
+        displayName = entry?.full ?? userData?.original_name ?? row.display_name;
+      } else {
+        displayName = userData?.original_name ?? row.display_name;
+      }
+
+      // Bonus picks
+      const winPick    = userData?.winner_pick_team_id;
+      const scorerPick = userData?.top_scorer_pick_player_id;
+      const winTeam    = winPick ? teamMap[winPick] : null;
+
+      // Top scorer bonus
+      let scorerBonusHtml = '';
+      const scorerPlayer = scorerPick ? playerMap[scorerPick] : null;
+      if (scorerPlayer) {
+        scorerBonusHtml = `<span class="bonus-status">
+          ⚽ <span class="bonus-pending">${scorerPlayer.name_short ?? scorerPlayer.name}</span>
+        </span>`;
+      } else {
+        scorerBonusHtml = `<span class="bonus-status bonus-pending">⚽ ni napovedi</span>`;
+      }
+
+      let winnerBonusHtml = '';
+      if (winTeam) {
+        if (tournamentDone) {
+          const correct = winPick === winnerTeamId;
+          winnerBonusHtml = `<span class="bonus-status">
+            🏆 <img src="${NP.flagUrl(winTeam.flag_code)}" style="width:14px;height:10px;object-fit:cover;border-radius:1px;border:1px solid var(--border)" alt="">
+            ${winTeam.name_sl}
+            ${correct ? '<span class="bonus-check">✓ +10</span>' : '<span style="color:var(--red)">✗</span>'}
+          </span>`;
+        } else {
+          winnerBonusHtml = `<span class="bonus-status">
+            🏆 <img src="${NP.flagUrl(winTeam.flag_code)}" style="width:14px;height:10px;object-fit:cover;border-radius:1px;border:1px solid var(--border)" alt="">
+            <span class="bonus-pending">${winTeam.name_sl}</span>
+          </span>`;
+        }
+      } else {
+        winnerBonusHtml = `<span class="bonus-status bonus-pending">🏆 ni napovedi</span>`;
+      }
+
+      // Points breakdown for expanded row
+      const matchPts  = row.match_points  ?? 0;
+      const triviaPts = row.trivia_points ?? 0;
+      const bonusPts  = (row.total_points ?? 0) - matchPts - triviaPts;
+
+      html += `
+        <div class="leaderboard-row" id="lbr-${row.user_id}">
+          <div class="player-info">
+            <span class="player-rank ${rankCls}">#${row.rank}</span>
+            ${row.flag_iso2
+              ? `<img src="${NP.flagUrl(row.flag_iso2, 40)}" class="player-flag" alt="" onerror="this.style.visibility='hidden'">`
+              : ''}
+            <span class="player-name">${_esc(displayName)}</span>
+            ${isMe ? '<span class="player-you">ti</span>' : ''}
+            ${row.correct_scores >= 3 ? '<span class="player-streak">🔥</span>' : ''}
+          </div>
+          <div class="player-stats">
+            <div class="player-total">${row.total_points ?? 0}</div>
+            <div class="player-delta ${deltaCls}">${deltaStr}</div>
+            <div class="stat">
+              <span class="stat-label">Tekme</span>
+              <span class="stat-value">${matchPts} t.</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Trivia</span>
+              <span class="stat-value">${triviaPts} t.</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Bonus</span>
+              <span class="stat-value ${bonusPts > 0 ? 'accent' : 'muted'}">${bonusPts > 0 ? '+' + bonusPts : 'čaka'}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Zmagovalec SP</span>
+              <span class="stat-value">${winnerBonusHtml}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Najboljši strelec</span>
+              <span class="stat-value">${scorerBonusHtml}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Točnih napovedi</span>
+              <span class="stat-value">${row.correct_scores ?? 0}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    el.innerHTML = html;
+  }
+
+
+
+  /* ══════════════════════════════════════════════════════
+     TRIVIA LEADERBOARD
+     ══════════════════════════════════════════════════════ */
+  async function _renderTriviaLb(profile, state) {
+    const el = document.getElementById('trivia-lb-content');
+    if (el.dataset.loaded) return;
+
+    const [triviaRes, weeklyRes, usersRes] = await Promise.all([
+      NP.db.from('trivia_leaderboard')
+        .select('user_id, display_name, avatar_team_iso2, questions_answered, correct_answers, accuracy_pct')
+        .order('correct_answers', { ascending: false })
+        .order('accuracy_pct',    { ascending: false }),
+      NP.db.from('trivia_weekly')
+        .select('user_id, week_number, correct')
+        .order('week_number'),
+      NP.db.from('users').select('id, original_name, display_name, aliases'),
+    ]);
+
+    const rows   = triviaRes.data  ?? [];
+    const weekly = weeklyRes.data  ?? [];
+    const users  = usersRes.data   ?? [];
+
+    const userOrigMap = {};
+    users.forEach(u => { userOrigMap[u.id] = u; });
+
+    // Build weekly winner map: week_number → user_id of winner
+    const weekWinners = {};
+    const weekGroups  = {};
+    weekly.forEach(w => {
+      if (!weekGroups[w.week_number]) weekGroups[w.week_number] = [];
+      weekGroups[w.week_number].push(w);
+    });
+    Object.entries(weekGroups).forEach(([wn, entries]) => {
+      const winner = entries.reduce((best, cur) =>
+        cur.correct > (best?.correct ?? -1) ? cur : best, null);
+      if (winner) weekWinners[wn] = winner.user_id;
+    });
+
+    // Build user → week badges map
+    const userWeekBadges = {};
+    Object.entries(weekWinners).forEach(([wn, uid]) => {
+      if (!userWeekBadges[uid]) userWeekBadges[uid] = [];
+      userWeekBadges[uid].push(Number(wn));
+    });
+
+    if (!rows.length) {
+      el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Ni trivia podatkov.</div>';
+      el.dataset.loaded = '1';
+      return;
+    }
+
+    let html = '';
+    rows.forEach((row, i) => {
+      const isMe   = row.user_id === profile.id;
+      const rank   = i + 1;
+      const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+      const weeks  = userWeekBadges[row.user_id] ?? [];
+      const u    = userOrigMap[row.user_id];
+      let name;
+      if (state.isThemedDay && state.plugins.alias_names && u?.aliases) {
+        const entry = u.aliases?.[state.themedDay?.theme_code];
+        name = entry?.full ?? u?.original_name ?? row.display_name;
+      } else {
+        name = u?.original_name ?? row.display_name;
+      }
+
+      const weekBadges = weeks.map(w =>
+        `<span class="trivia-week-badge">🧐 T${w}</span>`).join('');
+
+      html += `
+        <div class="trivia-lb-row ${isMe ? 'me' : ''}">
+          <div class="lb-rank ${rankCls}">${rank}</div>
+          ${row.avatar_team_iso2
+            ? `<img src="${NP.flagUrl(row.avatar_team_iso2, 40)}" class="lb-avatar" alt="" onerror="this.style.visibility='hidden'">`
+            : `<div class="lb-avatar-ph"></div>`}
+          <div class="lb-name-col">
+            <span class="lb-name">${_esc(name)}</span>
+            ${isMe ? '<span class="lb-you-tag">ti</span>' : ''}
+            ${weekBadges}
+          </div>
+          <div style="font-size:.82rem;font-weight:700;color:var(--text);flex-shrink:0;min-width:50px;text-align:right">
+            ${row.correct_answers ?? 0}/${row.questions_answered ?? 0}
+          </div>
+          <div class="trivia-accuracy">${row.accuracy_pct ?? 0}%</div>
+        </div>`;
+    });
+
+    // Add pending bonus note for current trivia leader
+    if (rows[0]) {
+      const leaderName = userOrigMap[rows[0].user_id]?.original_name ?? rows[0].display_name;
+      html += `
+        <div style="padding:10px 16px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);text-align:center">
+          💡 Trivia zmagovalec dobi +10 točk po finalni tekmi
+        </div>`;
+    }
+
+    el.innerHTML = html;
+    el.dataset.loaded = '1';
+  }
+
+  /* ══════════════════════════════════════════════════════
+     WEEKLY PRIZES
+     ══════════════════════════════════════════════════════ */
+  async function _renderPrizes(profile) {
+    const el = document.getElementById('prizes-content');
+    if (el.dataset.loaded) return;
+
+    const { data: weeks } = await NP.db
+      .from('weekly_prizes')
+      .select(`
+        id, week_number, week_start, week_end,
+        prize_sponsor_name, prize_description_sl,
+        winner_user_id,
+        winner:users!weekly_prizes_winner_user_id_fkey(original_name, display_name)
+      `)
+      .order('week_number');
+
+    const PRIZE_EMOJIS = ['🍭','🍬','🍫','🍦','🐻','🥐'];
+
+    const today = new Date();
+    let html = '';
+
+    (weeks ?? []).forEach((week, i) => {
+      const start   = new Date(week.week_start);
+      const end     = new Date(week.week_end);
+      const emoji   = PRIZE_EMOJIS[i] ?? '🎁';
+      const isPast  = end < today && week.winner_user_id;
+      const isCurrent = start <= today && end >= today;
+      const isFuture  = start > today;
+
+      const dateStr = `${start.getDate()}. ${MONTHS_SL[start.getMonth()]} – ${end.getDate()}. ${MONTHS_SL[end.getMonth()]}`;
+
+      let statusHtml = '';
+      if (isPast && week.winner) {
+        const winnerName = week.winner.original_name ?? week.winner.display_name ?? '—';
+        const isMe = week.winner_user_id === profile.id;
+        statusHtml = `
+          <div class="week-status">
+            <div class="week-badge-past">✓ zaključeno</div>
+            <div class="week-winner-name" style="${isMe ? 'color:var(--accent-dark)' : ''}">
+              ${_esc(winnerName)} ${isMe ? '🎉' : ''}
+            </div>
+          </div>`;
+      } else if (isPast && !week.winner) {
+        statusHtml = `<div class="week-status"><div class="week-badge-past">✓ zaključeno</div><div class="week-winner-sub">Zmagovalec ni določen</div></div>`;
+      } else if (isCurrent) {
+        // Progress bar for current week
+        const totalMs   = end - start;
+        const elapsedMs = today - start;
+        const pct       = Math.min(100, Math.round(elapsedMs / totalMs * 100));
+        statusHtml = `
+          <div class="week-status">
+            <div class="week-badge-current">● v teku</div>
+            <div class="week-winner-sub" style="margin-top:4px">Konča se ${end.getDate()}. ${MONTHS_SL[end.getMonth()]}</div>
+          </div>`;
+      } else {
+        statusHtml = `<div class="week-status"><div class="week-badge-future">Začne se ${start.getDate()}. ${MONTHS_SL[start.getMonth()]}</div></div>`;
+      }
+
+      const progressBar = isCurrent ? (() => {
+        const totalMs   = end - start;
+        const elapsedMs = today - start;
+        const pct = Math.min(100, Math.round(elapsedMs / totalMs * 100));
+        return `<div class="week-progress-bar" style="width:${pct}%"></div>`;
+      })() : '';
+
+      html += `
+        <div class="week-row ${isCurrent ? 'current' : isPast ? 'past' : ''}">
+          ${progressBar ? `<div style="height:3px;background:var(--bg-deep)">${progressBar}</div>` : ''}
+          <div class="week-row-inner">
+            <div class="week-emoji">${emoji}</div>
+            <div class="week-info">
+              <div class="week-label">Teden ${week.week_number} · ${week.prize_sponsor_name ?? '—'}</div>
+              <div class="week-dates">${dateStr} · ${week.prize_description_sl ?? ''}</div>
+            </div>
+            ${statusHtml}
+          </div>
+        </div>`;
+    });
+
+    el.innerHTML = html || '<div style="padding:30px;text-align:center;color:var(--muted)">Ni podatkov o nagradah.</div>';
+    el.dataset.loaded = '1';
+  }
+
+  /* ══════════════════════════════════════════════════════
+     HELPERS
+     ══════════════════════════════════════════════════════ */
+  function _esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function _flagEmoji(iso2) {
+    if (!iso2 || iso2.length !== 2) return '';
+    const base = 0x1F1E6 - 65;
+    return String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(0)) +
+           String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(1));
+  }
+  </script>
+
+  <script>
+    (function(){
+      var btn   = document.getElementById('nav-menu-btn');
+      var links = document.getElementById('navbar-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = links.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+        btn.textContent = open ? '\u2715' : '\u2630';
+      });
+      document.addEventListener('click', function(e){
+        if (!links.contains(e.target) && e.target !== btn) {
+          links.classList.remove('open');
+          btn.setAttribute('aria-expanded', false);
+          btn.textContent = '\u2630';
+        }
+      });
+      links.querySelectorAll('.navbar-link').forEach(function(a){
+        a.addEventListener('click', function(){
+          links.classList.remove('open');
+          btn.textContent = '\u2630';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moj profil · Napovednik 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4">
+  <style>
+    /* ── PROFIL-SPECIFIC ── */
+    .profil-wrap { display: flex; flex-direction: column; gap: 16px; }
+
+    /* Page header */
+    .profil-header { display: flex; align-items: flex-end; justify-content: space-between; padding: 4px 0 8px; }
+    .profil-header-left .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 2px; }
+    .profil-header-left .title { font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.1; }
+
+    /* To-predict card */
+    .predict-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm); }
+    .predict-card-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .predict-card-body { flex: 1; min-width: 0; }
+    .predict-card-title { font-size: .95rem; font-weight: 700; color: var(--text); }
+    .predict-card-sub { font-size: .75rem; color: var(--muted); margin-top: 1px; }
+    .predict-card-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .predict-card-count { font-size: .75rem; color: var(--muted); text-align: right; white-space: nowrap; }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .stat-tile { background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; box-shadow: var(--shadow-sm); }
+    .stat-tile-label { font-family: 'JetBrains Mono', monospace; font-size: .58rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+    .stat-tile-value { font-size: 1.9rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-tile-sub { font-size: .72rem; color: var(--muted); }
+
+    /* Two-column row */
+    .profil-two-col { display: grid; grid-template-columns: 1.55fr 1fr; gap: 14px; }
+
+    /* Trajectory card */
+    .trajectory-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+    .trajectory-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 4px; }
+    .trajectory-headline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .trajectory-title { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+    .trajectory-legend { display: flex; align-items: center; gap: 12px; }
+    .traj-leg { display: flex; align-items: center; gap: 5px; font-size: .7rem; color: var(--muted); }
+    .traj-leg-line { width: 20px; height: 2px; border-radius: 99px; }
+    .trajectory-chart { position: relative; }
+    .trajectory-caption { font-size: .7rem; color: var(--muted); margin-top: 8px; text-align: center; }
+
+    /* H2H card */
+    .h2h-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+    .h2h-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .h2h-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+    .h2h-change { font-size: .72rem; color: var(--accent-dark); font-weight: 600; cursor: pointer; }
+    .h2h-change:hover { text-decoration: underline; }
+    .h2h-versus { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .h2h-player { flex: 1; text-align: center; }
+    .h2h-player-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 2px; }
+    .h2h-player-name { font-size: .95rem; font-weight: 800; color: var(--text); }
+    .h2h-score-pill { background: var(--accent); color: #fff; border-radius: var(--radius-md); padding: 6px 14px; font-size: 1.1rem; font-weight: 900; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+    .h2h-rows { display: flex; flex-direction: column; gap: 0; flex: 1; }
+    .h2h-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .h2h-row:last-child { border-bottom: none; }
+    .h2h-val { font-size: .88rem; font-weight: 700; }
+    .h2h-val.me { text-align: right; }
+    .h2h-val.rival { text-align: left; }
+    .h2h-val.win { color: var(--accent-dark); font-weight: 800; }
+    .h2h-row-label { font-family: 'JetBrains Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); text-align: center; white-space: nowrap; }
+    .h2h-footer { margin-top: 12px; font-size: .75rem; color: var(--muted); text-align: center; border-top: 1px solid var(--border); padding-top: 10px; }
+
+    /* Jersey cabinet */
+    .cabinet-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+    .cabinet-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 4px; }
+    .cabinet-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: .6rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+    .cabinet-count { font-size: .72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .cabinet-title { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+    .cabinet-sub { font-size: .75rem; color: var(--muted); margin-bottom: 16px; }
+    .cabinet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+    .cabinet-tile { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); background: var(--bg-mid); position: relative; }
+    .cabinet-tile-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--bg-deep); }
+    .cabinet-tile-img-placeholder { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+    .cabinet-tile-stripe { height: 4px; width: 100%; }
+    .cabinet-tile-body { padding: 10px 12px; }
+    .cabinet-tile-name { font-size: .82rem; font-weight: 700; color: var(--text); }
+    .cabinet-tile-date { font-size: .68rem; color: var(--muted); margin-bottom: 8px; }
+    .cabinet-tile-btn { width: 100%; padding: 6px; font-size: .75rem; font-weight: 600; background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-main); color: var(--text-mid); transition: all .15s; }
+    .cabinet-tile-btn:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
+    .cabinet-tile-hint-mobile { display: none; font-size: .62rem; color: var(--muted); text-align: center; margin-top: 5px; }
+    @media (max-width: 768px) {
+      .cabinet-tile-btn-desktop { display: none !important; }
+      .cabinet-tile-hint-mobile { display: block; }
+    }
+    .cabinet-new-badge { position: absolute; top: 8px; right: 8px; background: var(--accent); color: #fff; font-size: .58rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
+    .cabinet-empty { padding: 32px; text-align: center; color: var(--muted); font-size: .85rem; }
+
+    /* Rival picker modal */
+    .rival-modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .rival-modal-inner { background: var(--bg-mid); border-radius: var(--radius-xl); padding: 24px; max-width: 480px; width: 100%; max-height: 80vh; overflow-y: auto; }
+    .rival-modal-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .rival-modal-sub { font-size: .8rem; color: var(--muted); margin-bottom: 16px; }
+    .rival-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+    .rival-chip { padding: 8px 10px; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-deep); cursor: pointer; text-align: center; font-size: .78rem; font-weight: 600; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .rival-chip:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .rival-chip.selected { border-color: var(--accent); background: var(--accent-bg); color: var(--accent-dark); }
+    .rival-chip img { width: 18px; height: 13px; object-fit: cover; border-radius: 2px; }
+
+    /* ── PROFIL MOBILE ── */
+    @media (max-width: 768px) {
+      /* Page header: flag + button wrap to second row */
+      .profil-header { flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+      .profil-header > div:last-child { width: 100%; justify-content: space-between; }
+
+      /* Predict card: 2-col grid (icon + body), button full-width below */
+      .predict-card {
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        align-items: start;
+        gap: 10px 12px;
+        padding: 14px;
+      }
+      .predict-card-icon { grid-row: 1 / span 2; font-size: 1.4rem; padding-top: 2px; }
+      .predict-card-body { min-width: 0; }
+      .predict-card-right {
+        grid-column: 2;
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .predict-card-right .btn { flex: 1; justify-content: center; }
+
+      /* Stats: 5-col → 2-col (last tile spans full width if odd) */
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px;
+      }
+      .stats-grid .stat-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+      .stat-tile { padding: 13px 14px; }
+      .stat-tile-value { font-size: 1.65rem; }
+
+      /* Two-col: stack vertically */
+      .profil-two-col {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+      /* Trajectory: hidden on mobile — complex canvas, not actionable */
+      .trajectory-card { display: none !important; }
+      /* H2H: full width */
+      .h2h-card { padding: 16px; }
+
+      /* Cabinet: 2 columns */
+      .cabinet-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .cabinet-card { padding: 16px; }
+
+      /* Rival picker: 2 cols on mobile */
+      .rival-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .stat-tile-value { font-size: 1.45rem; }
+      .stat-tile-label { font-size: .54rem; }
+      .h2h-player-name { font-size: .85rem; overflow-wrap: anywhere; }
+      .h2h-row-label { font-size: .52rem; }
+      .cabinet-sub { font-size: .7rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-logo" href="index.html">Napo<span>vednik</span><sup>2026</sup></a>
+      <div class="navbar-links" id="navbar-links">
+        <a class="navbar-link" href="index.html">🏠 Home</a>
+        <a class="navbar-link" href="predictions.html">📝 Moje napovedi</a>
+        <a class="navbar-link" href="napovedi.html">🌍 Vse napovedi</a>
+        <a class="navbar-link" href="rezultati.html">📊 Rezultati tekem</a>
+        <a class="navbar-link" href="leaderboard.html">🏆 Lestvica uporabnikov</a>
+        <a class="navbar-link navbar-link-selektor" id="navbar-selektor-link" href="selektor.html" style="display:none">⚙ Selektor</a>
+        <button class="navbar-link navbar-link-signout" onclick="NP.signOut()">🚪 Odjava</button>
+      </div>
+      <div class="navbar-right">
+        <a href="profil.html" class="user-chip" style="text-decoration:none;color:#fff">
+          <div class="user-avatar" id="nav-avatar">👤</div>
+          <span id="nav-name" style="color:#fff">...</span>
+        </a>
+        <button onclick="NP.signOut()" class="nav-signout-btn">Odjava</button>
+        <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Meni" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container page-wrap">
+    <div class="profil-wrap">
+
+      <!-- 1. PAGE HEADER -->
+      <div class="profil-header">
+        <div class="profil-header-left">
+          <div style="font-size:1.4rem;font-weight:800;color:var(--text)">Moj profil</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--muted)">
+            Navijam za:
+            <img id="navijam-flag" style="width:24px;height:17px;object-fit:cover;border-radius:3px;border:1px solid var(--border);display:inline-block" alt="">
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="_openCountryPicker()" style="gap:6px">
+            🏳️ Zamenjaj državo
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. HERO BANNER -->
+      <div data-slot="standing-banner"></div>
+
+      <!-- 3. TO-PREDICT SHORTCUT -->
+      <div id="predict-card" style="display:none">
+        <div class="predict-card">
+          <div class="predict-card-icon">⏰</div>
+          <div class="predict-card-body">
+            <div class="predict-card-title" id="predict-title">Napovedi te čakajo</div>
+            <div class="predict-card-sub" id="predict-sub">Nalagam...</div>
+          </div>
+          <div class="predict-card-right">
+            <div class="predict-card-count" id="predict-count"></div>
+            <a href="predictions.html" class="btn btn-primary btn-sm">Napoveduj →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. KEY STATS -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-tile">
+          <div class="stat-tile-label">Najboljši teden</div>
+          <div class="stat-tile-value" id="stat-best-week">—</div>
+          <div class="stat-tile-sub" id="stat-best-week-sub">—</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-label">Niz pravilnih ali točnih</div>
+          <div class="stat-tile-value" id="stat-streak">—</div>
+          <div class="stat-tile-sub" id="stat-streak-sub">—</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-label">Delež pravilnih ali točnih</div>
+          <div class="stat-tile-value" id="stat-pct">—</div>
+          <div class="stat-tile-sub" id="stat-pct-sub">—</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-label">Največji dnevni skok</div>
+          <div class="stat-tile-value" id="stat-jump">—</div>
+          <div class="stat-tile-sub" id="stat-jump-sub">—</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-tile-label">Najpogostejši izid</div>
+          <div class="stat-tile-value" id="stat-fav-score">—</div>
+          <div class="stat-tile-sub" id="stat-fav-score-sub">—</div>
+        </div>
+      </div>
+
+      <!-- 5. TRAJECTORY + H2H -->
+      <div class="profil-two-col">
+
+        <!-- TRAJECTORY -->
+        <div class="trajectory-card">
+          <div class="trajectory-eyebrow">Tvoja pot</div>
+          <div class="trajectory-headline">
+            <div>
+              <div class="trajectory-title" id="traj-title">Nalagam...</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="traj-caption">Uvrstitev med vsemi 26</div>
+            </div>
+            <div class="trajectory-legend">
+              <div class="traj-leg">
+                <div class="traj-leg-line" style="background:var(--accent)"></div>
+                <span id="traj-leg-me">Ti</span>
+              </div>
+              <div class="traj-leg" id="traj-leg-rival-wrap" style="display:none">
+                <div class="traj-leg-line" style="background:#e07b39;border-top:2px dashed #e07b39;height:0"></div>
+                <span id="traj-leg-rival">Tekmec</span>
+              </div>
+            </div>
+          </div>
+          <div class="trajectory-chart">
+            <canvas id="traj-canvas" height="200" style="width:100%;display:block"></canvas>
+          </div>
+        </div>
+
+        <!-- H2H -->
+        <div class="h2h-card">
+          <div class="h2h-header">
+            <div class="h2h-eyebrow">Tvoj dvoboj</div>
+            <span class="h2h-change" onclick="_openRivalPicker()">Zamenjaj tekmeca ▾</span>
+          </div>
+          <div id="h2h-content">
+            <div style="text-align:center;padding:32px;color:var(--muted);font-size:.85rem">
+              Nalagam dvoboj...
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 6. JERSEY CABINET -->
+      <div class="cabinet-card">
+        <div class="cabinet-header">
+          <div>
+            <div class="cabinet-eyebrow">Navijaški kotiček: Dresi</div>
+          </div>
+          <div class="cabinet-count" id="cabinet-count"></div>
+        </div>
+        <div class="cabinet-title">Tvoja osebna zbirka dresov s prvenstva</div>
+        <div class="cabinet-sub">Ob posebnih priložnostih in presenečenjih se tukaj pojavi nov dres · prenesi katerega koli</div>
+        <div class="cabinet-grid" id="cabinet-grid">
+          <div class="cabinet-empty">Nalagam zbirko...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIVAL PICKER MODAL -->
+  <div id="rival-modal" style="display:none" class="rival-modal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="rival-modal-inner">
+      <div class="rival-modal-title">Koga boš premagal?</div>
+      <div class="rival-modal-sub">Izberi tekmeca za sezonski dvoboj. Spremenljivo kadar koli.</div>
+      <div class="rival-grid" id="rival-grid"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('rival-modal').style.display='none'">Prekliči</button>
+        <button class="btn btn-primary" style="flex:1" id="rival-save-btn" onclick="_saveRival()">Shrani tekmeca</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>window.__NP_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliaW56ZXd5eHVweW9qbGFtbHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODY4NzcsImV4cCI6MjA5NDE2Mjg3N30.n5-oSP7_7QvylacamMozjluh1fwgUKUb4yv_uEl0-pQ';</script>
+  <!-- COUNTRY PICKER MODAL -->
+  <div id="country-modal" style="display:none" class="rival-modal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="rival-modal-inner">
+      <div class="rival-modal-title">🏳️ Izberi državo</div>
+      <div class="rival-modal-sub">Za katero reprezentanco navijaš? Izbiro lahko spremeniš kadar koli.</div>
+      <div id="country-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;max-height:60vh;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('country-modal').style.display='none'">Prekliči</button>
+        <button class="btn btn-primary" style="flex:1" onclick="_saveCountry()">Potrdi</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/plugins.js"></script>
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     PROFIL.HTML — main logic
+     ════════════════════════════════════════════════════════════ */
+
+  let _profile, _state, _myLb, _rivalLb, _allUsers;
+  let _selectedRivalId = null;
+
+  /* ── INIT ──────────────────────────────────────────────────── */
+  (async () => {
+    if (!NP.requireAuth()) return;
+    _profile = await NP.refreshUserProfile() ?? NP.getUserProfile();
+    _state   = await NP.getTournamentNow();
+
+    // Nav
+    document.getElementById('nav-name').textContent = NP.getAlias(_profile, _state, 'short');
+    const _navFlag = document.getElementById('navijam-flag');
+    if (_navFlag && _profile.avatar_team_iso2) _navFlag.src = `https://flagcdn.com/w40/${_profile.avatar_team_iso2.toLowerCase()}.png`;
+    // Set navijam za flag
+    var sl = document.getElementById('navbar-selektor-link'); if (NP.isAdmin() && sl) sl.style.display = 'flex';
+
+    // Standing banner
+    await NP.applyPlugins(_state, _profile);
+
+    // Load everything in parallel
+    // Load H2H first (sets _myLb) then trajectory which depends on _myLb
+    await _loadH2H();
+    await Promise.all([
+      _loadPredictCard(),
+      _loadStats(),
+      _loadTrajectory(),
+      _loadCabinet(),
+    ]);
+  })();
+
+  /* ── TO-PREDICT CARD ───────────────────────────────────────── */
+  async function _loadPredictCard() {
+    const now = new Date();
+    const { data: matches } = await NP.db
+      .from('matches')
+      .select('id, kickoff_at, home_team:teams!matches_home_team_id_fkey(name_sl), away_team:teams!matches_away_team_id_fkey(name_sl)')
+      .is('home_score_90', null)
+      .gt('kickoff_at', now.toISOString())
+      .order('kickoff_at')
+      .limit(104); // 72 group + 32 knockout
+
+    if (!matches?.length) return;
+
+    // Which ones have no prediction yet?
+    const matchIds = matches.map(m => m.id);
+    const [predsRes, totalRes] = await Promise.all([
+      NP.db.from('predictions').select('match_id').eq('user_id', _profile.id).in('match_id', matchIds),
+      NP.db.from('predictions').select('match_id', { count: 'exact', head: true }).eq('user_id', _profile.id)
+    ]);
+
+    const predictedIds = new Set((predsRes.data || []).map(p => p.match_id));
+    const oddanih = totalRes.count ?? 0;
+    const pending = matches.filter(m => {
+      const deadline = new Date(m.kickoff_at) - 3600000;
+      return !predictedIds.has(m.id) && deadline > Date.now();
+    });
+
+    if (!pending.length) return;
+
+    const next = pending[0];
+    const deadline = new Date(new Date(next.kickoff_at) - 3600000);
+    const months = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+    const dStr = `${deadline.getDate()}. ${months[deadline.getMonth()]}`;
+    const h = deadline.getHours().toString().padStart(2,'0');
+    const mn = deadline.getMinutes().toString().padStart(2,'0');
+    // oddanih from total count above
+
+    // Slovenian number agreement
+    function _cakaTekst(n) {
+      if (n === 1) return '1 napoved te čaka';
+      if (n === 2) return '2 napovedi te čakata';
+      if (n === 3 || n === 4) return `${n} napovedi te čakajo`;
+      return `${n} napovedi te čaka`;
+    }
+    function _oddanihTekst(n) {
+      if (n === 1) return '1 oddana';
+      if (n === 2) return '2 oddani';
+      if (n === 3 || n === 4) return `${n} oddane`;
+      return `${n} oddanih`;
+    }
+
+    document.getElementById('predict-card').style.display = 'block';
+    document.getElementById('predict-title').textContent = _cakaTekst(pending.length);
+    document.getElementById('predict-sub').textContent = `Naslednji deadline ${dStr} ${h}:${mn} · ${next.home_team?.name_sl} vs ${next.away_team?.name_sl}`;
+    document.getElementById('predict-count').innerHTML = `${_oddanihTekst(oddanih)} · <strong>${_cakaTekst(pending.length)}</strong>`;
+  }
+
+  /* ── STATS ─────────────────────────────────────────────────── */
+  async function _loadStats() {
+    const { data: preds } = await NP.db
+      .from('predictions')
+      .select('pred_home, pred_away, points_awarded, submitted_at, match:matches(kickoff_at, home_score_90, away_score_90, phase)')
+      .eq('user_id', _profile.id);
+
+    if (!preds?.length) return;
+
+    const finished = preds.filter(p => p.match?.home_score_90 !== null && p.match?.home_score_90 !== undefined);
+
+    // Correct outcomes / exact scores
+    let correctOutcomes = 0, exactScores = 0;
+    const scoreFreq = {};
+    finished.forEach(p => {
+      if (p.pred_home === null) return;
+      const pts = p.points_awarded ?? 0;
+      if (pts > 0) correctOutcomes++;
+      if (NP.scoring.calcBasePoints(p, p.match) === 3 || (p.pred_home === p.match.home_score_90 && p.pred_away === p.match.away_score_90)) exactScores++;
+      const key = `${p.pred_home}–${p.pred_away}`;
+      scoreFreq[key] = (scoreFreq[key] || 0) + 1;
+    });
+
+    // Best week (group by calendar week)
+    const weeklyPts = {};
+    preds.forEach(p => {
+      if (!p.match?.kickoff_at) return;
+      const d = new Date(p.match.kickoff_at);
+      const wk = `${d.getFullYear()}-W${Math.ceil(d.getDate()/7)}`;
+      weeklyPts[wk] = (weeklyPts[wk] || 0) + (p.points_awarded ?? 0);
+    });
+    const weekEntries = Object.entries(weeklyPts).sort((a,b) => b[1]-a[1]);
+    const bestWeek = weekEntries[0];
+
+    // Most common prediction
+    const topScore = Object.entries(scoreFreq).sort((a,b)=>b[1]-a[1])[0];
+
+    // Percentage correct
+    const pct = finished.length ? Math.round(correctOutcomes / finished.length * 100) : 0;
+
+    // Streak (consecutive correct)
+    const sorted = finished.sort((a,b) => new Date(a.match.kickoff_at) - new Date(b.match.kickoff_at));
+    let streak = 0, maxStreak = 0, curStreak = 0;
+    sorted.forEach(p => {
+      if ((p.points_awarded ?? 0) > 0) { curStreak++; maxStreak = Math.max(maxStreak, curStreak); }
+      else curStreak = 0;
+    });
+    // Current streak
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      if ((sorted[i].points_awarded ?? 0) > 0) streak++;
+      else break;
+    }
+
+    // Render
+    if (bestWeek) {
+      document.getElementById('stat-best-week').textContent = bestWeek[1];
+      document.getElementById('stat-best-week-sub').textContent = bestWeek[0].replace('-W','· teden ');
+    }
+    document.getElementById('stat-streak').textContent = maxStreak;
+    document.getElementById('stat-streak-sub').innerHTML = streak === maxStreak && streak > 0
+      ? '🔥 v teku' : `maks niz`;
+    document.getElementById('stat-pct').textContent = pct + '%';
+    document.getElementById('stat-pct-sub').textContent = `${correctOutcomes} od ${finished.length} tekem (točnih ali pravilnih)`;
+    document.getElementById('stat-fav-score').textContent = topScore?.[0] ?? '—';
+    document.getElementById('stat-fav-score-sub').textContent = topScore ? 'tvoja napoved' : '—';
+
+    // Jump stat — requires leaderboard snapshots; show placeholder for now
+    document.getElementById('stat-jump').textContent = '—';
+    document.getElementById('stat-jump-sub').textContent = 'kmalu';
+  }
+
+  /* ── H2H ───────────────────────────────────────────────────── */
+  async function _loadH2H() {
+    const rivalId = _profile.rival_user_id;
+
+    // Load leaderboard
+    const { data: lb } = await NP.db.from('leaderboard').select('*');
+    if (!lb) return;
+
+    _myLb = lb.find(r => r.user_id === _profile.id);
+
+    if (!rivalId) {
+      document.getElementById('h2h-content').innerHTML = `
+        <div style="text-align:center;padding:24px 16px;color:var(--muted)">
+          <div style="font-size:1.5rem;margin-bottom:8px">🤜🤛</div>
+          <div style="font-size:.85rem;font-weight:600;margin-bottom:4px">Izberi tekmeca</div>
+          <div style="font-size:.75rem;margin-bottom:12px">Primerjaj se s kolegom za celotno sezono</div>
+          <button class="btn btn-primary btn-sm" onclick="_openRivalPicker()">Izberi tekmeca →</button>
+        </div>`;
+      return;
+    }
+
+    _rivalLb = lb.find(r => r.user_id === rivalId);
+    if (!_rivalLb) return;
+
+    const { data: rivalProfile } = rivalId
+      ? await NP.db.from('users').select('display_name, aliases, avatar_team_iso2').eq('id', rivalId).maybeSingle()
+      : { data: null };
+
+    const myAlias  = NP.getAlias(_profile, _state, 'full');
+    const rivAlias = rivalProfile ? NP.getAlias(rivalProfile, _state, 'full') : _rivalLb.display_name;
+
+    // Win counts — who leads more H2H categories
+    const rows = [
+      { label: 'Uvrstitev',       me: _myLb.rank,          riv: _rivalLb.rank,         lowerWins: true  },
+      { label: 'Skupaj točk',     me: _myLb.total_points,  riv: _rivalLb.total_points,  lowerWins: false },
+      { label: 'Trivia točke',    me: _myLb.trivia_points, riv: _rivalLb.trivia_points,  lowerWins: false },
+      { label: 'Highest rank',    me: _myLb.rank,          riv: _rivalLb.rank,          lowerWins: true  },
+      { label: 'Točnih napovedi', me: _myLb.correct_scores, riv: _rivalLb.correct_scores, lowerWins: false },
+    ];
+
+    const rowLabels = ['Uvrstitev', 'Skupaj točk', 'Trivia točke', 'Najvišja uvrstitev', 'Točnih napovedi'];
+    let meWins = 0, rivWins = 0;
+    rows.forEach(r => {
+      const meLeads = r.lowerWins ? r.me < r.riv : r.me > r.riv;
+      if (meLeads) meWins++;
+      else if (r.me !== r.riv) rivWins++;
+    });
+
+    const rowsHtml = rows.map((r, i) => {
+      const meLeads  = r.lowerWins ? r.me < r.riv : r.me > r.riv;
+      const rivLeads = r.lowerWins ? r.riv < r.me : r.riv > r.me;
+      const meVal  = r.label === 'Uvrstitev' || r.label === 'Najvišja uvrstitev' ? `#${r.me}` : r.me ?? '—';
+      const rivVal = r.label === 'Uvrstitev' || r.label === 'Najvišja uvrstitev' ? `#${r.riv}` : r.riv ?? '—';
+      return `<div class="h2h-row">
+        <div class="h2h-val me ${meLeads?'win':''}">${meVal}</div>
+        <div class="h2h-row-label">${rowLabels[i]}</div>
+        <div class="h2h-val rival ${rivLeads?'win':''}">${rivVal}</div>
+      </div>`;
+    }).join('');
+
+    const ptsDiff = Math.abs((_myLb.total_points ?? 0) - (_rivalLb.total_points ?? 0));
+    const leader  = (_myLb.total_points ?? 0) >= (_rivalLb.total_points ?? 0) ? myAlias : rivAlias;
+
+    document.getElementById('h2h-content').innerHTML = `
+      <div class="h2h-versus">
+        <div class="h2h-player">
+          <div class="h2h-player-label">Ti</div>
+          <div class="h2h-player-name">${_esc(myAlias)}</div>
+        </div>
+        <div class="h2h-score-pill">${meWins}–${rivWins}</div>
+        <div class="h2h-player">
+          <div class="h2h-player-label">${_esc(rivAlias.split(' ')[0])}</div>
+          <div class="h2h-player-name">${_esc(rivAlias)}</div>
+        </div>
+      </div>
+      <div class="h2h-rows">${rowsHtml}</div>
+      <div class="h2h-footer">
+        ${meWins > rivWins
+          ? `Vodiš <strong>${meWins}–${rivWins}</strong> · ${ptsDiff} točk prednosti`
+          : meWins < rivWins
+            ? `<strong>${_esc(rivAlias)}</strong> vodi ${rivWins}–${meWins}`
+            : `Izenačeno ${meWins}–${rivWins}`}
+      </div>`;
+
+    // Trajectory rival legend
+    document.getElementById('traj-leg-rival').textContent = rivAlias.split(' ')[0];
+    document.getElementById('traj-leg-rival-wrap').style.display = 'flex';
+  }
+
+  /* ── TRAJECTORY CHART (Chart.js) ─────────────────────────── */
+  let _trajChart = null;
+
+  async function _loadTrajectory() {
+    console.log('[traj] starting, profile id:', _profile?.id, 'rival:', _profile?.rival_user_id);
+    const [myRes, rivalRes] = await Promise.all([
+      NP.db.from('leaderboard_snapshots').select('snapshot_date,rank')
+        .eq('user_id', _profile.id).order('snapshot_date'),
+      _profile.rival_user_id
+        ? NP.db.from('leaderboard_snapshots').select('snapshot_date,rank')
+            .eq('user_id', _profile.rival_user_id).order('snapshot_date')
+        : Promise.resolve({ data: [], error: null })
+    ]);
+
+    const mySnaps    = myRes.error    ? [] : (myRes.data    || []);
+    const rivalSnaps = rivalRes.error ? [] : (rivalRes.data || []);
+
+    console.log('[traj] mySnaps:', mySnaps.length, 'rivalSnaps:', rivalSnaps.length);
+    if (!mySnaps.length) {
+      document.getElementById('traj-title').textContent   = 'Uvrstitev še ni na voljo';
+      document.getElementById('traj-caption').textContent = 'Podatki se začnejo zbirati po prvih tekmah';
+      return;
+    }
+
+    const currentRank = _myLb?.rank ?? mySnaps[mySnaps.length - 1]?.rank ?? 1;
+    const firstRank   = mySnaps[0]?.rank ?? currentRank;
+    const diff = firstRank - currentRank;
+    document.getElementById('traj-title').textContent =
+      `Trenutno #${currentRank}` +
+      (diff > 0 ? ` ▲ ${diff} mest od začetka` : diff < 0 ? ` ▼ ${Math.abs(diff)} mest` : ' · brez sprememb');
+    document.getElementById('traj-caption').textContent =
+      `Uvrstitev med vsemi 27 · ${mySnaps.length} dni podatkov`;
+    document.getElementById('traj-leg-me').textContent = NP.getAlias(_profile, _state, 'short');
+    if (rivalSnaps.length) document.getElementById('traj-leg-rival-wrap').style.display = 'flex';
+
+    // Merge dates
+    const months  = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+    const allDates = [...new Set([...mySnaps, ...rivalSnaps].map(s => s.snapshot_date))].sort();
+    const labels   = allDates.map(d => { const x = new Date(d); return `${x.getDate()}. ${months[x.getMonth()]}`; });
+    const byDate   = (snaps) => Object.fromEntries(snaps.map(s => [s.snapshot_date, s.rank]));
+    const toData   = (map)   => allDates.map(d => map[d] ?? null);
+
+    const datasets = [{
+      label: NP.getAlias(_profile, _state, 'short'),
+      data: toData(byDate(mySnaps)),
+      borderColor: '#449d44', backgroundColor: '#449d44',
+      borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6,
+      tension: 0.15, spanGaps: false,
+    }];
+
+    if (rivalSnaps.length) {
+      datasets.push({
+        label: document.getElementById('traj-leg-rival').textContent || 'Tekmec',
+        data: toData(byDate(rivalSnaps)),
+        borderColor: '#e07b39', backgroundColor: '#e07b39',
+        borderWidth: 2, borderDash: [6, 4],
+        pointRadius: 4, pointHoverRadius: 6,
+        tension: 0.15, spanGaps: false,
+      });
+    }
+
+    const canvas = document.getElementById('traj-canvas');
+    canvas.style.height = '220px';
+    console.log('[traj] rendering chart, labels:', labels, 'data:', datasets[0].data);
+    if (_trajChart) _trajChart.destroy();
+
+    _trajChart = new Chart(canvas, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => `${c.dataset.label}: #${c.raw}` } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#8aaa8c', font: { size: 11 } } },
+          y: {
+            reverse: true, min: 1, max: 27,
+            ticks: {
+              color: '#8aaa8c', font: { size: 11 },
+              callback: v => [1, 5, 10, 15, 20, 27].includes(v) ? `#${v}` : null
+            },
+            grid: { color: c => [1, 5, 10, 15, 20, 27].includes(c.tick?.value) ? '#e8f0e8' : 'transparent' }
+          }
+        }
+      }
+    });
+  }
+
+  /* ── JERSEY CANVAS PRE-BAKE ───────────────────────────────── */
+  /*
+   * Runs after cabinet renders. For each jersey img, loads the image with
+   * crossOrigin=anonymous, draws it to canvas with the name overlay baked in,
+   * then replaces the img src with the canvas data URL.
+   * iOS long-press then saves the personalised version directly to Photos.
+   */
+  async function _prebakeAllJerseys() {
+    const imgs = document.querySelectorAll('.cabinet-tile-img[data-url]');
+    for (const img of imgs) {
+      try {
+        const url    = img.dataset.url;
+        const alias  = img.dataset.alias;
+        const fill   = img.dataset.fill;
+        const cx     = parseFloat(img.dataset.cx);
+        const cy     = parseFloat(img.dataset.cy);
+        const maxW   = parseFloat(img.dataset.mw);
+        const mf     = parseFloat(img.dataset.mf);
+
+        const src = url + (url.includes('?') ? '&' : '?') + '_cb=bake';
+        const jerseyImg = await new Promise((res, rej) => {
+          const i = new Image();
+          i.crossOrigin = 'anonymous';
+          i.onload = () => res(i);
+          i.onerror = rej;
+          i.src = src;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = jerseyImg.naturalWidth  || 1024;
+        canvas.height = jerseyImg.naturalHeight || 1024;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(jerseyImg, 0, 0);
+
+        const px = (cx / 1024) * canvas.width;
+        const py = (cy / 1024) * canvas.height;
+        const fs = Math.min(mf, Math.round(canvas.width * mf / maxW));
+        ctx.save();
+        ctx.font = `900 ${fs}px Figtree, sans-serif`;
+        ctx.fillStyle = fill;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.35)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(alias.toUpperCase(), px, py);
+        ctx.restore();
+
+        // Replace img src + hide CSS overlay (it's now baked in)
+        img.src = canvas.toDataURL('image/jpeg', 0.92);
+        img.style.webkitTouchCallout = 'default';
+        const overlay = img.parentElement.querySelector('.cabinet-name-overlay');
+        if (overlay) overlay.style.display = 'none';
+
+      } catch (err) {
+        // CORS failed — img stays as original URL, CSS overlay still visible
+        console.warn('Jersey pre-bake failed for', img.dataset.url, err);
+      }
+    }
+  }
+
+  /* ── JERSEY CABINET ────────────────────────────────────────── */
+  async function _loadCabinet() {
+    const today = new Date();
+    const todayISO = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+    const { data: days } = await NP.db
+      .from('themed_days')
+      .select('*')
+      .not('jersey_url', 'is', null)
+      .lte('theme_date', todayISO)
+      .order('theme_date', { ascending: false });
+
+    const grid = document.getElementById('cabinet-grid');
+
+    if (!days?.length) {
+      grid.innerHTML = '';
+      document.getElementById('cabinet-count').textContent = '';
+      return;
+    }
+
+    document.getElementById('cabinet-count').textContent = `${days.length} doslej`;
+
+    const jerseyName = (td) => {
+      const themeCode = td.theme_code;
+      const aliases   = _profile.aliases ?? {};
+      return aliases?.[themeCode]?.jersey
+          ?? NP.getAlias(_profile, _state, 'short').split(' ')[0];
+    };
+
+    const dateLabel = (iso) => {
+      const d = new Date(iso);
+      return `${d.getDate()}. ${['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'][d.getMonth()]}`;
+    };
+
+    grid.innerHTML = days.map(td => {
+      const isToday = td.theme_date === todayISO;
+      const fill = td.jersey_name_color || '#ffffff';
+      const alias = jerseyName(td);
+      const cx = td.jersey_center_x || 312;
+      const cy = td.jersey_center_y || 147;
+      const mw = td.jersey_max_width || 320;
+      const mf = td.jersey_font_size || 52;
+
+      return `<div class="cabinet-tile">
+        ${isToday ? '<div class="cabinet-new-badge">NOV</div>' : ''}
+        <div class="cabinet-tile-stripe" style="background:${td.banner_color_primary || '#449d44'}"></div>
+        <div style="position:relative">
+          <img class="cabinet-tile-img"
+            id="cabinet-img-${_esc(td.theme_code)}"
+            src="${_esc(td.jersey_url)}"
+            alt="${_esc(td.theme_name_sl || '')}"
+            style="-webkit-touch-callout:default"
+            data-alias="${_esc(alias)}"
+            data-fill="${_esc(fill)}"
+            data-cx="${cx}" data-cy="${cy}"
+            data-mw="${mw}" data-mf="${mf}"
+            data-url="${_esc(td.jersey_url)}">
+          <div class="cabinet-name-overlay" style="position:absolute;left:${(cx/1024*100).toFixed(2)}%;top:${(cy/1024*100).toFixed(2)}%;
+            transform:translate(-50%,-50%);font-family:Figtree,sans-serif;font-weight:900;
+            font-size:clamp(6px,3.5%,14px);color:${fill};text-transform:uppercase;
+            white-space:nowrap;pointer-events:none;letter-spacing:.05em;
+            text-shadow:0 1px 2px rgba(0,0,0,.3)">${_esc(alias)}</div>
+        </div>
+        <div class="cabinet-tile-body">
+          <div class="cabinet-tile-name">${_esc(td.theme_name_sl || '')}</div>
+          <div class="cabinet-tile-date">${dateLabel(td.theme_date)}</div>
+          <button class="cabinet-tile-btn"
+            onclick="_shareOrDownloadJersey('${_esc(td.jersey_url)}','${_esc(alias)}','${_esc(fill)}','${_esc(td.theme_code)}',${cx},${cy},${mw},${mf},this)">
+            ⬇ Prenesi
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Pre-bake all jerseys to canvas so long-press on mobile saves the named version
+    _prebakeAllJerseys();
+  }
+
+  /* ── JERSEY SHARE / DOWNLOAD ───────────────────────────────── */
+  /*
+   * On iOS: Web Share API opens native share sheet → user picks "Save Image" → Photos.
+   * On Android: same Web Share API works for most browsers.
+   * Fallback (desktop / unsupported): triggers the old <a download> behaviour.
+   * We re-render the jersey name overlay onto a canvas so the downloaded image
+   * includes the personalised name, exactly like NP.downloadJersey does.
+   */
+  async function _shareOrDownloadJersey(jerseyUrl, alias, fill, themeCode, cx, cy, maxW, fontSize, btn) {
+    const origLabel = btn.textContent;
+    btn.textContent = '⏳';
+    btn.disabled = true;
+
+    const fileName = `dres-${themeCode || 'napovednik'}.jpg`;
+
+    // Helper: share or download a blob/dataUrl
+    async function _doShare(dataUrl) {
+      if (navigator.canShare) {
+        try {
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], fileName, { type: 'image/jpeg' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'Moj dres · Napovednik 2026' });
+            return 'shared';
+          }
+        } catch (e) {
+          if (e.name === 'AbortError') return 'cancelled';
+          // share failed — fall through to download
+        }
+      }
+      // Desktop fallback
+      const a = document.createElement('a');
+      a.href = dataUrl; a.download = fileName; a.click();
+      return 'downloaded';
+    }
+
+    try {
+      // 1. Try with canvas (name overlay) — requires CORS headers on jersey image
+      let dataUrl = null;
+      try {
+        const img = await new Promise((res, rej) => {
+          const i = new Image();
+          i.crossOrigin = 'anonymous';
+          i.onload = () => res(i);
+          i.onerror = rej;
+          // Cache-bust to force CORS headers (avoids cached non-CORS response)
+          i.src = jerseyUrl + (jerseyUrl.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = img.naturalWidth  || 1024;
+        canvas.height = img.naturalHeight || 1024;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const px = (cx / 1024) * canvas.width;
+        const py = (cy / 1024) * canvas.height;
+        const fs = Math.min(fontSize, Math.round(canvas.width * fontSize / maxW));
+        ctx.save();
+        ctx.font = `900 ${fs}px Figtree, sans-serif`;
+        ctx.fillStyle = fill; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 4;
+        ctx.fillText(alias.toUpperCase(), px, py);
+        ctx.restore();
+
+        dataUrl = canvas.toDataURL('image/jpeg', 0.92); // throws if CORS tainted
+      } catch (canvasErr) {
+        console.warn('Canvas/CORS failed, falling back to raw image:', canvasErr);
+        // 2. CORS fallback: fetch the raw image as blob and share without overlay
+        const resp = await fetch(jerseyUrl);
+        if (!resp.ok) throw new Error('fetch failed');
+        const blob = await resp.blob();
+        dataUrl = await new Promise(res => {
+          const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob);
+        });
+      }
+
+      const result = await _doShare(dataUrl);
+      if (result === 'cancelled') {
+        btn.textContent = origLabel; btn.disabled = false; return;
+      }
+      btn.textContent = '✓';
+      setTimeout(() => { btn.textContent = origLabel; btn.disabled = false; }, 1800);
+
+    } catch (err) {
+      console.error('Jersey download error:', err);
+      btn.textContent = '✗ Napaka';
+      setTimeout(() => { btn.textContent = origLabel; btn.disabled = false; }, 2500);
+    }
+  }
+  window._shareOrDownloadJersey = _shareOrDownloadJersey;
+
+  /* ── RIVAL PICKER ──────────────────────────────────────────── */
+  async function _openRivalPicker() {
+    if (!_allUsers) {
+      const { data } = await NP.db
+        .from('users')
+        .select('id, display_name, aliases, avatar_team_iso2')
+        .neq('id', _profile.id)
+        .order('display_name');
+      _allUsers = data || [];
+    }
+
+    _selectedRivalId = _profile.rival_user_id;
+
+    document.getElementById('rival-grid').innerHTML = _allUsers.map(u => {
+      const alias = NP.getAlias(u, _state, 'short');
+      const isSelected = u.id === _selectedRivalId;
+      const flagSrc = NP.flagUrl(u.avatar_team_iso2, 40);
+      return `<div class="rival-chip ${isSelected?'selected':''}" data-uid="${u.id}" onclick="_selectRival('${u.id}', this)">
+        <img src="${flagSrc}" alt="" onerror="this.style.display='none'">
+        ${_esc(alias)}
+      </div>`;
+    }).join('');
+
+    document.getElementById('rival-modal').style.display = 'flex';
+  }
+
+  function _selectRival(uid, el) {
+    document.querySelectorAll('.rival-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    _selectedRivalId = uid;
+  }
+
+  async function _saveRival() {
+    if (!_selectedRivalId) return;
+    const { error } = await NP.db
+      .from('users')
+      .update({ rival_user_id: _selectedRivalId })
+      .eq('id', _profile.id);
+    if (!error) {
+      _profile.rival_user_id = _selectedRivalId;
+      localStorage.setItem('np_session', JSON.stringify(_profile));
+      document.getElementById('rival-modal').style.display = 'none';
+      NP.toast('Tekmec shranjen!', 'success');
+      await _loadH2H();
+      await _loadTrajectory();
+    } else {
+      NP.toast('Napaka pri shranjevanju tekmeca.', 'error');
+    }
+  }
+
+  /* ── COUNTRY PICKER ────────────────────────────────────────── */
+  let _selectedCountryIso = null;
+
+  async function _openCountryPicker() {
+    _selectedCountryIso = _profile.avatar_team_iso2 || 'si';
+    const { data: teams } = await NP.db.from('teams').select('id, name_sl, flag_code').order('name_sl');
+    document.getElementById('country-grid').innerHTML = (teams || []).map(t => `
+      <div onclick="_selectCountry('${t.flag_code}', this)" data-iso="${t.flag_code}"
+        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;
+          border-radius:8px;cursor:pointer;transition:all .15s;
+          border:2px solid ${t.flag_code === _selectedCountryIso ? 'var(--accent)' : 'transparent'};
+          background:${t.flag_code === _selectedCountryIso ? 'var(--accent-bg)' : 'transparent'}">
+        <img src="${NP.flagUrl(t.flag_code, 40)}" style="width:32px;height:22px;object-fit:cover;border-radius:3px;border:1px solid var(--border)">
+        <span style="font-size:.6rem;font-weight:600;text-align:center;color:var(--text-mid);line-height:1.2">${_esc(t.name_sl)}</span>
+      </div>`).join('');
+    document.getElementById('country-modal').style.display = 'flex';
+  }
+
+  function _selectCountry(iso, el) {
+    _selectedCountryIso = iso;
+    document.querySelectorAll('#country-grid > div').forEach(d => {
+      const sel = d.dataset.iso === iso;
+      d.style.borderColor = sel ? 'var(--accent)' : 'transparent';
+      d.style.background  = sel ? 'var(--accent-bg)' : 'transparent';
+    });
+  }
+
+  async function _saveCountry() {
+    if (!_selectedCountryIso) return;
+    const { error } = await NP.db.from('users').update({ avatar_team_iso2: _selectedCountryIso }).eq('id', _profile.id);
+    if (!error) {
+      _profile.avatar_team_iso2 = _selectedCountryIso;
+      localStorage.setItem('np_session', JSON.stringify(_profile));
+      document.getElementById('country-modal').style.display = 'none';
+      NP.toast('Država posodobljena! 🏳️', 'success');
+    } else {
+      NP.toast('Napaka pri shranjevanju.', 'error');
+    }
+  }
+
+
+  function _openEditProfile() {
+    NP.toast('Urejanje profila bo kmalu na voljo.', 'info');
+  }
+
+  /* ── COUNTRY PICKER ────────────────────────────────────────── */
+  </script>
+  <script>
+    (function(){
+      var btn   = document.getElementById('nav-menu-btn');
+      var links = document.getElementById('navbar-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = links.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+        btn.textContent = open ? '\u2715' : '\u2630';
+      });
+      document.addEventListener('click', function(e){
+        if (!links.contains(e.target) && e.target !== btn) {
+          links.classList.remove('open');
+          btn.setAttribute('aria-expanded', false);
+          btn.textContent = '\u2630';
+        }
+      });
+      links.querySelectorAll('.navbar-link').forEach(function(a){
+        a.addEventListener('click', function(){
+          links.classList.remove('open');
+          btn.textContent = '\u2630';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

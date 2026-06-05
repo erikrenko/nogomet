@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Napovednik 2026 — Prijava</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: var(--bg);
+    }
+    .login-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 8px 32px rgba(40,80,44,0.12);
+      overflow: hidden;
+    }
+    .login-header {
+      background: var(--accent);
+      padding: 28px 28px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-header::before {
+      content: '';
+      position: absolute;
+      top: -40%; right: -10%;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .login-logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.03em;
+      position: relative;
+    }
+    .login-logo span { color: rgba(255,255,255,0.7); }
+    .login-logo sup  { font-size: 0.55rem; font-weight: 400; color: rgba(255,255,255,0.6); vertical-align: super; }
+    .login-tagline {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+      position: relative;
+    }
+    .login-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .login-form-group { display: flex; flex-direction: column; gap: 5px; }
+    .login-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .login-input {
+      background: var(--white);
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      padding: 10px 13px;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--t-fast), box-shadow var(--t-fast);
+    }
+    .login-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+    .login-input::placeholder { color: var(--muted); opacity: 0.5; }
+    .login-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background var(--t-fast), transform var(--t-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .login-btn:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .login-error {
+      background: var(--red-bg);
+      border: 1px solid rgba(192,49,43,0.2);
+      border-radius: var(--radius-md);
+      color: var(--red);
+      font-size: 0.82rem;
+      padding: 10px 13px;
+      display: none;
+    }
+    .login-error.visible { display: block; }
+    .login-footer {
+      padding: 14px 28px 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .loading-spinner-inline {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">Napo<span>vednik</span><sup>2026</sup></div>
+      <div class="login-tagline">⚽ FIFA World Cup 2026 · NLB igra</div>
+    </div>
+
+    <div class="login-body">
+      <div class="login-form-group">
+        <label class="login-label" for="username">Uporabniško ime</label>
+        <input
+          class="login-input"
+          type="text"
+          id="username"
+          placeholder="npr. kenk"
+          autocomplete="username"
+          autocapitalize="none"
+          autofocus
+        >
+      </div>
+
+      <div class="login-form-group">
+        <label class="login-label" for="password">Geslo</label>
+        <input
+          class="login-input"
+          type="password"
+          id="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        >
+      </div>
+
+      <div class="login-error" id="login-error"></div>
+
+      <button class="login-btn" id="login-btn" type="button">
+        Prijava
+      </button>
+    </div>
+
+    <div class="login-footer">
+      Dostop samo za udeležence igre.<br>
+      Težave? Piši Eriku R. na Teams.
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>window.__NP_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliaW56ZXd5eHVweW9qbGFtbHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODY4NzcsImV4cCI6MjA5NDE2Mjg3N30.n5-oSP7_7QvylacamMozjluh1fwgUKUb4yv_uEl0-pQ';</script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Redirect immediately if already logged in
+    NP.redirectIfLoggedIn('index.html');
+
+    const usernameEl = document.getElementById('username');
+    const passEl     = document.getElementById('password');
+    const btn        = document.getElementById('login-btn');
+    const errorEl    = document.getElementById('login-error');
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('visible');
+    }
+    function clearError() {
+      errorEl.classList.remove('visible');
+    }
+    function setLoading(on) {
+      btn.disabled = on;
+      btn.innerHTML = on
+        ? '<div class="loading-spinner-inline"></div> Prijavljam...'
+        : 'Prijava';
+    }
+
+    async function doLogin() {
+      clearError();
+
+      const username = usernameEl.value.trim();
+      const password = passEl.value;
+
+      if (!username) { showError('Vpiši uporabniško ime.'); usernameEl.focus(); return; }
+      if (!password) { showError('Vpiši geslo.');           passEl.focus();     return; }
+
+      setLoading(true);
+
+      const result = await NP.login(username, password);
+
+      if (!result.success) {
+        setLoading(false);
+        showError(result.message);
+        passEl.value = '';
+        passEl.focus();
+        return;
+      }
+
+      // Success — go to homepage
+      window.location.href = 'index.html';
+    }
+
+    btn.addEventListener('click', doLogin);
+    [usernameEl, passEl].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+      el.addEventListener('input',   clearError);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Napovednik 2026 — Rezultati</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=3">
+  <style>
+    /* ── PAGE HEADER ── */
+    .rez-header {
+      margin-bottom: 24px;
+    }
+    .rez-eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .rez-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--text);
+    }
+
+    /* ── TABS ── */
+    .rez-tabs-nav {
+      display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;
+    }
+    .rez-tab-btn {
+      padding:10px 18px;font-size:.88rem;font-weight:600;color:var(--muted);
+      border:none;border-bottom:3px solid transparent;margin-bottom:-2px;
+      background:none;cursor:pointer;font-family:var(--font-main);
+      transition:color var(--t-fast),border-color var(--t-fast);
+      white-space:nowrap;
+    }
+    .rez-tab-btn:hover { color:var(--text); }
+    .rez-tab-btn.active { color:var(--text);border-bottom-color:var(--accent); }
+    .rez-tab-pane { display:none; }
+    .rez-tab-pane.active { display:block; }
+
+    /* ── GROUP GRID ── */
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 960px) { .group-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 580px) { .group-grid { grid-template-columns: 1fr; } }
+
+    /* ── GROUP BLOCK ── */
+    .group-block {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(40,80,44,.07);
+    }
+
+    .group-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-deep);
+    }
+    .group-block-title {
+      font-size: .8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text);
+    }
+    .group-block-status {
+      font-size: .65rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .group-block-status.live    { background: var(--red-bg);   color: var(--red);        border: 1px solid rgba(192,49,43,.2); }
+    .group-block-status.done    { background: var(--green-bg); color: var(--green-text); border: 1px solid rgba(68,157,68,.2); }
+    .group-block-status.upcoming{ background: var(--bg-mid);   color: var(--muted);      border: 1px solid var(--border); }
+
+    /* ── STANDINGS TABLE ── */
+    .standings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .76rem;
+    }
+    .standings-table th {
+      font-size: .6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      padding: 5px 6px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-deep);
+    }
+    .standings-table th:first-child { text-align: left; padding-left: 12px; }
+    .standings-table td {
+      padding: 6px 6px;
+      text-align: center;
+      border-bottom: 1px solid rgba(200,223,201,.5);
+      color: var(--text-mid);
+      font-variant-numeric: tabular-nums;
+    }
+    .standings-table td:first-child { text-align: left; padding-left: 10px; }
+    .standings-table tr:last-child td { border-bottom: none; }
+    .standings-table tr:hover td { background: var(--bg-deep); }
+    .standings-table .qualifies td:first-child { border-left: 3px solid var(--accent); }
+    .standings-table .pts-col { font-weight: 800; color: var(--text); }
+    .standings-table .gd-pos { color: var(--green-text); }
+    .standings-table .gd-neg { color: var(--red); }
+
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .team-cell img {
+      width: 16px;
+      height: 11px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .rank-num {
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ── MATCH LIST INSIDE GROUP ── */
+    .group-matches { border-top: 1px solid var(--border); }
+
+    .group-match-row {
+      display: grid;
+      grid-template-columns: 45px minmax(0,1fr) 65px minmax(0,1fr) 110px;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(200,223,201,.4);
+      font-size: .78rem;
+      transition: background var(--t-fast);
+    }
+    .group-match-row:last-child { border-bottom: none; }
+    .group-match-row:hover { background: var(--bg-deep); }
+
+    .gm-date { font-size:.65rem;font-weight:600;color:var(--muted); }
+    .gm-home { display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0;overflow:hidden; }
+    .gm-away { display:flex;align-items:center;justify-content:flex-start;gap:5px;min-width:0;overflow:hidden; }
+    .gm-center { text-align:center;font-weight:700;font-size:.85rem; }
+    .gm-status { display:flex;align-items:center;justify-content:flex-end;width:110px; }
+    .gm-team-name { font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem; }
+    .gm-team-name {
+      font-size: .78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+      min-width: 0;
+      flex-shrink: 1;
+    }
+    .gm-team img {
+      width: 16px;
+      height: 11px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .gm-score {
+      font-size: .88rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--text);
+    }
+    .gm-time {
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-align: center;
+    }
+    .gm-pred {
+      font-size: .68rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 60px;
+      text-align: center;
+    }
+    .gm-pred.exact   { background:#dcfce7;color:#166534;border:1px solid #86efac; }
+    .gm-pred.correct { background:#dbeafe;color:#1e40af;border:1px solid #93c5fd; }
+    .gm-pred.wrong   { background:#fef9c3;color:#854d0e;border:1px solid #fde047; }
+    .gm-pred.pending { background: var(--bg-deep);  color: var(--muted);      border: 1px solid var(--border); }
+    .gm-pred.missing { background:#fee2e2;color:#991b1b;border:1px solid #fca5a5; }
+
+    .gm-action {
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--accent-dark);
+      text-decoration: none;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .gm-action:hover { text-decoration: underline; }
+
+    /* Napovej → green pill on desktop */
+    .gm-action-new {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px; border-radius: 99px;
+      background: var(--accent); color: #fff !important;
+      font-size: .72rem; font-weight: 700; text-decoration: none !important;
+      transition: background var(--t-fast);
+    }
+    .gm-action-new:hover { background: var(--accent-dark); text-decoration: none !important; }
+
+    /* ── REZULTATI MOBILE ── */
+    @media (max-width: 768px) {
+      /* Widen status col to fit full text labels */
+      .group-match-row {
+        grid-template-columns: 40px minmax(0,1fr) 52px minmax(0,1fr) 90px !important;
+        gap: 5px !important;
+        padding: 7px 10px !important;
+      }
+      .gm-status { width: auto !important; }
+      .gm-pred   { min-width: 0 !important; }
+    }
+
+    @media (max-width: 480px) {
+      .group-match-row {
+        grid-template-columns: 36px minmax(0,1fr) 46px minmax(0,1fr) 80px !important;
+        gap: 4px !important;
+        padding: 6px 8px !important;
+      }
+      .gm-date      { font-size: .6rem !important; }
+      .gm-team-name { font-size: .72rem !important; }
+      .gm-score     { font-size: .78rem !important; }
+      .gm-pred      { font-size: .62rem !important; }
+    }
+
+    /* ── KNOCKOUT BRACKET ── */
+    .knockout-section { margin-top: 8px; }
+
+    .knockout-round {
+      margin-bottom: 16px;
+    }
+    .knockout-round-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .knockout-round-label .mult-badge {
+      font-size: .62rem;
+    }
+
+    .knockout-matches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 8px;
+    }
+
+    .knockout-match {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(40,80,44,.06);
+    }
+    .knockout-match.tbd {
+      opacity: .55;
+    }
+
+    .knockout-match-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 10px;
+      background: var(--bg-deep);
+      border-bottom: 1px solid var(--border);
+      font-size: .62rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .knockout-match-body {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    .ko-team {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+    }
+    .ko-team.right { justify-content: flex-end; flex-direction: row-reverse; }
+    .ko-team img {
+      width: 20px;
+      height: 14px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ko-team-name {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90px;
+    }
+    .ko-team-name.tbd { color: var(--muted); font-weight: 400; font-style: italic; }
+    .ko-score {
+      font-size: 1rem;
+      font-weight: 800;
+      min-width: 50px;
+      text-align: center;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .ko-time {
+      font-size: .78rem;
+      color: var(--muted);
+      font-weight: 600;
+      min-width: 50px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .knockout-match-footer {
+      padding: 5px 12px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-logo" href="index.html">Napo<span>vednik</span><sup>2026</sup></a>
+      <div class="navbar-links" id="navbar-links">
+        <a class="navbar-link" href="index.html">🏠 Home</a>
+        <a class="navbar-link" href="predictions.html">📝 Moje napovedi</a>
+        <a class="navbar-link" href="napovedi.html">🌍 Vse napovedi</a>
+        <a class="navbar-link" href="rezultati.html">📊 Rezultati tekem</a>
+        <a class="navbar-link" href="leaderboard.html">🏆 Lestvica uporabnikov</a>
+        <a class="navbar-link navbar-link-selektor" id="navbar-selektor-link" href="selektor.html" style="display:none">⚙ Selektor</a>
+        <button class="navbar-link navbar-link-signout" onclick="NP.signOut()">🚪 Odjava</button>
+      </div>
+      <div class="navbar-right">
+        <a href="profil.html" class="user-chip" style="text-decoration:none;color:#fff">
+          <div class="user-avatar" id="nav-avatar">👤</div>
+          <span id="nav-name" style="color:#fff">...</span>
+        </a>
+        <button onclick="NP.signOut()" class="nav-signout-btn">Odjava</button>
+        <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Meni" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container page-wrap">
+
+    <div class="rez-header">
+      <div class="rez-eyebrow">Rezultati</div>
+      <div class="rez-title">Tekme &amp; lestvice</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="rez-tabs-nav">
+      <button class="rez-tab-btn active" data-tab="skupinski">⚽ Skupinski del</button>
+      <button class="rez-tab-btn"        data-tab="izlocilni">🏆 Izločilni boji</button>
+    </div>
+
+    <!-- TAB: SKUPINSKI DEL -->
+    <div class="rez-tab-pane active" id="tab-skupinski">
+      <div class="group-grid" id="group-grid">
+        <div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+    <!-- TAB: IZLOČILNI BOJI -->
+    <div class="rez-tab-pane" id="tab-izlocilni">
+      <div class="knockout-section" id="knockout-section">
+        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>window.__NP_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliaW56ZXd5eHVweW9qbGFtbHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODY4NzcsImV4cCI6MjA5NDE2Mjg3N30.n5-oSP7_7QvylacamMozjluh1fwgUKUb4yv_uEl0-pQ';</script>
+  <script src="js/utils.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/plugins.js"></script>
+  <script>
+  const MONTHS_SL = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+  const DAYS_SL   = ['ned','pon','tor','sre','čet','pet','sob'];
+
+  (async () => {
+    if (!NP.requireAuth()) return;
+    const profile = NP.getUserProfile();
+    const state   = await NP.getTournamentNow();
+
+    // Navbar
+    var __sl = document.getElementById('navbar-selektor-link'); if(__sl && NP.isAdmin()) __sl.style.display = 'flex';
+    document.getElementById('nav-name').textContent = NP.getAlias(profile, state, 'full');
+    document.getElementById('nav-avatar').textContent =
+      state.isThemedDay && state.themedDay?.theme_flag_iso2
+        ? _flagEmoji(state.themedDay.theme_flag_iso2)
+        : profile.display_name.charAt(0).toUpperCase();
+
+    // Load data in parallel
+    const [matchesRes, predsRes, standingsRes] = await Promise.all([
+      NP.db.from('matches')
+        .select(`id, phase, group_name, kickoff_at,
+          home_score_90, away_score_90, home_score_120, away_score_120,
+          home_placeholder, away_placeholder,
+          home_team:teams!matches_home_team_id_fkey(id, name_sl, fifa_code, flag_code),
+          away_team:teams!matches_away_team_id_fkey(id, name_sl, fifa_code, flag_code)`)
+        .order('kickoff_at'),
+      NP.db.from('predictions')
+        .select('match_id, pred_home, pred_away, points_awarded')
+        .eq('user_id', profile.id),
+      NP.db.from('group_standings')
+        .select('*')
+        .order('group_name')
+        .order('points', { ascending: false })
+        .order('goal_difference', { ascending: false }),
+    ]);
+
+    const allMatches = matchesRes.data ?? [];
+    const predMap = {};
+    (predsRes.data ?? []).forEach(p => { predMap[p.match_id] = p; });
+    const standings = standingsRes.data ?? [];
+
+    // Build group standings map
+    const standingsMap = {};
+    standings.forEach(row => {
+      if (!standingsMap[row.group_name]) standingsMap[row.group_name] = [];
+      standingsMap[row.group_name].push(row);
+    });
+
+    // Group stage matches
+    const groupMatches = allMatches.filter(m => m.phase === 'GROUP' && m.group_name);
+    const byGroup = {};
+    groupMatches.forEach(m => {
+      if (!byGroup[m.group_name]) byGroup[m.group_name] = [];
+      byGroup[m.group_name].push(m);
+    });
+
+    // Render groups
+    const groupNames = Object.keys(byGroup).sort();
+    let groupHtml = '';
+
+    groupNames.forEach(g => {
+      const matches  = byGroup[g];
+      const gStandings = standingsMap[g] ?? [];
+      const played   = matches.filter(m => m.home_score_90 !== null).length;
+      const total    = matches.length;
+      const allDone  = played === total;
+      const hasLive  = matches.some(m => {
+        const ko = new Date(m.kickoff_at);
+        const now = new Date();
+        return m.home_score_90 === null && ko < now && ko > new Date(now - 120*60000);
+      });
+
+      const statusCls  = allDone ? 'done' : hasLive ? 'live' : 'upcoming';
+      const statusText = allDone ? '✓ končano' : hasLive ? '● v teku' : '';
+
+      // Standings table
+      let standingsHtml = '';
+      if (gStandings.length > 0) {
+        standingsHtml = `
+          <table class="standings-table">
+            <thead>
+              <tr>
+                <th>#</th><th>O</th><th>Z</th><th>N</th><th>P</th>
+                <th>G</th><th>GR</th><th>T</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${gStandings.map((row, i) => {
+                const gdCls = row.goal_difference > 0 ? 'gd-pos' : row.goal_difference < 0 ? 'gd-neg' : '';
+                const gdStr = row.goal_difference > 0 ? '+' + row.goal_difference : String(row.goal_difference);
+                const qualifies = i < 2; // top 2 advance
+                return `<tr class="${qualifies ? 'qualifies' : ''}">
+                  <td>
+                    <div class="team-cell">
+                      <span class="rank-num">${i+1}</span>
+                      <img src="${NP.flagUrl(row.flag_code)}" alt="" onerror="this.style.display='none'">
+                      <span style="font-size:.75rem;font-weight:${qualifies ? '700' : '500'};color:var(--text)">${row.name_sl}</span>
+                    </div>
+                  </td>
+                  <td>${row.played ?? 0}</td>
+                  <td>${row.won ?? 0}</td>
+                  <td>${row.drawn ?? 0}</td>
+                  <td>${row.lost ?? 0}</td>
+                  <td>${(row.goals_for ?? 0)}:${(row.goals_against ?? 0)}</td>
+                  <td class="${gdCls}">${gdStr}</td>
+                  <td class="pts-col">${row.points ?? 0}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>`;
+      } else {
+        // No standings data yet — show team list from matches
+        const teamSet = {};
+        matches.forEach(m => {
+          if (m.home_team) teamSet[m.home_team.id] = m.home_team;
+          if (m.away_team) teamSet[m.away_team.id] = m.away_team;
+        });
+        const teams = Object.values(teamSet);
+        standingsHtml = `
+          <table class="standings-table">
+            <thead><tr><th>#</th><th>O</th><th>Z</th><th>N</th><th>P</th><th>G</th><th>GR</th><th>T</th></tr></thead>
+            <tbody>
+              ${teams.map((t, i) => `
+                <tr class="${i < 2 ? 'qualifies' : ''}">
+                  <td><div class="team-cell">
+                    <span class="rank-num">${i+1}</span>
+                    <img src="${NP.flagUrl(t.flag_code)}" alt="" onerror="this.style.display='none'">
+                    <span style="font-size:.75rem;font-weight:500;color:var(--text)">${t.name_sl}</span>
+                  </div></td>
+                  <td>0</td><td>0</td><td>0</td><td>0</td><td>0:0</td><td>0</td><td class="pts-col">0</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
+      }
+
+      // Match rows
+      const matchRows = matches.map(m => {
+        const pred     = predMap[m.id];
+        const finished = m.home_score_90 !== null;
+        const locked   = NP.isPredictionLocked(m.kickoff_at);
+        const d        = new Date(m.kickoff_at);
+        const dateStr = d.getDate() + '. ' + MONTHS_SL[d.getMonth()].toUpperCase();
+
+        // Score or time
+        const scoreHtml = finished
+          ? `<span class="gm-score">${m.home_score_120 ?? m.home_score_90}–${m.away_score_120 ?? m.away_score_90}</span>`
+          : `<span class="gm-time">${NP.formatKickoff(m.kickoff_at, false)}</span>`;
+
+        // Prediction chip
+        let predHtml = '';
+        if (finished) {
+          if (!pred) {
+            predHtml = `<span class="gm-pred missing">✗ ni napovedi · +0</span>`;
+          } else {
+            const base = NP.scoring.calcBasePoints(pred, m);
+            const pts  = NP.scoring.applyMultiplier(base, state.multiplier ?? 1);
+            if (base === 3)      predHtml = `<span class="gm-pred exact">✓ Točno · +${pts}</span>`;
+            else if (base === 1) predHtml = `<span class="gm-pred correct">✓ Pravilno · +${pts}</span>`;
+            else                 predHtml = `<span class="gm-pred wrong">✗ Napačno · +0</span>`;
+          }
+        } else if (locked) {
+          predHtml = pred
+            ? `<span class="gm-pred pending" style="font-family:monospace">tvoja ${pred.pred_home}–${pred.pred_away} · 🔒</span>`
+            : `<span class="gm-pred missing">✗ ni napovedi</span>`;
+        }
+
+        // Action
+        let actionHtml = '';
+        if (!locked && !finished) {
+          actionHtml = pred
+            ? `<a href="predictions.html#match-${m.id}" class="gm-action gm-action-edit">Spremeni →</a>`
+            : `<a href="predictions.html#match-${m.id}" class="gm-action gm-action-new">Napovej →</a>`;
+        }
+
+        const statusHtml = actionHtml || predHtml || '';
+        return `
+          <div class="group-match-row">
+            <div class="gm-date">${dateStr}</div>
+            <div class="gm-home">
+              <span class="gm-team-name">${m.home_team?.fifa_code ?? m.home_team?.name_sl ?? '—'}</span>
+              <img src="${NP.flagUrl(m.home_team?.flag_code)}" alt="" onerror="this.style.display='none'" style="width:16px;height:11px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0">
+            </div>
+            <div class="gm-center">${scoreHtml}</div>
+            <div class="gm-away">
+              <img src="${NP.flagUrl(m.away_team?.flag_code)}" alt="" onerror="this.style.display='none'" style="width:16px;height:11px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0">
+              <span class="gm-team-name">${m.away_team?.fifa_code ?? m.away_team?.name_sl ?? '—'}</span>
+            </div>
+            <div class="gm-status">${statusHtml}</div>
+          </div>`;
+      }).join('');
+
+      groupHtml += `
+        <div class="group-block">
+          <div class="group-block-header">
+            <span class="group-block-title">Skupina ${g}</span>
+            <span class="group-block-status ${statusCls}">${statusText}</span>
+          </div>
+          ${standingsHtml}
+          <div class="group-matches">${matchRows}</div>
+        </div>`;
+    });
+
+    document.getElementById('group-grid').innerHTML =
+      groupHtml || '<div style="padding:30px;text-align:center;color:var(--muted);grid-column:1/-1">Ni podatkov.</div>';
+
+    // ── KNOCKOUT STAGES ──
+    const koPhases = [
+      { code: 'R32',   label: 'R32 — Osmina finala',   mult: 1 },
+      { code: 'R16',   label: 'R16 — Šestnajstina finala', mult: 1 },
+      { code: 'QF',    label: 'Četrtfinale',             mult: 2 },
+      { code: 'SF',    label: 'Polfinale',               mult: 2 },
+      { code: 'THIRD', label: 'Tekma za 3. mesto',       mult: 2 },
+      { code: 'FINAL', label: 'Finale',                  mult: 3 },
+    ];
+
+    let koHtml = '';
+    koPhases.forEach(({ code, label, mult }) => {
+      const phaseMatches = allMatches.filter(m => m.phase === code);
+      if (!phaseMatches.length) return;
+
+      const matchCards = phaseMatches.map(m => {
+        const pred     = predMap[m.id];
+        const finished = m.home_score_90 !== null;
+        const locked   = NP.isPredictionLocked(m.kickoff_at);
+        const hasBothTeams = m.home_team && m.away_team;
+        const d = new Date(m.kickoff_at);
+        const dateStr = d.getDate() + '. ' + MONTHS_SL[d.getMonth()] + ', ' + NP.formatKickoff(m.kickoff_at, false);
+
+        const homeName = m.home_team?.fifa_code ?? m.home_placeholder ?? '?';
+        const awayName = m.away_team?.fifa_code ?? m.away_placeholder ?? '?';
+        const isTbd = !m.home_team && !m.away_team;
+
+        const homeFlag = m.home_team
+          ? `<img src="${NP.flagUrl(m.home_team.flag_code)}" alt="" onerror="this.style.display='none'">`
+          : '';
+        const awayFlag = m.away_team
+          ? `<img src="${NP.flagUrl(m.away_team.flag_code)}" alt="" onerror="this.style.display='none'">`
+          : '';
+
+        const scoreHtml = finished
+          ? `<span class="ko-score">${m.home_score_120 ?? m.home_score_90}–${m.away_score_120 ?? m.away_score_90}</span>`
+          : `<span class="ko-time">${NP.formatKickoff(m.kickoff_at, false)}</span>`;
+
+        // Prediction
+        let predHtml = '';
+        if (finished && pred) {
+          const { label: lbl, type, points } = NP.scoring.getResultLabel(pred, m, mult);
+          predHtml = `<span class="gm-pred ${type}" style="font-size:.68rem">${lbl} · +${points}</span>`;
+        } else if (!locked && !finished && hasBothTeams) {
+          predHtml = pred
+            ? `<span class="gm-pred pending" style="font-size:.68rem">tvoj ${pred.pred_home}–${pred.pred_away}</span>`
+            : '';
+        } else if (locked && pred) {
+          predHtml = `<span class="gm-pred pending" style="font-size:.68rem">🔒 ${pred.pred_home}–${pred.pred_away}</span>`;
+        }
+
+        let actionHtml = '';
+        if (!locked && !finished && hasBothTeams) {
+          actionHtml = pred
+            ? `<a href="predictions.html#match-${m.id}" class="gm-action gm-action-edit">Spremeni →</a>`
+            : `<a href="predictions.html#match-${m.id}" class="gm-action gm-action-new">Napovej →</a>`;
+        }
+
+        return `
+          <div class="knockout-match ${isTbd ? 'tbd' : ''}">
+            <div class="knockout-match-header">
+              <span>${dateStr}</span>
+              ${mult > 1 ? `<span class="mult-badge mult-x${mult}">×${mult}</span>` : ''}
+            </div>
+            <div class="knockout-match-body">
+              <div class="ko-team">
+                ${homeFlag}
+                <span class="ko-team-name ${isTbd ? 'tbd' : ''}">${homeName}</span>
+              </div>
+              ${scoreHtml}
+              <div class="ko-team right">
+                <span class="ko-team-name ${isTbd ? 'tbd' : ''}">${awayName}</span>
+                ${awayFlag}
+              </div>
+            </div>
+            ${predHtml || actionHtml ? `
+            <div class="knockout-match-footer">
+              ${predHtml}
+              ${actionHtml}
+            </div>` : ''}
+          </div>`;
+      }).join('');
+
+      koHtml += `
+        <div class="knockout-round">
+          <div class="knockout-round-label">
+            ${label}
+            ${mult > 1 ? `<span class="mult-badge mult-x${mult}">×${mult}</span>` : ''}
+          </div>
+          <div class="knockout-matches">${matchCards}</div>
+        </div>`;
+    });
+
+    document.getElementById('knockout-section').innerHTML =
+      koHtml || '<div style="padding:20px;color:var(--muted);font-size:.85rem">Izločilni boji se začnejo po skupinskem delu.</div>';
+
+  })();
+
+  // Tab switching
+  document.querySelectorAll('.rez-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.rez-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.rez-tab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function _flagEmoji(iso2) {
+    if (!iso2 || iso2.length !== 2) return '';
+    const base = 0x1F1E6 - 65;
+    return String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(0)) +
+           String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(1));
+  }
+  </script>
+
+  <script>
+    (function(){
+      var btn   = document.getElementById('nav-menu-btn');
+      var links = document.getElementById('navbar-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = links.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+        btn.textContent = open ? '\u2715' : '\u2630';
+      });
+      document.addEventListener('click', function(e){
+        if (!links.contains(e.target) && e.target !== btn) {
+          links.classList.remove('open');
+          btn.setAttribute('aria-expanded', false);
+          btn.textContent = '\u2630';
+        }
+      });
+      links.querySelectorAll('.navbar-link').forEach(function(a){
+        a.addEventListener('click', function(){
+          links.classList.remove('open');
+          btn.textContent = '\u2630';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
