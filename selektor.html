@@ -890,7 +890,6 @@
       total += r.updated;
       if (r.errors.length) errors++;
     }
-    // Rebuild leaderboard after full recalc
     try { await NP.scoring.rebuildLeaderboard(); } catch(e) {}
     _toast(`✓ ${total} napovedi preračunanih · ${errors} napak`, errors > 0 ? 'error' : 'success');
   }
