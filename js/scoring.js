@@ -356,35 +356,24 @@ NP.scoring = {
    * @returns {{ total_points: number, correct_scores: number, correct_outcomes: number }}
    */
   async recalcUser(userId) {
-    // Match points + correct counts
+    // Fetch all predictions with match scores for finished matches
     const { data: preds } = await NP.db
       .from('predictions')
-      .select('points_awarded, pred_home, pred_away, matches(home_score_90, away_score_90, home_score_120, away_score_120)')
+      .select('points_awarded, pred_home, pred_away, match_id, matches!inner(home_score_90, away_score_90, home_score_120, away_score_120)')
       .eq('user_id', userId)
-      .not('matches.home_score_90', 'is', null);
+      .not('points_awarded', 'is', null);
 
     let match_points = 0, correct_scores = 0, correct_outcomes = 0;
     (preds ?? []).forEach(p => {
-      const base = this.calcBasePoints(p, p.matches ?? {});
-      if (base === null) return;
-      match_points += p.points_awarded ?? 0;
-      if (base === 3) { correct_scores++; correct_outcomes++; }
-      else if (base === 1) correct_outcomes++;
+      const pts = p.points_awarded ?? 0;
+      match_points += pts;
+      if (pts >= 3) { correct_scores++; correct_outcomes++; }
+      else if (pts >= 1) correct_outcomes++;
     });
 
-    // Trivia points
-    const { data: tAnswers } = await NP.db
-      .from('trivia_answers')
-      .select('is_correct')
-      .eq('user_id', userId);
-    const trivia_points = (tAnswers ?? []).filter(a => a.is_correct).length;
+    const total_points = match_points;
 
-    // Bonus points (only if tournament finished)
-    // Not calculated here — admin applies via separate bonus entry
-
-    const total_points = match_points + trivia_points;
-
-    return { total_points, match_points, trivia_points, correct_scores, correct_outcomes };
+    return { total_points, match_points, trivia_points: 0, correct_scores, correct_outcomes };
   },
 
   /**
@@ -457,7 +446,7 @@ NP.scoring = {
           flag_iso2:        user.avatar_team_iso2 ?? null,
           total_points:     stats.total_points,
           match_points:     stats.match_points,
-          trivia_points:    stats.trivia_points ?? 0,
+          trivia_points:    0,
           correct_scores:   stats.correct_scores,
           correct_outcomes: stats.correct_outcomes,
           delta:            0,
