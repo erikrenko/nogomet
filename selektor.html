@@ -573,9 +573,7 @@
     try {
       const lb = await NP.scoring.rebuildLeaderboard();
       if (lb.errors.length) console.warn('Leaderboard rebuild errors:', lb.errors);
-    } catch(e) {
-      console.warn('Leaderboard rebuild failed:', e);
-    }
+    } catch(e) { console.warn('Leaderboard rebuild failed:', e); }
 
     // Update local cache and re-render
     const m = _allMatches.find(x => x.id === matchId);
