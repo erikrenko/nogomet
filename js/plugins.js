@@ -134,15 +134,13 @@ async function _applyStandingBanner(state, profile) {
   // Fetch live stats
   const { data: lb } = await NP.db
     .from('leaderboard')
-    .select('rank, total_points, correct_scores, correct_outcomes, trivia_correct, trivia_total, delta')
+    .select('rank, total_points, correct_scores, correct_outcomes, delta')
     .eq('user_id', profile.id)
     .maybeSingle();
 
   const rank         = lb?.rank           ?? '—';
   const pts          = lb?.total_points   ?? 0;
   const scores       = lb?.correct_scores ?? 0;
-  const triviaCorrect = lb?.trivia_correct ?? 0;
-  const triviaTotal   = lb?.trivia_total   ?? 0;
   const delta        = lb?.delta          ?? 0;
 
   const deltaClass = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
@@ -202,7 +200,7 @@ async function _applyStandingBanner(state, profile) {
               </span>
             </div>
             <div class="standing-pts" style="color:rgba(255,255,255,.8)">
-              ${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih
+              ${nNapovedi(scores)}
             </div>
           </div>
           <div class="standing-divider" style="background:rgba(255,255,255,.3)"></div>
@@ -257,7 +255,7 @@ async function _applyStandingBanner(state, profile) {
 
           <div style="padding:0 18px 14px">
             <div class="standing-pts" style="color:rgba(255,255,255,.7);font-size:.72rem">
-              ${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih
+              ${nNapovedi(scores)}
             </div>
           </div>
 
@@ -278,7 +276,7 @@ async function _applyStandingBanner(state, profile) {
         <div class="standing-divider"></div>
         <div class="standing-info">
           <div class="standing-name">${_esc(profile.original_name ?? profile.display_name)}</div>
-          <div class="standing-pts">${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih</div>
+          <div class="standing-pts">${nNapovedi(scores)}</div>
         </div>
         <div class="standing-divider"></div>
         <div class="standing-stat">
