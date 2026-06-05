@@ -569,16 +569,13 @@
       _toast(`✓ Objavljeno · ${result.updated} napovedi preračunanih`, 'success');
     }
 
-    // Auto-save leaderboard snapshot after publishing result
+    // Rebuild leaderboard after publishing result
     try {
-      await NP.db.rpc('save_leaderboard_snapshot');
+      const lb = await NP.scoring.rebuildLeaderboard();
+      if (lb.errors.length) console.warn('Leaderboard rebuild errors:', lb.errors);
     } catch(e) {
-      // Snapshot failed silently — not critical
+      console.warn('Leaderboard rebuild failed:', e);
     }
-
-
-    // Auto-save leaderboard snapshot after publishing result
-    try { await NP.db.rpc('save_leaderboard_snapshot'); } catch(e) {}
 
     // Update local cache and re-render
     const m = _allMatches.find(x => x.id === matchId);
@@ -893,6 +890,8 @@
       total += r.updated;
       if (r.errors.length) errors++;
     }
+    // Rebuild leaderboard after full recalc
+    try { await NP.scoring.rebuildLeaderboard(); } catch(e) {}
     _toast(`✓ ${total} napovedi preračunanih · ${errors} napak`, errors > 0 ? 'error' : 'success');
   }
 
