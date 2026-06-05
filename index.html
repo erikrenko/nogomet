@@ -346,8 +346,7 @@
       .select(`id, kickoff_at, home_score_90, away_score_90, home_score_120, away_score_120, group_name, phase,
         home_team:teams!matches_home_team_id_fkey(id, name_sl, flag_code, fifa_code),
         away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)`)
-      .is('home_score_90', null)
-      .gte('kickoff_at', from.toISOString())
+      .gte('kickoff_at', now.toISOString())
       .order('kickoff_at')
       .limit(TOTAL);
 
@@ -359,8 +358,7 @@
       .select(`id, kickoff_at, home_score_90, away_score_90, home_score_120, away_score_120, group_name, phase,
         home_team:teams!matches_home_team_id_fkey(id, name_sl, flag_code, fifa_code),
         away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)`)
-      .not('home_score_90', 'is', null)
-      .not('result_published_at', 'is', null)
+      .lt('kickoff_at', now.toISOString())
       .order('kickoff_at', { ascending: false })
       .limit(pastLimit);
 
@@ -400,7 +398,11 @@
       if (isPast) {
         const hs = m.home_score_120 ?? m.home_score_90;
         const as = m.away_score_120 ?? m.away_score_90;
-        centerHtml = `<div class="vs-score">${hs} – ${as}</div>`;
+        if (hs !== null && as !== null) {
+          centerHtml = `<div class="vs-score">${hs} – ${as}</div>`;
+        } else {
+          centerHtml = `<div class="vs-time" style="color:var(--muted);font-size:.72rem">Čaka na rezultat</div>`;
+        }
       } else if (isLive) {
         centerHtml = `<div class="vs-time vs-live" style="color:var(--red);font-weight:700">🔴 V teku</div>`;
       } else {
@@ -411,21 +413,26 @@
         centerHtml = `<div class="vs-time" style="line-height:1.2">${NP.formatKickoff(m.kickoff_at, false)}${warn}</div>`;
       }
 
-      // Col 5: my prediction (grey pill) — shown whenever pred exists
+      // Col 5: my prediction (grey pill) — shown for future/locked; for past-no-result shown in col 6
+      const hasResult = (m.home_score_120 ?? m.home_score_90) !== null;
       let predPreviewHtml = '';
-      if (pred) {
+      if (pred && (!isPast || hasResult)) {
         predPreviewHtml = `<span class="pred-chip pending" style="font-size:.68rem">${pred.pred_home}–${pred.pred_away}</span>`;
       }
 
       // Col 6: outcome chip (past) OR button (open future) OR missing (locked no pred)
       let rightHtml = '';
       if (isPast) {
-        if (!pred) {
+        const hs = m.home_score_120 ?? m.home_score_90;
+        const as = m.away_score_120 ?? m.away_score_90;
+        const hasResult = hs !== null && as !== null;
+        if (!hasResult) {
+          // Kicked off but no result yet — show prediction if exists
+          if (pred) rightHtml = `<span class="pred-chip pending" style="font-size:.68rem">${pred.pred_home}–${pred.pred_away}</span>`;
+        } else if (!pred) {
           rightHtml = `<span class="pred-chip missing">✗ Manjka</span>`;
         } else {
           const ph = pred.pred_home, pa = pred.pred_away;
-          const hs = m.home_score_120 ?? m.home_score_90;
-          const as = m.away_score_120 ?? m.away_score_90;
           const exact = ph === hs && pa === as;
           const correctWinner = !exact && ((ph>pa&&hs>as)||(ph<pa&&hs<as)||(ph===pa&&hs===as));
           const mult = state?.multiplier ?? 1;
