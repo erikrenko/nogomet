@@ -1850,7 +1850,7 @@
 
       distHtml = `
         <div class="dist-section">
-          <div class="dist-title">Kako so glasovali sodelavci (${total} glasov)</div>
+          <div class="dist-title">Kako so napovedali ostali (${total})</div>
           ${topTeams.map(({ team, pct }) => `
             <div class="dist-row">
               <img class="dist-flag" src="${NP.flagUrl(team.flag_code)}" alt="" onerror="this.style.display='none'">
@@ -1962,7 +1962,7 @@
 
       distHtml = `
         <div class="dist-section">
-          <div class="dist-title">Kako so glasovali sodelavci (${total} glasov)</div>
+          <div class="dist-title">Kako so napovedali ostali (${total})</div>
           ${sorted.map(([pid, count]) => {
             const p   = playerMap[parseInt(pid)];
             if (!p) return '';
