@@ -356,12 +356,13 @@ NP.scoring = {
    * @returns {{ total_points: number, correct_scores: number, correct_outcomes: number }}
    */
   async recalcUser(userId) {
-    // Fetch all predictions with match scores for finished matches
+    // Sum points_awarded directly — no join needed
     const { data: preds } = await NP.db
       .from('predictions')
-      .select('points_awarded, pred_home, pred_away, match_id, matches!inner(home_score_90, away_score_90, home_score_120, away_score_120)')
+      .select('points_awarded')
       .eq('user_id', userId)
-      .not('points_awarded', 'is', null);
+      .not('points_awarded', 'is', null)
+      .gt('points_awarded', 0);
 
     let match_points = 0, correct_scores = 0, correct_outcomes = 0;
     (preds ?? []).forEach(p => {
@@ -371,9 +372,7 @@ NP.scoring = {
       else if (pts >= 1) correct_outcomes++;
     });
 
-    const total_points = match_points;
-
-    return { total_points, match_points, trivia_points: 0, correct_scores, correct_outcomes };
+    return { total_points: match_points, match_points, trivia_points: 0, correct_scores, correct_outcomes };
   },
 
   /**
@@ -424,16 +423,10 @@ NP.scoring = {
     return { saved: ranked.length, errors };
   },
 
-  /**
-   * Rebuilds the leaderboard table from predictions for all users.
-   * Call after every match result publish.
-   */
   async rebuildLeaderboard() {
     const errors = [];
-
     const { data: users, error: uErr } = await NP.db
-      .from('users')
-      .select('id, display_name, avatar_team_iso2');
+      .from('users').select('id, display_name, avatar_team_iso2');
     if (uErr) return { saved: 0, errors: [uErr.message] };
 
     const rows = [];
@@ -451,19 +444,14 @@ NP.scoring = {
           correct_outcomes: stats.correct_outcomes,
           delta:            0,
         });
-      } catch (e) {
-        errors.push(`User ${user.id}: ${e.message}`);
-      }
+      } catch (e) { errors.push(`User ${user.id}: ${e.message}`); }
     }
 
     rows.sort((a, b) => b.total_points - a.total_points);
     const ranked = this.assignRanks(rows);
-
     const { error: lErr } = await NP.db
-      .from('leaderboard')
-      .upsert(ranked, { onConflict: 'user_id' });
+      .from('leaderboard').upsert(ranked, { onConflict: 'user_id' });
     if (lErr) errors.push(lErr.message);
-
     return { saved: ranked.length, errors };
   },
 
