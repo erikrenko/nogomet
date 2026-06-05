@@ -435,6 +435,49 @@ NP.scoring = {
     return { saved: ranked.length, errors };
   },
 
+  /**
+   * Rebuilds the leaderboard table from predictions for all users.
+   * Call after every match result publish.
+   */
+  async rebuildLeaderboard() {
+    const errors = [];
+
+    const { data: users, error: uErr } = await NP.db
+      .from('users')
+      .select('id, display_name, avatar_team_iso2');
+    if (uErr) return { saved: 0, errors: [uErr.message] };
+
+    const rows = [];
+    for (const user of users ?? []) {
+      try {
+        const stats = await this.recalcUser(user.id);
+        rows.push({
+          user_id:          user.id,
+          display_name:     user.display_name,
+          flag_iso2:        user.avatar_team_iso2 ?? null,
+          total_points:     stats.total_points,
+          match_points:     stats.match_points,
+          trivia_points:    stats.trivia_points ?? 0,
+          correct_scores:   stats.correct_scores,
+          correct_outcomes: stats.correct_outcomes,
+          delta:            0,
+        });
+      } catch (e) {
+        errors.push(`User ${user.id}: ${e.message}`);
+      }
+    }
+
+    rows.sort((a, b) => b.total_points - a.total_points);
+    const ranked = this.assignRanks(rows);
+
+    const { error: lErr } = await NP.db
+      .from('leaderboard')
+      .upsert(ranked, { onConflict: 'user_id' });
+    if (lErr) errors.push(lErr.message);
+
+    return { saved: ranked.length, errors };
+  },
+
   /* ══════════════════════════════════════════════════════════
      DISPLAY HELPERS
      ══════════════════════════════════════════════════════════ */
