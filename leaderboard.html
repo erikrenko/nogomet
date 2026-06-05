@@ -269,32 +269,9 @@
       <div class="lb-title">Skupna lestvica</div>
     </div>
 
-    <!-- TABS -->
-    <div class="lb-tabs-nav">
-      <button class="lb-tab-btn active" data-tab="main">🏆 Skupna</button>
-      <button class="lb-tab-btn"        data-tab="trivia">🎯 Trivia</button>
-      <button class="lb-tab-btn"        data-tab="prizes">🎁 Tedenske nagrade</button>
-    </div>
-
-    <!-- TAB: MAIN LEADERBOARD -->
-    <div class="lb-tab-pane active" id="tab-main">
-      <div class="lb-card" id="main-lb-content">
-        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
-      </div>
-    </div>
-
-    <!-- TAB: TRIVIA -->
-    <div class="lb-tab-pane" id="tab-trivia">
-      <div class="lb-card" id="trivia-lb-content">
-        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
-      </div>
-    </div>
-
-    <!-- TAB: WEEKLY PRIZES -->
-    <div class="lb-tab-pane" id="tab-prizes">
-      <div class="weekly-grid" id="prizes-content">
-        <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
-      </div>
+    <!-- MAIN LEADERBOARD -->
+    <div class="lb-card" id="main-lb-content">
+      <div style="padding:30px;text-align:center;color:var(--muted)">Nalagam...</div>
     </div>
 
     <!-- RULES BOX -->
@@ -327,7 +304,6 @@
         <div class="rules-section-title">Razvrstitev ob enakem številu točk</div>
         <ol class="rules-ordered">
           <li>Skupno število točk</li>
-          <li>Točke iz napovedi tekem</li>
           <li>Število točnih rezultatov</li>
           <li>Čas zadnje oddane napovedi (prej = bolje)</li>
         </ol>
@@ -365,18 +341,7 @@
     // Load main leaderboard immediately
     await _renderMainLb(profile, state);
 
-    // Tab switching
-    document.querySelectorAll('.lb-tab-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        document.querySelectorAll('.lb-tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.lb-tab-pane').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = btn.dataset.tab;
-        document.getElementById('tab-' + tab).classList.add('active');
-        if (tab === 'trivia')  await _renderTriviaLb(profile, state);
-        if (tab === 'prizes')  await _renderPrizes(profile);
-      });
-    });
+
   })();
 
   /* ══════════════════════════════════════════════════════
@@ -509,10 +474,6 @@
               <span class="stat-value">${matchPts} t.</span>
             </div>
             <div class="stat">
-              <span class="stat-label">Trivia</span>
-              <span class="stat-value">${triviaPts} t.</span>
-            </div>
-            <div class="stat">
               <span class="stat-label">Bonus</span>
               <span class="stat-value ${bonusPts > 0 ? 'accent' : 'muted'}">${bonusPts > 0 ? '+' + bonusPts : 'čaka'}</span>
             </div>
@@ -536,190 +497,6 @@
   }
 
 
-
-  /* ══════════════════════════════════════════════════════
-     TRIVIA LEADERBOARD
-     ══════════════════════════════════════════════════════ */
-  async function _renderTriviaLb(profile, state) {
-    const el = document.getElementById('trivia-lb-content');
-    if (el.dataset.loaded) return;
-
-    const [triviaRes, weeklyRes, usersRes] = await Promise.all([
-      NP.db.from('trivia_leaderboard')
-        .select('user_id, display_name, avatar_team_iso2, questions_answered, correct_answers, accuracy_pct')
-        .order('correct_answers', { ascending: false })
-        .order('accuracy_pct',    { ascending: false }),
-      NP.db.from('trivia_weekly')
-        .select('user_id, week_number, correct')
-        .order('week_number'),
-      NP.db.from('users').select('id, original_name, display_name, aliases'),
-    ]);
-
-    const rows   = triviaRes.data  ?? [];
-    const weekly = weeklyRes.data  ?? [];
-    const users  = usersRes.data   ?? [];
-
-    const userOrigMap = {};
-    users.forEach(u => { userOrigMap[u.id] = u; });
-
-    // Build weekly winner map: week_number → user_id of winner
-    const weekWinners = {};
-    const weekGroups  = {};
-    weekly.forEach(w => {
-      if (!weekGroups[w.week_number]) weekGroups[w.week_number] = [];
-      weekGroups[w.week_number].push(w);
-    });
-    Object.entries(weekGroups).forEach(([wn, entries]) => {
-      const winner = entries.reduce((best, cur) =>
-        cur.correct > (best?.correct ?? -1) ? cur : best, null);
-      if (winner) weekWinners[wn] = winner.user_id;
-    });
-
-    // Build user → week badges map
-    const userWeekBadges = {};
-    Object.entries(weekWinners).forEach(([wn, uid]) => {
-      if (!userWeekBadges[uid]) userWeekBadges[uid] = [];
-      userWeekBadges[uid].push(Number(wn));
-    });
-
-    if (!rows.length) {
-      el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Ni trivia podatkov.</div>';
-      el.dataset.loaded = '1';
-      return;
-    }
-
-    let html = '';
-    rows.forEach((row, i) => {
-      const isMe   = row.user_id === profile.id;
-      const rank   = i + 1;
-      const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-      const weeks  = userWeekBadges[row.user_id] ?? [];
-      const u    = userOrigMap[row.user_id];
-      let name;
-      if (state.isThemedDay && state.plugins.alias_names && u?.aliases) {
-        const entry = u.aliases?.[state.themedDay?.theme_code];
-        name = entry?.full ?? u?.original_name ?? row.display_name;
-      } else {
-        name = u?.original_name ?? row.display_name;
-      }
-
-      const weekBadges = weeks.map(w =>
-        `<span class="trivia-week-badge">🧐 T${w}</span>`).join('');
-
-      html += `
-        <div class="trivia-lb-row ${isMe ? 'me' : ''}">
-          <div class="lb-rank ${rankCls}">${rank}</div>
-          ${row.avatar_team_iso2
-            ? `<img src="${NP.flagUrl(row.avatar_team_iso2, 40)}" class="lb-avatar" alt="" onerror="this.style.visibility='hidden'">`
-            : `<div class="lb-avatar-ph"></div>`}
-          <div class="lb-name-col">
-            <span class="lb-name">${_esc(name)}</span>
-            ${isMe ? '<span class="lb-you-tag">ti</span>' : ''}
-            ${weekBadges}
-          </div>
-          <div style="font-size:.82rem;font-weight:700;color:var(--text);flex-shrink:0;min-width:50px;text-align:right">
-            ${row.correct_answers ?? 0}/${row.questions_answered ?? 0}
-          </div>
-          <div class="trivia-accuracy">${row.accuracy_pct ?? 0}%</div>
-        </div>`;
-    });
-
-    // Add pending bonus note for current trivia leader
-    if (rows[0]) {
-      const leaderName = userOrigMap[rows[0].user_id]?.original_name ?? rows[0].display_name;
-      html += `
-        <div style="padding:10px 16px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);text-align:center">
-          💡 Trivia zmagovalec dobi +10 točk po finalni tekmi
-        </div>`;
-    }
-
-    el.innerHTML = html;
-    el.dataset.loaded = '1';
-  }
-
-  /* ══════════════════════════════════════════════════════
-     WEEKLY PRIZES
-     ══════════════════════════════════════════════════════ */
-  async function _renderPrizes(profile) {
-    const el = document.getElementById('prizes-content');
-    if (el.dataset.loaded) return;
-
-    const { data: weeks } = await NP.db
-      .from('weekly_prizes')
-      .select(`
-        id, week_number, week_start, week_end,
-        prize_sponsor_name, prize_description_sl,
-        winner_user_id,
-        winner:users!weekly_prizes_winner_user_id_fkey(original_name, display_name)
-      `)
-      .order('week_number');
-
-    const PRIZE_EMOJIS = ['🍭','🍬','🍫','🍦','🐻','🥐'];
-
-    const today = new Date();
-    let html = '';
-
-    (weeks ?? []).forEach((week, i) => {
-      const start   = new Date(week.week_start);
-      const end     = new Date(week.week_end);
-      const emoji   = PRIZE_EMOJIS[i] ?? '🎁';
-      const isPast  = end < today && week.winner_user_id;
-      const isCurrent = start <= today && end >= today;
-      const isFuture  = start > today;
-
-      const dateStr = `${start.getDate()}. ${MONTHS_SL[start.getMonth()]} – ${end.getDate()}. ${MONTHS_SL[end.getMonth()]}`;
-
-      let statusHtml = '';
-      if (isPast && week.winner) {
-        const winnerName = week.winner.original_name ?? week.winner.display_name ?? '—';
-        const isMe = week.winner_user_id === profile.id;
-        statusHtml = `
-          <div class="week-status">
-            <div class="week-badge-past">✓ zaključeno</div>
-            <div class="week-winner-name" style="${isMe ? 'color:var(--accent-dark)' : ''}">
-              ${_esc(winnerName)} ${isMe ? '🎉' : ''}
-            </div>
-          </div>`;
-      } else if (isPast && !week.winner) {
-        statusHtml = `<div class="week-status"><div class="week-badge-past">✓ zaključeno</div><div class="week-winner-sub">Zmagovalec ni določen</div></div>`;
-      } else if (isCurrent) {
-        // Progress bar for current week
-        const totalMs   = end - start;
-        const elapsedMs = today - start;
-        const pct       = Math.min(100, Math.round(elapsedMs / totalMs * 100));
-        statusHtml = `
-          <div class="week-status">
-            <div class="week-badge-current">● v teku</div>
-            <div class="week-winner-sub" style="margin-top:4px">Konča se ${end.getDate()}. ${MONTHS_SL[end.getMonth()]}</div>
-          </div>`;
-      } else {
-        statusHtml = `<div class="week-status"><div class="week-badge-future">Začne se ${start.getDate()}. ${MONTHS_SL[start.getMonth()]}</div></div>`;
-      }
-
-      const progressBar = isCurrent ? (() => {
-        const totalMs   = end - start;
-        const elapsedMs = today - start;
-        const pct = Math.min(100, Math.round(elapsedMs / totalMs * 100));
-        return `<div class="week-progress-bar" style="width:${pct}%"></div>`;
-      })() : '';
-
-      html += `
-        <div class="week-row ${isCurrent ? 'current' : isPast ? 'past' : ''}">
-          ${progressBar ? `<div style="height:3px;background:var(--bg-deep)">${progressBar}</div>` : ''}
-          <div class="week-row-inner">
-            <div class="week-emoji">${emoji}</div>
-            <div class="week-info">
-              <div class="week-label">Teden ${week.week_number} · ${week.prize_sponsor_name ?? '—'}</div>
-              <div class="week-dates">${dateStr} · ${week.prize_description_sl ?? ''}</div>
-            </div>
-            ${statusHtml}
-          </div>
-        </div>`;
-    });
-
-    el.innerHTML = html || '<div style="padding:30px;text-align:center;color:var(--muted)">Ni podatkov o nagradah.</div>';
-    el.dataset.loaded = '1';
-  }
 
   /* ══════════════════════════════════════════════════════
      HELPERS
