@@ -16,223 +16,12 @@
       gap: 16px;
       align-items: start;
     }
-    .index-grid-bottom {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      align-items: start;
-    }
-    /* ── ŠLOGARICA ──────────────────────────────────────────── */
-    :root {
-      --slg-purple: #633fa2;
-      --slg-purple-dark: #4e2d9a;
-      --slg-purple-light: #ede8fb;
-      --slg-purple-mid: #8b5cf6;
-    }
-    .slg-wrap {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* ── FIRST-VISIT BANNER ── */
-    .slg-invite {
-      background: var(--slg-purple);
-      padding: 14px 20px;
-      display: flex; align-items: center; gap: 14px;
-    }
-    .slg-invite-parrot { font-size: 1.4rem; flex-shrink: 0; }
-    .slg-invite-body   { flex: 1; min-width: 0; }
-    .slg-invite-title  { font-size: .92rem; font-weight: 800; color: #fff; }
-    .slg-invite-sub    { font-size: .72rem; color: rgba(255,255,255,.75); margin-top: 2px; }
-    .slg-invite-signs  { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-    .slg-invite-sign   { font-size: 1rem; opacity: .7; }
-    .slg-invite-btn {
-      padding: 7px 16px; border-radius: 99px;
-      background: #fff; color: var(--slg-purple);
-      font-size: .78rem; font-weight: 700;
-      border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0;
-      font-family: var(--font-main);
-    }
-    .slg-invite-btn:hover { background: var(--slg-purple-light); }
-
-    @media (max-width: 768px) {
-      .slg-invite { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; }
-      .slg-invite-parrot { display: none; }
-      .slg-invite-signs  { display: none; }
-      .slg-invite-btn    { width: 100%; text-align: center; padding: 10px; font-size: .85rem; }
-    }
-
-    /* ── REVEALED: 3-COLUMN ── */
-    .slg-card {
-      display: grid;
-      grid-template-columns: 200px 1fr 250px;
-      min-height: 180px;
-    }
-
-    /* ── LEFT COLUMN ── */
-    .slg-left {
-      background: var(--slg-purple);
-      padding: 18px;
-      display: flex; flex-direction: column;
-      justify-content: space-between;
-      align-self: stretch;
-    }
-    .slg-brand-header {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 2px;
-    }
-    .slg-avatar {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(255,255,255,.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: .9rem; flex-shrink: 0;
-    }
-    .slg-left-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0; }
-    .slg-left-sub   { font-size: .65rem; color: rgba(255,255,255,.75); margin: 2px 0 0 36px; line-height: 1.3; }
-
-    /* Sign pill */
-    .slg-sign-pill {
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 10px;
-      padding: 8px 12px;
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer; transition: background .15s; margin-top: 12px;
-    }
-    .slg-sign-pill:hover { background: rgba(255,255,255,.2); }
-    .slg-sign-icon-box {
-      font-size: .9rem;
-      background: rgba(255,255,255,.15);
-      width: 26px; height: 26px; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .slg-sign-meta { display: flex; flex-direction: column; line-height: 1.2; }
-    .slg-sign-name   { font-size: .78rem; font-weight: 700; color: #fff; }
-    .slg-sign-action { font-size: .58rem; color: rgba(255,255,255,.65); margin-top: 1px; }
-
-    /* ── MIDDLE COLUMN ── */
-    .slg-middle {
-      padding: 15px 24px;
-      display: flex; flex-direction: column; justify-content: center; gap: 10px;
-      border-right: 1px solid var(--border);
-    }
-    .slg-fortune-row { display: flex; align-items: center; gap: 12px; }
-    .slg-fortune-icon {
-      width: 28px; height: 28px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .82rem; flex-shrink: 0;
-    }
-    .slg-fortune-icon.money  { background: #eaf6ed; }
-    .slg-fortune-icon.love   { background: #fdebee; }
-    .slg-fortune-icon.health { background: #eaf4f9; }
-    .slg-fortune-cat {
-      font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
-      width: 60px; flex-shrink: 0;
-    }
-    .slg-fortune-cat.money  { color: #3b8755; }
-    .slg-fortune-cat.love   { color: #df4759; }
-    .slg-fortune-cat.health { color: #2b7bb9; }
-    .slg-fortune-text { font-size: .78rem; color: var(--text); line-height: 1.4; font-weight: 500; }
-
-    /* ── RIGHT COLUMN ── */
-    .slg-right {
-      display: flex; flex-direction: column;
-      border-left: 1px solid var(--border);
-    }
-    .slg-lucky-box {
-      background: #fcfaff;
-      flex: 1.1; padding: 0 16px;
-      display: flex; align-items: center; gap: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-    .slg-lucky-circle {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--slg-purple); color: #fff;
-      font-size: 1.15rem; font-weight: 900;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .slg-lucky-text-group { display: flex; flex-direction: column; line-height: 1.2; }
-    .slg-lucky-label { font-size: .58rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .07em; color: var(--slg-purple); }
-    .slg-lucky-sub   { font-size: .7rem; color: var(--muted); font-weight: 500; }
-
-    .slg-match-box {
-      flex: 1; padding: 10px 16px;
-      display: flex; flex-direction: column; justify-content: center;
-    }
-    .slg-game-label { font-size: .58rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; color: var(--slg-purple); margin-bottom: 6px; }
-    .slg-game-teams { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
-    .slg-team-item  { display: flex; align-items: center; gap: 4px; }
-    .slg-game-team  { font-size: .75rem; font-weight: 600; color: var(--text); white-space: nowrap; }
-    .slg-score-badge {
-      background: #f1f5f2; padding: 2px 8px; border-radius: 4px;
-      font-size: .72rem; font-weight: 800; color: var(--text); white-space: nowrap;
-    }
-    .slg-game-fun { font-size: .58rem; color: var(--muted); font-style: italic; margin-top: 4px; }
-
-    /* ── MODAL ── */
-    .slg-modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.5);
-      z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px;
-    }
-    .slg-modal {
-      background: var(--bg-mid); border-radius: var(--radius-xl);
-      padding: 24px; max-width: 480px; width: 100%;
-      max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,.3);
-    }
-    .slg-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .slg-modal-title  { font-size: 1.05rem; font-weight: 800; }
-    .slg-modal-close  { font-size: 1.2rem; cursor: pointer; color: var(--muted);
-      background: none; border: none; font-family: var(--font-main); line-height: 1; }
-    .slg-modal-sub    { font-size: .78rem; color: var(--muted); margin-bottom: 18px; }
-    .slg-sign-grid    { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .slg-sign-btn {
-      border: 2px solid var(--border); border-radius: var(--radius-md);
-      background: var(--bg-deep); padding: 10px 6px;
-      cursor: pointer; text-align: center; transition: all .15s;
-      font-family: var(--font-main);
-    }
-    .slg-sign-btn:hover  { border-color: var(--slg-purple); background: var(--slg-purple-light); }
-    .slg-sign-btn.active { border-color: var(--slg-purple); background: var(--slg-purple-light); }
-    .slg-sign-emoji { font-size: 1.3rem; display: block; margin-bottom: 3px; }
-    .slg-sign-btn .slg-sign-name  { font-size: .7rem; font-weight: 700; color: var(--text); display: block; }
-    .slg-sign-dates { font-size: .56rem; color: var(--muted); display: block; margin-top: 1px; }
-
-    /* ── MOBILE ── */
-    @media (max-width: 768px) {
-      .slg-card { grid-template-columns: 1fr; min-height: 0; }
-      .slg-left {
-        flex-direction: row; align-items: center;
-        padding: 10px 14px; gap: 10px;
-        justify-content: flex-start;
-      }
-      .slg-left-sub { display: none; margin: 0; }
-      .slg-sign-pill { margin-top: 0; padding: 6px 10px; flex: 1; justify-content: space-between; }
-      .slg-brand-header { flex-shrink: 0; }
-      .slg-middle { border-right: none; border-bottom: 1px solid var(--border); padding: 12px 14px; }
-      .slg-right { border-left: none; border-top: 1px solid var(--border); flex-direction: row; }
-      .slg-lucky-box  { flex: 1; border-bottom: none; border-right: 1px solid var(--border); padding: 10px 12px; }
-      .slg-match-box  { flex: 1; padding: 10px 12px; }
-      .slg-sign-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .slg-game-teams { flex-wrap: wrap; gap: 4px; }
-      .slg-sign-grid  { gap: 6px; }
-      .slg-sign-btn   { padding: 8px 4px; }
-    }
 
     /* Short/full label toggle — desktop shows full, mobile shows short */
     .ix-lbl-short { display: none; }
 
     @media (max-width: 768px) {
-      .index-grid-top,
-      .index-grid-bottom { grid-template-columns: 1fr; }
+      .index-grid-top { grid-template-columns: 1fr; }
 
       /* Switch to FIFA codes on mobile */
       .ix-lbl-full  { display: none; }
@@ -245,106 +34,6 @@
       .pred-chip .ix-lbl-full  { display: none; }
       .pred-chip .ix-lbl-short { display: inline; }
     }
-
-    @media (max-width: 480px) {
-      /* Hero: 16:9 banner on mobile — image on top, text below */
-      .hero-banner {
-        flex-direction: column !important;
-        min-height: 0 !important;
-      }
-      .hero-img-wrap {
-        display: block !important;
-        width: 100% !important;
-        aspect-ratio: 16 / 9;
-        height: auto !important;
-      }
-      .hero-img-wrap img {
-        width: 100%; height: 100%;
-        object-fit: cover; object-position: center top;
-      }
-      .hero-content {
-        padding: 16px 18px !important;
-        background: linear-gradient(135deg, #1e5c1e, #2d7a2d) !important;
-      }
-      .hero-title { font-size: 1.15rem; }
-      .hero-subtitle { font-size: .76rem; }
-    }
-
-    /* ── HERO BANNER ── */
-    .hero-banner {
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      position: relative;
-      background: #1e5c1e;
-      box-shadow: var(--shadow-md);
-      min-height: 200px;
-      display: flex;
-      align-items: stretch;
-    }
-    .hero-img-wrap {
-      width: 42%;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-    .hero-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top center;
-      display: block;
-    }
-    .hero-content {
-      flex: 1;
-      padding: 22px 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #1e5c1e, #2d7a2d);
-    }
-    .hero-eyebrow {
-      font-size: .65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: rgba(255,255,255,.6);
-    }
-    .hero-title {
-      font-size: 1.45rem;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.15;
-      letter-spacing: -.02em;
-    }
-    .hero-subtitle {
-      font-size: .82rem;
-      color: rgba(255,255,255,.7);
-      line-height: 1.5;
-    }
-    .hero-cta {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-    .hero-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 7px 14px;
-      border-radius: var(--radius-md);
-      font-size: .8rem;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      font-family: var(--font-main);
-      transition: all var(--t-fast);
-      text-decoration: none;
-    }
-    .hero-btn-primary { background: #fff; color: var(--accent-dark); }
-    .hero-btn-primary:hover { background: var(--bg-deep); color: var(--accent-dark); }
-    .hero-btn-ghost { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3); }
-    .hero-btn-ghost:hover { background: rgba(255,255,255,.25); color: #fff; }
 
     /* ── MATCH ROWS ── */
     .match-time-label {
@@ -364,128 +53,68 @@
       font-size: .85rem;
     }
 
-    /* ── TRIVIA ── */
-    .trivia-card {
-      background: var(--bg-mid);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-    .trivia-card-header {
-      background: var(--themed-day-color, var(--accent));
-      padding: 11px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background .3s;
-    }
-    .trivia-header-title {
-      font-size: .72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: rgba(255,255,255,.9);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .trivia-score-pill {
-      font-size: .73rem;
-      font-weight: 600;
-      color: rgba(255,255,255,.75);
-      background: rgba(255,255,255,.2);
-      padding: 3px 10px;
-      border-radius: 99px;
-    }
-    .trivia-done-state {
-      padding: 28px 16px;
-      text-align: center;
-      color: var(--muted);
-    }
-    .trivia-done-icon { font-size: 2rem; margin-bottom: 6px; }
-    .trivia-done-text { font-size: .85rem; }
-
-    /* ── LEADERBOARD ── */
-    .lb-alias-tag {
-      font-size: .6rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: var(--muted);
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      padding: 1px 5px;
-      border-radius: 3px;
-      margin-left: 4px;
-    }
-
-    /* ── ONBOARDING MODAL ───────────────────────────────────── */
+    /* ── ONBOARDING MODAL ── */
     .ob-overlay {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,.45);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     .ob-modal {
-      background: #fff; border-radius: 20px;
-      width: 100%; max-width: 560px;
-      padding: 28px 32px 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      background: var(--bg-mid); border-radius: var(--radius-xl);
+      padding: 28px; max-width: 520px; width: 100%;
       max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
     }
     .ob-progress {
-      display: grid; grid-template-columns: repeat(5,1fr);
-      gap: 6px; margin-bottom: 24px;
+      display: flex; gap: 6px; margin-bottom: 24px;
     }
     .ob-progress-bar {
-      height: 4px; border-radius: 99px;
-      background: #e8f0e8; transition: background .3s;
+      flex: 1; height: 4px; border-radius: 99px;
+      background: var(--border); transition: background .3s;
     }
     .ob-progress-bar.done { background: var(--accent); }
     .ob-eyebrow {
-      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--accent-dark);
-      margin-bottom: 6px;
+      font-size: .65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--muted); margin-bottom: 8px;
     }
-    .ob-title { font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 6px; line-height: 1.15; }
-    .ob-subtitle { font-size: .88rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+    .ob-title {
+      font-size: 1.35rem; font-weight: 900; color: var(--text);
+      line-height: 1.15; margin-bottom: 10px; letter-spacing: -.02em;
+    }
+    .ob-subtitle {
+      font-size: .85rem; color: var(--text-mid); line-height: 1.6; margin-bottom: 18px;
+    }
     .ob-row {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 16px; border-radius: 12px;
-      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: var(--radius-md);
+      margin-bottom: 8px; border: 1.5px solid transparent;
     }
+    .ob-row.green  { background: var(--green-bg);  border-color: var(--green);  }
+    .ob-row.yellow { background: var(--gold-bg);   border-color: var(--gold);   }
+    .ob-row.grey   { background: var(--bg-deep);   border-color: var(--border); }
     .ob-row-pts {
-      font-size: 1.3rem; font-weight: 900; min-width: 32px;
-      text-align: center; flex-shrink: 0;
+      font-size: 1.8rem; font-weight: 900; color: var(--accent);
+      min-width: 36px; text-align: center; flex-shrink: 0;
     }
-    .ob-row-body { flex: 1; }
-    .ob-row-body strong { display: block; font-size: .92rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-    .ob-row-body span { font-size: .78rem; color: var(--muted); }
-    .ob-row-pts-right { font-size: 1.3rem; font-weight: 900; flex-shrink: 0; }
-    .ob-row.green { background: #f0faf0; }
-    .ob-row.green .ob-row-pts { color: #166534; }
-    .ob-row.green .ob-row-pts-right { color: #166534; }
-    .ob-row.yellow { background: #fefce8; }
-    .ob-row.yellow .ob-row-pts { color: #92400e; }
-    .ob-row.yellow .ob-row-pts-right { color: #92400e; }
-    .ob-row.grey { background: #f9fafb; border: 1px solid var(--border); }
-    .ob-row.grey .ob-row-pts { color: var(--muted); }
+    .ob-row-pts-right {
+      font-size: 1.4rem; font-weight: 900; color: var(--accent); margin-left: auto; flex-shrink: 0;
+    }
+    .ob-row-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .ob-row-body strong { font-size: .9rem; font-weight: 700; color: var(--text); }
+    .ob-row-body span   { font-size: .78rem; color: var(--text-mid); }
     .ob-multiplier {
       display: flex; align-items: center; gap: 12px;
-      border: 1px dashed var(--border); border-radius: 10px;
-      padding: 12px 14px; margin-top: 4px;
-      font-size: .82rem; color: var(--muted);
+      padding: 10px 14px; border-radius: var(--radius-md);
+      background: var(--gold-bg); border: 1.5px solid var(--gold);
+      font-size: .82rem; color: var(--text-mid); line-height: 1.4; margin-top: 4px;
     }
     .ob-multiplier-badge {
-      font-size: .88rem; font-weight: 800; color: var(--accent-dark);
-      white-space: nowrap;
+      background: var(--gold); color: #fff; border-radius: 8px;
+      padding: 4px 10px; font-size: 1rem; font-weight: 900; flex-shrink: 0;
     }
     .ob-note {
-      text-align: center; font-size: .78rem; color: var(--muted);
-      margin-top: 8px; padding-top: 12px;
-      border-top: 1px solid var(--border);
+      font-size: .75rem; color: var(--muted); text-align: center;
+      padding: 8px; background: var(--bg-deep); border-radius: var(--radius-sm);
+      margin-top: 8px;
     }
     .ob-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -511,27 +140,6 @@
       transition: background .15s;
     }
     .ob-btn-next:hover { background: var(--accent-dark); }
-    /* Mock quiz in step 3 */
-    .ob-quiz-header {
-      background: var(--accent); color: #fff; border-radius: 10px 10px 0 0;
-      padding: 10px 14px; font-size: .78rem; font-weight: 700;
-    }
-    .ob-quiz-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 14px; }
-    .ob-quiz-q { font-size: .88rem; font-weight: 600; color: var(--text); margin-bottom: 10px; }
-    .ob-quiz-opt {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 12px; border-radius: 8px; margin-bottom: 6px;
-      border: 1.5px solid var(--border); font-size: .82rem;
-      background: #fff; cursor: default;
-    }
-    .ob-quiz-opt.selected { background: #f0faf0; border-color: var(--accent); }
-    .ob-quiz-letter {
-      width: 22px; height: 22px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .7rem; font-weight: 700; flex-shrink: 0;
-      background: var(--bg-deep); color: var(--muted);
-    }
-    .ob-quiz-opt.selected .ob-quiz-letter { background: var(--accent); color: #fff; }
     /* Step 4 colleague grid */
     .ob-colleague-grid {
       display: grid; grid-template-columns: repeat(5, 1fr);
@@ -647,54 +255,8 @@
       <!-- BRACKET PROGRESS BAR — full width -->
       <div data-slot="bracket-bar"></div>
 
-      <!-- CUSTOM BANNER SLOT A — between matches/leaderboard and quiz/jersey -->
+      <!-- CUSTOM BANNER SLOT A -->
       <div id="custom-banner-a"></div>
-
-      <!-- ROW 2: Pub Quiz (left) + Illustration/Jersey (right) -->
-      <div class="index-grid-bottom">
-
-        <!-- LEFT: pub quiz -->
-        <div>
-          <div class="trivia-card" id="trivia-card">
-            <div class="trivia-card-header">
-              <div class="trivia-header-title">🎯 PUB KVIZ <span id="trivia-day-label" style="font-size:11px;font-weight:400;opacity:.6"></span></div>
-              <div class="trivia-score-pill" id="trivia-score">Nalagam...</div>
-            </div>
-            <div id="trivia-slot">
-              <div class="no-matches">Nalagam vprašanja...</div>
-            </div>
-            <div class="trivia-steps" id="trivia-steps" style="display:none">
-              <div class="trivia-step" id="step1">1</div>
-              <div class="trivia-step" id="step2">2</div>
-              <div class="trivia-step" id="step3">3</div>
-              <span style="font-size:11px;color:var(--muted);margin-left:6px" id="step-text"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT: jersey on national day, AI hero otherwise -->
-        <div id="top-left-slot">
-          <div class="hero-banner" id="hero-banner">
-            <div class="hero-img-wrap" id="hero-img-wrap"></div>
-            <div class="hero-content">
-              <div class="hero-eyebrow">⚽ FIFA World Cup 2026</div>
-              <div class="hero-title" id="hero-title">Napovednik 2026</div>
-              <div class="hero-subtitle" id="hero-subtitle">Maksimiziramo sinergijo športnega duha in strateških napovedi z namenom doseganja ključnih kazalnikov uspešnosti (KPI) na področju pisarniškega navijanja.</div>
-              <div class="hero-cta">
-                <a href="predictions.html" class="hero-btn hero-btn-primary">Optimiziraj napovedi →</a>
-                <a href="leaderboard.html" class="hero-btn hero-btn-ghost">Pregled KPI-jev</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ŠLOGARICA — full width, last row -->
-      <div id="slogarica-wrap"></div>
-
-      <!-- CUSTOM BANNER SLOT B — below šlogarica -->
-      <div id="custom-banner-b"></div>
 
     </div>
   </div>
@@ -711,7 +273,6 @@
         <div class="ob-progress-bar" id="ob-p2"></div>
         <div class="ob-progress-bar" id="ob-p3"></div>
         <div class="ob-progress-bar" id="ob-p4"></div>
-        <div class="ob-progress-bar" id="ob-p5"></div>
       </div>
       <div id="ob-step-content"></div>
     </div>
@@ -737,36 +298,14 @@
     document.getElementById('nav-name').textContent =
       NP.getAlias(profile, state, 'full');
     var sl = document.getElementById('navbar-selektor-link'); if (NP.isAdmin() && sl) sl.style.display = 'flex';
-    // Avatar: flag emoji on national day, initials otherwise
-    const avatarEl = document.getElementById('nav-avatar');
-    if (state.isThemedDay && state.themedDay?.theme_flag_iso2) {
-      avatarEl.textContent = _flagEmoji(state.themedDay.theme_flag_iso2);
-    } else {
-      avatarEl.textContent = profile.display_name.charAt(0).toUpperCase();
-    }
+    document.getElementById('nav-avatar').textContent = profile.display_name.charAt(0).toUpperCase();
 
 
     /* ── PLUGINS ────────────────────────────────────────── */
     await NP.applyPlugins();
 
-    /* ── TOP-LEFT SLOT — jersey or hero ─────────────────── */
-    if (state.isThemedDay && state.plugins.jersey_preview) {
-      // Jersey module rendered by plugins.js into [data-slot="jersey-preview"]
-      // Replace the hero banner with the jersey slot
-      document.getElementById('hero-banner').outerHTML =
-        '<div data-slot="jersey-preview"></div>';
-      // plugins.js already ran — re-apply just the jersey plugin
-      NP.plugins_applyJerseyPreview?.(state, profile);
-    } else {
-      // AI hero banner — load image from app_config
-      await _loadHeroBanner(state);
-    }
-
     /* ── TODAY'S MATCHES ────────────────────────────────── */
     await _loadNextMatches(profile, state);
-
-    /* ── PUB QUIZ ───────────────────────────────────────── */
-    await _loadTrivia(profile, state);
 
     /* ── MINI LEADERBOARD ───────────────────────────────── */
     await _loadLeaderboard(profile, state);
@@ -786,39 +325,7 @@
       observer.observe(_annSlot, { childList: true });
     }
 
-    /* ── ŠLOGARICA ──────────────────────────────────────── */
-    _loadSlogarica();
-
   })();
-
-  /* ══════════════════════════════════════════════════════
-     HERO BANNER
-     ══════════════════════════════════════════════════════ */
-  async function _loadHeroBanner(state) {
-    // Load hero image URL from app_config
-    const { data: cfg } = await NP.db
-      .from('app_config')
-      .select('value')
-      .eq('key', 'hero_image_url')
-      .maybeSingle();
-
-    const imgWrap = document.getElementById('hero-img-wrap');
-    if (cfg?.value) {
-      const img = document.createElement('img');
-      img.src = cfg.value;
-      img.alt = 'World Cup 2026';
-      imgWrap.appendChild(img);
-    } else {
-      const url = `https://brandsandfilms.com/wp-content/uploads/2026/06/ai13a.jpg`;
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = 'World Cup 2026';
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
-      imgWrap.appendChild(img);
-    }
-
-    // Hero title/subtitle are fixed in HTML — no dynamic overwrite
-  }
 
   /* ══════════════════════════════════════════════════════
      TODAY'S MATCHES
@@ -829,7 +336,7 @@
     const months = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
     const mult = state?.multiplier ?? 1;
 
-    const TOTAL = 6;
+    const TOTAL = 10;
     const MAX_PAST = 3;
     const from = new Date(now - 2 * 60 * 60 * 1000);
 
@@ -972,271 +479,6 @@
   }
 
   /* ══════════════════════════════════════════════════════
-     PUB QUIZ
-     ══════════════════════════════════════════════════════ */
-  async function _loadTrivia(profile, state) {
-    const slot      = document.getElementById('trivia-slot');
-    const scoreEl   = document.getElementById('trivia-score');
-    const stepsEl   = document.getElementById('trivia-steps');
-    const dayLabel  = document.getElementById('trivia-day-label');
-
-    // Find today's trivia questions — use LOCAL date not UTC
-    const _now = new Date();
-    const today = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
-    const { data: questions } = await NP.db
-      .from('trivia_questions')
-      .select('id, question_date, slot, type, photo_url, question_text, correct_answer, option_b, option_c, fun_fact, is_published')
-      .eq('question_date', today)
-      .eq('is_published', true)
-      .order('slot');
-
-    if (!questions?.length) {
-      slot.innerHTML = '<div class="trivia-done-state"><div class="trivia-done-icon">📅</div><div class="trivia-done-text">Danes ni pub quiz vprašanj.</div></div>';
-      scoreEl.textContent = '—';
-      return;
-    }
-
-    dayLabel.textContent = `— Dan ${today.slice(8,10)}. ${today.slice(5,7)}.`;
-
-    // Fetch already-answered questions for today
-    const qIds = questions.map(q => q.id);
-    const { data: answers } = await NP.db
-      .from('trivia_answers')
-      .select('question_id, is_correct, chosen_answer')
-      .eq('user_id', profile.id)
-      .in('question_id', qIds);
-
-    const answerMap = {};
-    (answers ?? []).forEach(a => { answerMap[a.question_id] = a; });
-
-    const answered    = answers?.length ?? 0;
-    const correct     = answers?.filter(a => a.is_correct).length ?? 0;
-    scoreEl.textContent = `Danes: ${correct}/${answered || questions.length}`;
-
-    // Show steps
-    stepsEl.style.display = 'flex';
-    questions.forEach((q, i) => {
-      const stepEl = document.getElementById(`step${i+1}`);
-      if (!stepEl) return;
-      const ans = answerMap[q.id];
-      if (ans) {
-        stepEl.className = `trivia-step ${ans.is_correct ? 'correct' : 'wrong'}`;
-        stepEl.textContent = ans.is_correct ? '✓' : '✗';
-      } else {
-        stepEl.className = 'trivia-step';
-      }
-    });
-
-    // Determine which question to show
-    // Show first unanswered, or completion state
-    const firstUnanswered = questions.find(q => !answerMap[q.id]);
-
-    if (!firstUnanswered) {
-      // All answered
-      const fem = profile.gender === 'f';
-      slot.innerHTML = `
-        <div class="trivia-done-state">
-          <div class="trivia-done-icon">${correct === 3 ? '🎉' : correct === 2 ? '👍' : '💪'}</div>
-          <div class="trivia-done-text">
-            Danes si ${fem ? 'odgovorila' : 'odgovoril'} na vsa vprašanja.<br>
-            <strong>${correct}/3 pravilnih</strong>
-          </div>
-        </div>`;
-      document.getElementById('step-text').textContent = `Končano! ${correct}/3 🎉`;
-      return;
-    }
-
-    // Activate the current step
-    const currentIdx = questions.indexOf(firstUnanswered);
-    const stepEl = document.getElementById(`step${currentIdx+1}`);
-    if (stepEl) {
-      stepEl.className = 'trivia-step active';
-      stepEl.textContent = currentIdx + 1;
-    }
-    document.getElementById('step-text').textContent =
-      `Odgovori na ${currentIdx+1}. vprašanje`;
-
-    _renderTriviaQuestion(firstUnanswered, currentIdx, questions, profile, state, answerMap);
-  }
-
-  // Store trivia state in window vars — avoids passing JSON through onclick attributes
-  window._triviaQuestions = [];
-  window._triviaAnswerMap = {};
-
-  function _renderTriviaQuestion(q, idx, allQuestions, profile, state, answerMap) {
-    // Store in window so onclick handlers can access safely
-    window._triviaQuestions = allQuestions;
-    window._triviaAnswerMap = answerMap;
-
-    const slot = document.getElementById('trivia-slot');
-
-    let topHtml = '';
-    if (idx === 0 && q.type === 'photo') {
-      topHtml = `
-        <div class="trivia-photo-frame">
-          <div class="trivia-photo-bg" style="background-image:url('${q.photo_url}')"></div>
-          <div class="trivia-photo-fg" style="background-image:url('${q.photo_url}')"></div>
-        </div>`;
-    } else if (idx === 0 && q.type !== 'photo') {
-      const jerseyColor = state.themedDay?.jersey_name_color ?? '#449d44';
-      topHtml = `
-        <div class="trivia-silhouette" style="--jersey-color:${jerseyColor}">
-          <div class="trivia-sil-bg"></div>
-          <div class="trivia-sil-person">
-            <div class="trivia-sil-head"></div>
-            <div class="trivia-sil-body"></div>
-            <div class="trivia-sil-shorts"></div>
-          </div>
-          <div class="trivia-sil-fade"></div>
-        </div>`;
-    } else if (idx === 1) {
-      const q2img = q.photo_url || 'https://brandsandfilms.com/wp-content/uploads/2026/06/questions.jpg';
-      topHtml = `
-        <div class="trivia-photo-frame">
-          <div class="trivia-photo-bg" style="background-image:url('${q2img}')"></div>
-          <div class="trivia-photo-fg" style="background-image:url('${q2img}');opacity:.7"></div>
-        </div>`;
-    } else {
-      const q3img = q.photo_url || 'https://brandsandfilms.com/wp-content/uploads/2026/06/yes-no.jpg';
-      topHtml = `
-        <div class="trivia-photo-frame">
-          <div class="trivia-photo-bg" style="background-image:url('${q3img}')"></div>
-          <div class="trivia-photo-fg" style="background-image:url('${q3img}');opacity:.7"></div>
-        </div>`;
-    }
-
-    let answerHtml = '';
-    if (q.type === 'truefalse') {
-      answerHtml = `
-        <div class="tf-opts">
-          <button class="tf-btn" onclick="_submitTriviaAnswer(${q.id}, 'true',  ${idx})">RESNICA</button>
-          <button class="tf-btn" onclick="_submitTriviaAnswer(${q.id}, 'false', ${idx})">LAŽ</button>
-        </div>`;
-    } else {
-      const opts = [q.correct_answer, q.option_b, q.option_c].filter(Boolean);
-      const shuffled = [...opts].sort(() => Math.random() - 0.5);
-      // Store shuffled options in window for safe access from onclick
-      window._triviaShuffled = shuffled;
-      answerHtml = `
-        <div class="trivia-opts">
-          ${shuffled.map((opt, i) => `
-            <button class="trivia-opt" onclick="_submitTriviaAnswer(${q.id}, window._triviaShuffled[${i}], ${idx})">
-              <div class="trivia-opt-letter">${String.fromCharCode(65+i)}</div>
-              ${opt}
-            </button>`).join('')}
-        </div>`;
-    }
-
-    slot.innerHTML = `
-      <div id="q-wrap-${idx}" class="slide-in">
-        ${topHtml}
-        <div class="trivia-q-text">${q.question_text}</div>
-        ${answerHtml}
-      </div>`;
-  }
-
-  async function _submitTriviaAnswer(questionId, answerGiven, idx) {
-    const profile    = NP.getUserProfile();
-    const allQuestions = window._triviaQuestions;
-    const answerMap  = window._triviaAnswerMap;
-    const q          = allQuestions[idx];
-    const correct_answer = q.correct_answer;
-
-    // Determine if correct
-    const is_correct = String(answerGiven).toLowerCase() === String(correct_answer).toLowerCase();
-
-    // Disable all buttons immediately
-    document.querySelectorAll('.trivia-opt, .tf-btn').forEach(btn => {
-      btn.onclick = null;
-      btn.classList.add('dim');
-    });
-
-    // Highlight chosen + correct
-    document.querySelectorAll('.trivia-opt, .tf-btn').forEach(btn => {
-      const btnVal = btn.textContent.trim();
-      // For MC: compare button text content to answer value
-      const btnText = btn.querySelector('.trivia-opt-letter')
-        ? btn.textContent.replace(btn.querySelector('.trivia-opt-letter').textContent, '').trim()
-        : btnVal;
-      const isChosen  = q.type === 'truefalse'
-        ? (answerGiven === 'true' ? btnVal === 'RESNICA' : btnVal === 'LAŽ')
-        : btnText === answerGiven;
-      const isCorrectBtn = q.type === 'truefalse'
-        ? (correct_answer === 'true' ? btnVal === 'RESNICA' : btnVal === 'LAŽ')
-        : btnText === correct_answer;
-
-      if (isChosen)      { btn.classList.remove('dim'); btn.classList.add(is_correct ? 'correct' : 'wrong'); }
-      if (isCorrectBtn && !is_correct) { btn.classList.remove('dim'); btn.classList.add('correct'); }
-    });
-
-    // Save answer to DB
-    await NP.db.from('trivia_answers').upsert({
-      user_id:     profile.id,
-      question_id: questionId,
-      chosen_answer: String(answerGiven),
-      is_correct,
-      answered_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,question_id' });
-
-    // Update local answerMap
-    answerMap[questionId] = { is_correct, chosen_answer: answerGiven };
-    window._triviaAnswerMap = answerMap;
-    const correct = Object.values(answerMap).filter(a => a.is_correct).length;
-    const total   = Object.keys(answerMap).length;
-    document.getElementById('trivia-score').textContent = `Danes: ${correct}/${total}`;
-
-    // Update step indicator
-    const stepEl = document.getElementById(`step${idx+1}`);
-    if (stepEl) {
-      stepEl.className = `trivia-step ${is_correct ? 'correct' : 'wrong'}`;
-      stepEl.textContent = is_correct ? '✓' : '✗';
-    }
-
-    // Show fun fact
-    const wrap = document.getElementById(`q-wrap-${idx}`);
-    if (wrap && q.fun_fact) {
-      const ff = document.createElement('div');
-      ff.className = 'fun-fact';
-      ff.innerHTML = `
-        <div class="fun-fact-header">
-          💡 Zanimivost
-          <div class="fun-fact-pts ${is_correct ? 'correct' : 'wrong'}">
-            ${is_correct ? '+1 točka' : '0 točk'}
-          </div>
-        </div>
-        <div class="fun-fact-body">${q.fun_fact}</div>`;
-      wrap.appendChild(ff);
-    }
-
-    // Continue button if not last question
-    if (idx < 2) {
-      const cont = document.createElement('div');
-      cont.className = 'trivia-continue';
-      const nextBtn = document.createElement('button');
-      nextBtn.className = 'btn btn-primary';
-      nextBtn.style.width = '100%';
-      nextBtn.textContent = 'Nadaljuj →';
-      nextBtn.onclick = () => _showNextQuestion(idx + 1);
-      cont.appendChild(nextBtn);
-      wrap.appendChild(cont);
-    } else {
-      // Last question — show completion
-      document.getElementById('step-text').textContent = `Končano! ${correct}/3 🎉`;
-    }
-  }
-
-  function _showNextQuestion(nextIdx) {
-    const profile      = NP.getUserProfile();
-    const state        = window._npState;
-    const allQuestions = window._triviaQuestions;
-    const answerMap    = window._triviaAnswerMap;
-    _renderTriviaQuestion(allQuestions[nextIdx], nextIdx, allQuestions, profile, state, answerMap);
-    const stepEl = document.getElementById(`step${nextIdx+1}`);
-    if (stepEl) { stepEl.className = 'trivia-step active'; stepEl.textContent = nextIdx + 1; }
-    document.getElementById('step-text').textContent = `Odgovori na ${nextIdx+1}. vprašanje`;
-  }
-
-  /* ══════════════════════════════════════════════════════
      MINI LEADERBOARD
      ══════════════════════════════════════════════════════ */
   async function _loadLeaderboard(profile, state) {
@@ -1246,7 +488,7 @@
       .from('leaderboard')
       .select('user_id, rank, display_name, aliases, total_points, delta, flag_iso2')
       .order('rank')
-      .limit(8);
+      .limit(20);
 
     if (error || !data?.length) {
       list.innerHTML = '<div class="no-matches">Lestvica ni na voljo.</div>';
@@ -1288,35 +530,6 @@
         </div>`;
     });
 
-    // If user not in top 8, add separator + their row
-    if (!myEntry) {
-      const { data: myRow } = await NP.db
-        .from('leaderboard')
-        .select('user_id, rank, display_name, aliases, total_points, delta, flag_iso2')
-        .eq('user_id', profile.id)
-        .maybeSingle();
-
-      if (myRow) {
-        const delta    = myRow.delta ?? 0;
-        const deltaCls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
-        const deltaText = delta > 0 ? `▲${delta}` : delta < 0 ? `▼${Math.abs(delta)}` : '—';
-        html += `
-          <div style="height:1px;background:var(--border);margin:0 16px"></div>
-          <div class="lb-row me">
-            <div class="lb-rank">${myRow.rank}</div>
-            <img src="${NP.flagUrl(myRow.flag_iso2, 40)}"
-                 class="lb-avatar"
-                 onerror="this.style.visibility='hidden'" alt="">
-            <div class="lb-name" style="color:var(--accent-dark);font-weight:600">
-              ${myRow.display_name}
-              <span class="lb-alias-tag">ti</span>
-            </div>
-            <div class="lb-pts" style="color:var(--accent-dark)">${myRow.total_points}</div>
-            <div class="lb-delta ${deltaCls}">${deltaText}</div>
-          </div>`;
-      }
-    }
-
     list.innerHTML = html;
   }
 
@@ -1353,7 +566,7 @@
   }
 
   function _obProgress(step) {
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 4; i++) {
       const el = document.getElementById('ob-p' + i); if(el) el.classList.toggle('done', i <= step);
     }
   }
@@ -1363,15 +576,14 @@
     const el = document.getElementById('ob-step-content');
     if (_obStep === 1) el.innerHTML = _obStep1();
     else if (_obStep === 2) el.innerHTML = _obStep2();
-    else if (_obStep === 3) el.innerHTML = _obStep3();
-    else if (_obStep === 4) el.innerHTML = await _obStep4();
-    else if (_obStep === 5) el.innerHTML = _obStep5();
+    else if (_obStep === 3) el.innerHTML = await _obStep3();
+    else if (_obStep === 4) el.innerHTML = _obStep4();
 
     // Attach button listeners — no global scope needed
     el.querySelector('[data-ob="back"]')?.addEventListener('click', () => { _obStep--; _obRender(); });
     el.querySelector('[data-ob="skip"]')?.addEventListener('click', () => _obDismiss());
     el.querySelector('[data-ob="next"]')?.addEventListener('click', () => {
-      if (_obStep < 5) { _obStep++; _obRender(); }
+      if (_obStep < 4) { _obStep++; _obRender(); }
       else _obFinish();
     });
     el.querySelectorAll('[data-ob-rival]').forEach(btn =>
@@ -1386,18 +598,18 @@
     const back = step > 1
       ? `<button class="ob-btn-back" onclick="_obStep--;_obRender()">← Nazaj</button>`
       : `<div></div>`;
-    const skip = step < 5
+    const skip = step < 4
       ? `<button class="ob-btn-skip" onclick="_obDismiss()">Preskoči</button>`
       : '';
-    const nextLabel = step < 5 ? 'Naprej →'
+    const nextLabel = step < 4 ? 'Naprej →'
       : (_obRivalId ? `Začni z ${_obRivalName} →` : 'Začni igro →');
-    const next = `<button class="ob-btn-next" id="ob-next-btn" onclick="${step < 5 ? '_obStep++;_obRender()' : '_obFinish()'}">${nextLabel}</button>`;
+    const next = `<button class="ob-btn-next" id="ob-next-btn" onclick="${step < 4 ? '_obStep++;_obRender()' : '_obFinish()'}">${nextLabel}</button>`;
     return `<div class="ob-footer">${back}<div style="display:flex;align-items:center;margin-left:auto">${skip}${next}</div></div>`;
   }
 
   function _obStep1() {
     return `
-      <div class="ob-eyebrow">Korak 1 / 5 · Kako deluje</div>
+      <div class="ob-eyebrow">Korak 1 / 4 · Kako deluje</div>
       <div class="ob-title">Napoveduj izide, zbiraj točke</div>
       <div class="ob-subtitle">Pred vsako tekmo napoveš končni izid. Pazi: napoved se zaklene eno uro pred začetkom tekme. Točke dobiš takole:</div>
       <div class="ob-row green">
@@ -1421,7 +633,7 @@
 
   function _obStep2() {
     return `
-      <div class="ob-eyebrow">Korak 2 / 5 · Bonus napovedi</div>
+      <div class="ob-eyebrow">Korak 2 / 4 · Bonus napovedi</div>
       <div class="ob-title">Dve veliki napovedi za bonus</div>
       <div class="ob-subtitle">Pred začetkom prvenstva napovej zmagovalca in najboljšega strelca. Če zadeneš, prejmeš bonus točke.</div>
       <div class="ob-row green">
@@ -1438,33 +650,12 @@
       ${_obFooter(2)}`;
   }
 
-  function _obStep3() {
-    return `
-      <div class="ob-eyebrow">Korak 3 / 5 · Trivia</div>
-      <div class="ob-title">Vsak dan trije izzivi</div>
-      <div class="ob-subtitle">Poleg napovedi te vsak dan čaka <strong>pub kviz</strong>: 3 vprašanja o nogometu, legendah in zgodovini. Pravilni odgovori prinesejo dodatne točke v skupni seštevek.</div>
-      <div class="ob-quiz-header">● PUB KVIZ · DANES &nbsp; 0/3</div>
-      <div class="ob-quiz-body">
-        <div class="ob-quiz-q">Kdo je zabil zlati gol v finalu EURO 2000?</div>
-        <div class="ob-quiz-opt selected">
-          <div class="ob-quiz-letter">A</div><span>David Trezeguet</span>
-        </div>
-        <div class="ob-quiz-opt">
-          <div class="ob-quiz-letter">B</div><span>Zinedine Zidane</span>
-        </div>
-        <div class="ob-quiz-opt">
-          <div class="ob-quiz-letter">C</div><span>Thierry Henry</span>
-        </div>
-      </div>
-      <div class="ob-note">Trivia točke prinašajo posebne tedenske nagrade</div>
-      ${_obFooter(3)}`;
-  }
 
 
   let _obCountryIso = null;
   let _obTeams = [];
 
-  async function _obStep4() {
+  async function _obStep3() {
     if (!_obTeams.length) {
       const { data } = await NP.db.from('teams').select('id, name_sl, flag_code').order('name_sl');
       _obTeams = data || [];
@@ -1486,14 +677,14 @@
       ? 'Izberi reprezentanco, za katero boš stiskala pesti na letošnjem prvenstvu.'
       : 'Izberi reprezentanco, za katero boš stiskal pesti na letošnjem prvenstvu.';
     return `
-      <div class="ob-eyebrow">Korak 4 / 5 · Navijaški kotiček</div>
+      <div class="ob-eyebrow">Korak 3 / 4 · Navijaški kotiček</div>
       <div class="ob-title">Za koga bije tvoje srce?</div>
       <div class="ob-subtitle">${subtitle}</div>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-height:240px;overflow-y:auto;margin-bottom:12px" id="ob-country-grid">
         ${grid}
       </div>
       <div style="font-size:.75rem;color:var(--muted);text-align:center">Izbiro reprezentance kadarkoli kasneje spremeniš v svojem profilu.</div>
-      ${_obFooter(4)}`;
+      ${_obFooter(3)}`;
   }
 
   function _obSelectCountry(iso, el) {
@@ -1505,17 +696,17 @@
     });
   }
 
-  function _obStep5() {
+  function _obStep4() {
     const chips = _obUsers.map(u => {
       const sel = u.id === _obRivalId;
       return `<div class="ob-colleague-chip ${sel?'selected':''}" data-ob-rival="${u.id}" data-ob-name="${u.display_name}">${u.display_name}</div>`;
     }).join('');
     return `
-      <div class="ob-eyebrow">Korak 5 / 5 · Izberi tekmeca</div>
+      <div class="ob-eyebrow">Korak 4 / 4 · Izberi tekmeca</div>
       <div class="ob-title">${_obProfile.gender === 'f' ? 'Koga boš premagala?' : 'Koga boš premagal?'}</div>
       <div class="ob-subtitle">Izberi enega sodelavca ali sodelavko za osebni dvoboj čez prvenstvo. Ves čas vidiš, kdo vodi. Lahko ga/jo kasneje zamenjaš.</div>
       <div class="ob-colleague-grid">${chips}</div>
-      ${_obFooter(5)}`;
+      ${_obFooter(4)}`;
   }
 
   function _obSelectRival(id, name, el) {
@@ -1555,227 +746,6 @@
   window._obSelectRival  = _obSelectRival;
   window._obSelectCountry= _obSelectCountry;
 
-  /* ══════════════════════════════════════════════════════════
-     ŠLOGARICA
-     ══════════════════════════════════════════════════════════ */
-
-  const SIGNS = [
-    { key:'oven',     emoji:'♈', name:'Oven',      dates:'21.3 – 19.4' },
-    { key:'bik',      emoji:'♉', name:'Bik',       dates:'20.4 – 20.5' },
-    { key:'dvojcka',  emoji:'♊', name:'Dvojčka',   dates:'21.5 – 20.6' },
-    { key:'rak',      emoji:'♋', name:'Rak',       dates:'21.6 – 22.7' },
-    { key:'lev',      emoji:'♌', name:'Lev',       dates:'23.7 – 22.8' },
-    { key:'devica',   emoji:'♍', name:'Devica',    dates:'23.8 – 22.9' },
-    { key:'tehtnica', emoji:'♎', name:'Tehtnica',  dates:'23.9 – 22.10' },
-    { key:'skorpijon',emoji:'♏', name:'Škorpijon', dates:'23.10 – 21.11' },
-    { key:'strelec',  emoji:'♐', name:'Strelec',   dates:'22.11 – 21.12' },
-    { key:'kozorog',  emoji:'♑', name:'Kozorog',   dates:'22.12 – 19.1' },
-    { key:'vodnar',   emoji:'♒', name:'Vodnar',    dates:'20.1 – 18.2' },
-    { key:'ribi',     emoji:'♓', name:'Ribi',      dates:'19.2 – 20.3' },
-  ];
-
-  function _slgRng(seed) {
-    return function() {
-      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  function _slgDateSeed() {
-    var d = new Date();
-    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-  }
-  function _slgUserSeed(userId) {
-    // Turn userId string into a numeric seed
-    var h = 0;
-    var s = String(userId || 'anon');
-    for (var i = 0; i < s.length; i++) {
-      h = Math.imul(31, h) + s.charCodeAt(i) | 0;
-    }
-    return Math.abs(h);
-  }
-
-  function _slgLuckyNumber(userId) {
-    var d = new Date();
-    if (d.getDate() === 6 || d.getDate() === 7) return 67;
-    var userSeed = _slgUserSeed(userId);
-    var rng = _slgRng(_slgDateSeed() * 7 + userSeed);
-    return Math.floor(rng() * 100) + 1;
-  }
-  function _slgPick(arr, seed) {
-    if (!arr || !arr.length) return null;
-    var rng = _slgRng(seed);
-    return arr[Math.floor(rng() * arr.length)];
-  }
-
-  var _slgSentences = null;
-  var _slgUserId = null;
-
-  async function _loadSlogarica() {
-    var wrap = document.getElementById('slogarica-wrap');
-    if (!wrap) return;
-    _slgUserId = (typeof profile !== 'undefined' && profile && profile.id) ? profile.id : 'anon';
-    var storageKey = 'np_slogarica_sign_' + _slgUserId;
-    var savedSign = localStorage.getItem(storageKey);
-    if (!savedSign) {
-      _renderSlgInvite(wrap);
-    } else {
-      var sign = SIGNS.find(function(s) { return s.key === savedSign; }) || SIGNS[0];
-      await _renderSlgRevealed(wrap, sign);
-    }
-  }
-
-  function _renderSlgInvite(wrap) {
-    var preview = SIGNS.slice(0, 5).map(function(s) {
-      return '<span class="slg-invite-sign">' + s.emoji + '</span>';
-    }).join('');
-    wrap.innerHTML = '<div class="slg-wrap"><div class="slg-invite">'
-      + '<span class="slg-invite-parrot">🔮</span>'
-      + '<div class="slg-invite-body">'
-      +   '<div class="slg-invite-title">Šlogarica ti je pripravila napoved</div>'
-      +   '<div class="slg-invite-sub">Izberi svoje astrološko znamenje in odkrij nasvet za denar, ljubezen in zdravje — ter današnjo srečno številko.</div>'
-      + '</div>'
-      + '<div class="slg-invite-signs">' + preview + '<span class="slg-invite-sign" style="opacity:.5">+7</span></div>'
-      + '<button class="slg-invite-btn" onclick="_slgOpenModal()">Izberi znamenje →</button>'
-      + '</div></div>';
-  }
-
-  function _slgOpenModal(currentKey) {
-    var existing = document.getElementById('slg-modal');
-    if (existing) existing.remove();
-    var modal = document.createElement('div');
-    modal.className = 'slg-modal-overlay';
-    modal.id = 'slg-modal';
-    var btns = SIGNS.map(function(s) {
-      var active = currentKey === s.key ? ' active' : '';
-      return '<button class="slg-sign-btn' + active + '" onclick="_slgPickSign(\'' + s.key + '\')">'
-        + '<span class="slg-sign-emoji">' + s.emoji + '</span>'
-        + '<span class="slg-sign-name">' + s.name + '</span>'
-        + '<span class="slg-sign-dates">' + s.dates + '</span>'
-        + '</button>';
-    }).join('');
-    modal.innerHTML = '<div class="slg-modal">'
-      + '<div class="slg-modal-header">'
-      +   '<div class="slg-modal-title">Izberi svoje astrološko znamenje</div>'
-      +   '<button class="slg-modal-close" onclick="_slgCloseModal()">✕</button>'
-      + '</div>'
-      + '<div class="slg-modal-sub">Šlogarica ti vsak dan zašlogira nasvet za denar, ljubezen in zdravje.</div>'
-      + '<div class="slg-sign-grid">' + btns + '</div>'
-      + '</div>';
-    modal.addEventListener('click', function(e) { if (e.target === modal) _slgCloseModal(); });
-    document.body.appendChild(modal);
-  }
-
-  function _slgCloseModal() {
-    var m = document.getElementById('slg-modal');
-    if (m) m.remove();
-  }
-
-  async function _slgPickSign(key) {
-    var storageKey = 'np_slogarica_sign_' + (_slgUserId || 'anon');
-    localStorage.setItem(storageKey, key);
-    _slgCloseModal();
-    var wrap = document.getElementById('slogarica-wrap');
-    var sign = SIGNS.find(function(s) { return s.key === key; });
-    await _renderSlgRevealed(wrap, sign);
-  }
-
-  async function _renderSlgRevealed(wrap, sign) {
-    if (!_slgSentences) {
-      var res = await NP.db.from('horoscopes').select('category, text');
-      _slgSentences = res.data || [];
-    }
-    var byCat = function(cat) { return _slgSentences.filter(function(s) { return s.category === cat; }); };
-    var signIdx = SIGNS.findIndex(function(s) { return s.key === sign.key; });
-    var ds = _slgDateSeed();
-    var us = _slgUserSeed(_slgUserId);
-    var money  = _slgPick(byCat('denar'),    ds * 3  + signIdx * 97  + us + 1);
-    var love   = _slgPick(byCat('ljubezen'), ds * 5  + signIdx * 113 + us + 2);
-    var health = _slgPick(byCat('zdravje'),  ds * 7  + signIdx * 131 + us + 3);
-    var lucky  = _slgLuckyNumber(_slgUserId);
-
-    var mres = await NP.db
-      .from('matches')
-      .select('id, kickoff_at, home_team:teams!matches_home_team_id_fkey(name_sl, flag_code), away_team:teams!matches_away_team_id_fkey(name_sl, flag_code)')
-      .gte('kickoff_at', new Date().toISOString())
-      .is('home_score_90', null)
-      .order('kickoff_at')
-      .limit(1);
-
-    var gameHtml = '';
-    var m = mres.data && mres.data[0];
-    if (m) {
-      var rng = _slgRng(ds * 11 + signIdx * 17 + us);
-      var hs = Math.floor(rng() * 4);
-      var as = Math.floor(rng() * 4);
-      var hf = m.home_team && m.home_team.flag_code ? '<img src="' + NP.flagUrl(m.home_team.flag_code) + '" style="width:16px;height:11px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0">' : '';
-      var af = m.away_team && m.away_team.flag_code ? '<img src="' + NP.flagUrl(m.away_team.flag_code) + '" style="width:16px;height:11px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0">' : '';
-      gameHtml = '<div class="slg-game-label">Šlogaričina napoved</div>'
-        + '<div class="slg-game-teams">'
-        +   '<div class="slg-team-item">' + hf + '<span class="slg-game-team">' + (m.home_team && m.home_team.name_sl || '?') + '</span></div>'
-        +   '<span class="slg-score-badge">' + hs + ' : ' + as + '</span>'
-        +   '<div class="slg-team-item"><span class="slg-game-team">' + (m.away_team && m.away_team.name_sl || '?') + '</span>' + af + '</div>'
-        + '</div>'
-        + '<div class="slg-game-fun">🔮 zgolj za zabavo · ne šteje za točke</div>';
-    }
-
-    var today = new Date();
-    var months = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
-    var days = ['ned','pon','tor','sre','čet','pet','sob'];
-    var dateStr = days[today.getDay()] + ', ' + today.getDate() + '. ' + months[today.getMonth()];
-
-    wrap.innerHTML = '<div class="slg-wrap"><div class="slg-card">'
-      // LEFT
-      + '<div class="slg-left">'
-      +   '<div>'
-      +     '<div class="slg-brand-header">'
-      +       '<div class="slg-avatar">🦜</div>'
-      +       '<span class="slg-left-title">Šlogarica</span>'
-      +     '</div>'
-      +     '<div class="slg-left-sub">Tvoja nogometna napoved za danes · ' + dateStr + '</div>'
-      +   '</div>'
-      +   '<div class="slg-sign-pill" onclick="_slgOpenModal(\'' + sign.key + '\')">'
-      +     '<div class="slg-sign-icon-box">' + sign.emoji + '</div>'
-      +     '<div class="slg-sign-meta">'
-      +       '<span class="slg-sign-name">' + sign.name + '</span>'
-      +       '<span class="slg-sign-action">spremeni →</span>'
-      +     '</div>'
-      +   '</div>'
-      + '</div>'
-      // MIDDLE
-      + '<div class="slg-middle">'
-      +   '<div class="slg-fortune-row"><div class="slg-fortune-icon money">💰</div><span class="slg-fortune-cat money">Denar</span><span class="slg-fortune-text">' + (money && money.text || '—') + '</span></div>'
-      +   '<div class="slg-fortune-row"><div class="slg-fortune-icon love">❤️</div><span class="slg-fortune-cat love">Ljubezen</span><span class="slg-fortune-text">' + (love && love.text || '—') + '</span></div>'
-      +   '<div class="slg-fortune-row"><div class="slg-fortune-icon health">🩺</div><span class="slg-fortune-cat health">Zdravje</span><span class="slg-fortune-text">' + (health && health.text || '—') + '</span></div>'
-      + '</div>'
-      // RIGHT
-      + '<div class="slg-right">'
-      +   '<div class="slg-lucky-box">'
-      +     '<div class="slg-lucky-circle">' + lucky + '</div>'
-      +     '<div class="slg-lucky-text-group">'
-      +       '<span class="slg-lucky-label">Srečna številka</span>'
-      +       '<span class="slg-lucky-sub">danes te spremlja</span>'
-      +     '</div>'
-      +   '</div>'
-      +   '<div class="slg-match-box">'
-      +     gameHtml
-      +   '</div>'
-      + '</div>'
-      + '</div></div>';
-  }
-
-  window._slgPickSign   = _slgPickSign;
-  window._slgOpenModal  = _slgOpenModal;
-  window._slgCloseModal = _slgCloseModal;
-
-
-  function _flagEmoji(iso2) {
-    if (!iso2 || iso2.length !== 2) return '';
-    const base = 0x1F1E6 - 65;
-    return String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(0)) +
-           String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(1));
-  }
   </script>
 
 </body>
