@@ -993,10 +993,10 @@ body.theme-office { --accent: #464EB8; --accent-dark: #2d3580; --accent-glow: rg
   /* ── STANDING BANNER: tighter ── */
   .standing-banner { padding: 12px 14px; gap: 8px; }
   .standing-rank { font-size: 2rem; }
-  .standing-name { font-size: 1rem; }
-  .standing-pts  { font-size: .75rem; }
+  .standing-name { font-size: 1.05rem; }
+  .standing-pts  { font-size: .82rem; }
   .standing-stat-num { font-size: 1rem; }
-  .delta-chip { font-size: .73rem; padding: 3px 8px; }
+  .delta-chip { font-size: .78rem; padding: 3px 8px; }
 
   /* ── HERO BANNER: hide AI image on phone ── */
   .hero-img-wrap { display: none; }
@@ -1004,26 +1004,23 @@ body.theme-office { --accent: #464EB8; --accent-dark: #2d3580; --accent-glow: rg
   .hero-title { font-size: 1.2rem; }
   .hero-subtitle { font-size: .78rem; }
 
-  /* ── INDEX GRIDS: single column (already handled at 720px in index.html,
-     but reinforce here and tighten gap) ── */
+  /* ── INDEX GRIDS: single column ── */
   .index-grid-top,
   .index-grid-bottom { gap: 12px; }
 
-  /* ── MATCH ROW: tighten further ── */
-  .match-row { grid-template-columns: 32px 58px 52px 58px 38px 1fr !important; gap: 3px !important; padding: 7px 8px !important; }
-  .pred-chip { font-size: .58rem !important; padding: 2px 4px !important; }
-  .vs-score  { font-size: .88rem; }
-  .pts-chip  { font-size: .7rem; }
-  .team-block .team-name { font-size: .78rem; }
-  .vs-score { font-size: .9rem; }
-  .vs-time  { font-size: .68rem; }
-  .pred-chip { font-size: .63rem; padding: 2px 6px; }
-  .pts-chip  { font-size: .72rem; }
+  /* ── MATCH ROW: readable sizes ── */
+  .match-row { grid-template-columns: 34px 60px 54px 60px 40px 1fr !important; gap: 4px !important; padding: 9px 10px !important; }
+  .team-block .team-name { font-size: .86rem; font-weight: 700; }
+  .vs-score  { font-size: 1rem; font-weight: 900; }
+  .vs-time   { font-size: .76rem; }
+  .pred-chip { font-size: .7rem !important; padding: 2px 7px !important; }
+  .pts-chip  { font-size: .76rem; }
+  .match-meta { font-size: .7rem; }
 
-  /* ── LEADERBOARD ROWS: compact ── */
-  .lb-row { padding: 8px 12px; }
-  .lb-name { font-size: .82rem; }
-  .lb-pts  { font-size: .88rem; }
+  /* ── LEADERBOARD ROWS ── */
+  .lb-row  { padding: 9px 12px; }
+  .lb-name { font-size: .9rem; }
+  .lb-pts  { font-size: .95rem; }
 
   /* ── CARD HEADER ── */
   .card-header { padding: 10px 12px; }
