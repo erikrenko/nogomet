@@ -1008,14 +1008,36 @@ body.theme-office { --accent: #464EB8; --accent-dark: #2d3580; --accent-glow: rg
   .index-grid-top,
   .index-grid-bottom { gap: 12px; }
 
-  /* ── MATCH ROW: readable sizes ── */
-  .match-row { grid-template-columns: 34px 60px 54px 60px 40px 1fr !important; gap: 4px !important; padding: 9px 10px !important; }
-  .team-block .team-name { font-size: .86rem; font-weight: 700; }
-  .vs-score  { font-size: 1rem; font-weight: 900; }
-  .vs-time   { font-size: .76rem; }
-  .pred-chip { font-size: .7rem !important; padding: 2px 7px !important; }
-  .pts-chip  { font-size: .76rem; }
-  .match-meta { font-size: .7rem; }
+  /* ── MATCH ROW: 2-row layout on mobile ── */
+  .match-row {
+    display: grid !important;
+    grid-template-columns: 38px 1fr 56px 1fr !important;
+    grid-template-rows: auto auto !important;
+    grid-template-areas:
+      "date home score away"
+      ". pred pred btn" !important;
+    gap: 0 6px !important;
+    padding: 10px 12px !important;
+    row-gap: 6px !important;
+  }
+  .match-meta     { grid-area: date; font-size: .75rem; align-self: center; }
+  .team-block     { align-self: center; }
+  .team-block:not(.right) { grid-area: home; }
+  .vs-block       { grid-area: score; align-self: center; text-align: center; }
+  .team-block.right { grid-area: away; flex-direction: row !important; justify-content: flex-start !important; }
+  .match-pred-col { grid-area: pred; display: flex !important; align-items: center; justify-content: flex-end; }
+  .match-btn-col  { grid-area: btn;  display: flex; align-items: center; justify-content: flex-end; }
+
+  /* Bigger fonts for row 1 */
+  .team-block .team-name { font-size: .92rem !important; font-weight: 700; }
+  .team-block .flag      { width: 20px !important; height: 14px !important; }
+  .vs-score { font-size: 1.1rem !important; font-weight: 900 !important; }
+  .vs-time  { font-size: .82rem !important; font-weight: 700 !important; }
+
+  /* Bigger chips and buttons for row 2 */
+  .pred-chip  { font-size: .75rem !important; padding: 3px 8px !important; }
+  .match-action-btn { font-size: .78rem !important; padding: 5px 14px !important; }
+  .match-btn-text   { font-size: .78rem !important; }
 
   /* ── LEADERBOARD ROWS ── */
   .lb-row  { padding: 9px 12px; }
