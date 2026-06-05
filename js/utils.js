@@ -10,7 +10,7 @@
 // Supabase JS v2 loaded via CDN in each HTML page before this script:
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-const _SUPABASE_URL  = 'https://ybinzewyxupyojlamlpr.supabase.co';
+const _SUPABASE_URL  = 'https://bnmlijpfztkhyfvjbkly.supabase.co';
 const _SUPABASE_ANON = window.__NP_ANON_KEY__ || '';  // injected by Vercel env at build time
 
 // Initialise once, reuse everywhere via NP.db
