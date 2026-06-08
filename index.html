@@ -40,11 +40,23 @@
       .vs-block       { display: none; }
       .match-pred-col { display: none; }
       .match-btn-col  { display: none; }
-      .match-row2     { display: flex !important; width: 100%; align-items: center; padding-top: 5px; margin-top: 4px; border-top: 1px solid var(--border); }
+      .match-row2     { display: flex !important; flex-direction: column; width: 100%; padding-top: 4px; margin-top: 4px; border-top: 1px solid var(--border); }
     }
 
     /* ── MATCH ROW 2 (mobile only) ── */
     .match-row2 { display: none; }
+    .match-row2-top {
+      display: flex; align-items: center; gap: 5px; width: 100%;
+      padding-bottom: 6px;
+    }
+    .match-row2-date { font-size: .7rem; color: var(--muted); flex-shrink: 0; min-width: 26px; }
+    .match-row2-team { font-size: .82rem; font-weight: 700; color: var(--text); }
+    .match-row2-flag { width: 18px; height: 13px; object-fit: cover; border-radius: 2px; border: 1px solid var(--border); flex-shrink: 0; }
+    .match-row2-center { flex: 1; text-align: center; }
+    .match-row2-bottom {
+      display: flex; align-items: center; gap: 0; width: 100%;
+      padding-top: 5px; border-top: 1px solid var(--border);
+    }
     .match-row2-item {
       display: flex; flex-direction: column; gap: 2px; flex: 1;
     }
@@ -490,17 +502,27 @@
           <div class="match-pred-col">${predPreviewHtml}</div>
           <div class="match-btn-col">${rightHtml}</div>
           <div class="match-row2">
-            <span class="match-row2-item">
-              <span class="match-row2-label">Napoved</span>
-              ${predPreviewHtml || '<span class="match-row2-empty">—</span>'}
-            </span>
-            <span class="match-row2-item">
-              <span class="match-row2-label">Rezultat</span>
-              ${isPast ? (rightHtml || '<span class="match-row2-empty">—</span>') : '<span class="match-row2-empty">—</span>'}
-            </span>
-            <span class="match-row2-action">
-              ${!isPast ? rightHtml : ''}
-            </span>
+            <div class="match-row2-top">
+              <span class="match-row2-date">${dateLabel(m.kickoff_at)}</span>
+              <span class="match-row2-team">${homeCode}</span>
+              <img src="${NP.flagUrl(m.home_team?.flag_code)}" class="match-row2-flag" onerror="this.style.display='none'" alt="">
+              <span class="match-row2-center">${centerHtml}</span>
+              <img src="${NP.flagUrl(m.away_team?.flag_code)}" class="match-row2-flag" onerror="this.style.display='none'" alt="">
+              <span class="match-row2-team">${awayCode}</span>
+            </div>
+            <div class="match-row2-bottom">
+              <span class="match-row2-item">
+                <span class="match-row2-label">Napoved</span>
+                ${predPreviewHtml || '<span class="match-row2-empty">—</span>'}
+              </span>
+              <span class="match-row2-item">
+                <span class="match-row2-label">Rezultat</span>
+                ${isPast ? (rightHtml || '<span class="match-row2-empty">—</span>') : '<span class="match-row2-empty">—</span>'}
+              </span>
+              <span class="match-row2-action">
+                ${!isPast ? rightHtml : ''}
+              </span>
+            </div>
           </div>
         </div>`;
     };
