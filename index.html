@@ -20,6 +20,9 @@
     /* Short/full label toggle — desktop shows full, mobile shows short */
     .ix-lbl-short { display: none; }
 
+    /* match-row2: mobile second row — hidden on desktop */
+    .match-row2 { display: none; }
+
     @media (max-width: 768px) {
       .index-grid-top { grid-template-columns: 1fr; }
 
@@ -34,61 +37,54 @@
       .pred-chip .ix-lbl-full  { display: none; }
       .pred-chip .ix-lbl-short { display: inline; }
 
-      /* ── MOBILE MATCH ROW — 2-row layout ── */
-      .match-row {
-        display: flex;
-        flex-direction: column;
-        padding: 10px 14px;
-        gap: 6px;
-      }
-      /* Row 1: date + home flag+name + score + away name+flag */
-      .match-row-top {
-        display: flex;
+      /* Hide desktop grid columns */
+      .match-meta     { display: none; }
+      .team-block     { display: none; }
+      .vs-block       { display: none; }
+      .match-pred-col { display: none; }
+      .match-btn-col  { display: none; }
+
+      /* Match row becomes flex column */
+      .match-row { display: flex; flex-direction: column; padding: 8px 14px; gap: 0; }
+
+      /* Row 2: show on mobile */
+      .match-row2 {
+        display: flex !important;
         align-items: center;
-        gap: 6px;
         width: 100%;
-      }
-      /* Row 2: NAPOVED label+chip left, REZULTAT label+chip right */
-      .match-row-bottom {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding-top: 4px;
+        padding-top: 5px;
         border-top: 1px solid var(--border);
+        margin-top: 4px;
       }
-      .match-row-bottom-left,
-      .match-row-bottom-right {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+      .match-row2-item {
+        display: flex; flex-direction: column; gap: 2px; flex: 1;
       }
-      .match-row-bottom-right { align-items: flex-end; }
-      .match-mobile-label {
-        font-size: .55rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        color: var(--muted);
+      .match-row2-item + .match-row2-item { border-left: 1px solid var(--border); padding-left: 12px; }
+      .match-row2-label {
+        font-size: .55rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; color: var(--muted);
       }
-
-      /* Hide desktop columns on mobile */
-      .match-meta       { display: none; }
-      .team-block       { display: none; }
-      .vs-block         { display: none; }
-      .match-pred-col   { display: none; }
-      .match-btn-col    { display: none; }
-
-      /* Show mobile-only rows */
-      .match-row-top    { display: flex !important; }
-      .match-row-bottom { display: flex !important; }
+      .match-row2-empty { font-size: .75rem; color: var(--muted); }
+      .match-row2-action { margin-left: auto; flex-shrink: 0; }
     }
 
-    /* Hide mobile-only elements on desktop */
-    .match-row-top    { display: none; }
-    .match-row-bottom { display: none; }
-
     /* ── MATCH ROWS ── */
+    .match-row2 { display: none; }
+    .match-row2-item {
+      display: flex; flex-direction: column; gap: 2px;
+      flex: 1;
+    }
+    .match-row2-item:last-of-type { align-items: flex-end; }
+    .match-row2-label {
+      font-size: .55rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: var(--muted);
+    }
+    .match-row2-empty { color: var(--muted); font-size: .78rem; }
+    .match-row2-action {
+      display: flex; align-items: center; justify-content: flex-end;
+      flex-shrink: 0;
+    }
     .match-time-label {
       font-size: .65rem;
       font-weight: 700;
@@ -507,21 +503,19 @@
       const homeCode = m.home_team?.fifa_code ?? homeName;
       const awayCode = m.away_team?.fifa_code ?? awayName;
 
-      // Mobile bottom row: prediction pill left, result/button right
-      const mobilePredHtml = predPreviewHtml
-        ? predPreviewHtml
-        : `<span style="color:var(--muted);font-size:.75rem">—</span>`;
-      const mobileResultHtml = isPast
-        ? (() => {
-            const hs = m.home_score_120 ?? m.home_score_90;
-            const as = m.away_score_120 ?? m.away_score_90;
-            return (hs !== null && as !== null) ? rightHtml : `<span style="color:var(--muted);font-size:.75rem">—</span>`;
-          })()
-        : rightHtml;
+      // Mobile top row: date + home + score/time + away
+      const mobileTopRow = `<div style="display:flex;align-items:center;gap:6px;width:100%">
+        <span style="font-size:.7rem;color:var(--muted);flex-shrink:0;min-width:24px">${dateLabel(m.kickoff_at)}</span>
+        <span style="font-weight:700;font-size:.85rem;white-space:nowrap">${homeCode}</span>
+        <img src="${NP.flagUrl(m.home_team?.flag_code)}" style="width:18px;height:13px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0" onerror="this.style.display='none'" alt="">
+        <div style="flex:1;text-align:center">${centerHtml}</div>
+        <img src="${NP.flagUrl(m.away_team?.flag_code)}" style="width:18px;height:13px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0" onerror="this.style.display='none'" alt="">
+        <span style="font-weight:700;font-size:.85rem;white-space:nowrap">${awayCode}</span>
+      </div>`;
 
       return `
         <div class="match-row">
-          <!-- DESKTOP columns (hidden on mobile) -->
+          <!-- Desktop columns -->
           <div class="match-meta">${dateLabel(m.kickoff_at)}</div>
           <div class="team-block">
             <span class="team-name"><span class="ix-lbl-full">${homeName}</span><span class="ix-lbl-short">${homeCode}</span></span>
@@ -534,25 +528,21 @@
           </div>
           <div class="match-pred-col">${predPreviewHtml}</div>
           <div class="match-btn-col">${rightHtml}</div>
-
-          <!-- MOBILE rows (hidden on desktop) -->
-          <div class="match-row-top">
-            <span style="font-size:.7rem;color:var(--muted);flex-shrink:0;min-width:28px">${dateLabel(m.kickoff_at)}</span>
-            <span style="font-weight:700;font-size:.88rem">${homeCode}</span>
-            <img src="${NP.flagUrl(m.home_team?.flag_code)}" style="width:18px;height:13px;object-fit:cover;border-radius:2px;border:1px solid var(--border)" onerror="this.style.display='none'" alt="">
-            <div style="flex:1;text-align:center">${centerHtml}</div>
-            <img src="${NP.flagUrl(m.away_team?.flag_code)}" style="width:18px;height:13px;object-fit:cover;border-radius:2px;border:1px solid var(--border)" onerror="this.style.display='none'" alt="">
-            <span style="font-weight:700;font-size:.88rem">${awayCode}</span>
-          </div>
-          <div class="match-row-bottom">
-            <div class="match-row-bottom-left">
-              <span class="match-mobile-label">Napoved</span>
-              ${mobilePredHtml}
-            </div>
-            <div class="match-row-bottom-right">
-              <span class="match-mobile-label">Rezultat</span>
-              ${mobileResultHtml}
-            </div>
+          <!-- Mobile row 1 -->
+          ${mobileTopRow}
+          <!-- Mobile row 2 -->
+          <div class="match-row2">
+            <span class="match-row2-item">
+              <span class="match-row2-label">Napoved</span>
+              ${predPreviewHtml || '<span class="match-row2-empty">—</span>'}
+            </span>
+            <span class="match-row2-item">
+              <span class="match-row2-label">Rezultat</span>
+              ${isPast ? rightHtml : '<span class="match-row2-empty">—</span>'}
+            </span>
+            <span class="match-row2-action">
+              ${!isPast ? rightHtml : ''}
+            </span>
           </div>
         </div>`;
     };
