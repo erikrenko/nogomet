@@ -14,8 +14,8 @@
 
 /* ── ENTRY POINT ─────────────────────────────────────────── */
 
-NP.applyPlugins = async function () {
-  const state   = await NP.getTournamentNow();
+NP.applyPlugins = async function (stateOverride) {
+  const state   = stateOverride ?? await NP.getTournamentNow();
   const profile = await NP.getUserProfile();
   const p       = state.plugins;
 
@@ -70,12 +70,12 @@ NP.applyPlugins = async function () {
   // ── National day plugins ──────────────────────────────────
   if (state.isThemedDay) {
     _applyThemedBanner(state, profile);
-    if (p.alias_names)       _applyAliasNames(state, profile);
+    if (p.alias_names && profile.full_game === true)    _applyAliasNames(state, profile);
     if (p.hello_message_native) _applyHelloMessageNative(p, profile, state);
     if (p.food_fact_card)    _applyFoodFactCard(p);
     if (p.no_team_note)      _applyNoTeamNote(p);
     if (p.national_holiday)  _applyNationalHoliday(p);
-    if (p.jersey_preview)    _applyJerseyPreview(state, profile);
+    if (p.jersey_preview && profile.full_game === true) _applyJerseyPreview(state, profile);
   }
 
   // ── Transfer Deadline Day ─────────────────────────────────
@@ -90,6 +90,7 @@ NP.applyPlugins = async function () {
   // ── Win98 Day ─────────────────────────────────────────────
   if (p.win98_theme)         _applyWin98Theme();
   if (p.win98_clippy)        _applyWin98Clippy();
+  if (p.win98_bsod)          _applyWin98Bsod();
   if (p.win98_error_dialogs) _applyWin98ErrorDialogs();
   if (p.win98_startup_sound) _applyWin98StartupSound();
   if (p.win98_loading_bar)   _applyWin98LoadingBar();
@@ -128,19 +129,23 @@ async function _applyStandingBanner(state, profile) {
   const slot = NP.qs('[data-slot="standing-banner"]');
   if (!slot || !profile) return;
 
-  const alias = NP.getAlias(profile, state, 'full');
-  const isNationalDay = state.isThemedDay && state.plugins.alias_names;
+  const alias = profile.full_game === true
+    ? NP.getAlias(profile, state, 'full')
+    : (profile.alias_limited || profile.display_name);
+  const isNationalDay = state.isThemedDay && state.plugins.alias_names && profile.full_game === true;
 
   // Fetch live stats
   const { data: lb } = await NP.db
     .from('leaderboard')
-    .select('rank, total_points, correct_scores, correct_outcomes, delta')
+    .select('rank, total_points, correct_scores, correct_outcomes, trivia_correct, trivia_total, delta')
     .eq('user_id', profile.id)
     .maybeSingle();
 
   const rank         = lb?.rank           ?? '—';
   const pts          = lb?.total_points   ?? 0;
   const scores       = lb?.correct_scores ?? 0;
+  const triviaCorrect = lb?.trivia_correct ?? 0;
+  const triviaTotal   = lb?.trivia_total   ?? 0;
   const delta        = lb?.delta          ?? 0;
 
   const deltaClass = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
@@ -200,7 +205,7 @@ async function _applyStandingBanner(state, profile) {
               </span>
             </div>
             <div class="standing-pts" style="color:rgba(255,255,255,.8)">
-              ${nNapovedi(scores)}
+              ${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih
             </div>
           </div>
           <div class="standing-divider" style="background:rgba(255,255,255,.3)"></div>
@@ -255,7 +260,7 @@ async function _applyStandingBanner(state, profile) {
 
           <div style="padding:0 18px 14px">
             <div class="standing-pts" style="color:rgba(255,255,255,.7);font-size:.72rem">
-              ${nNapovedi(scores)}
+              ${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih
             </div>
           </div>
 
@@ -276,7 +281,7 @@ async function _applyStandingBanner(state, profile) {
         <div class="standing-divider"></div>
         <div class="standing-info">
           <div class="standing-name">${_esc(profile.original_name ?? profile.display_name)}</div>
-          <div class="standing-pts">${nNapovedi(scores)}</div>
+          <div class="standing-pts">${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih</div>
         </div>
         <div class="standing-divider"></div>
         <div class="standing-stat">
@@ -647,8 +652,8 @@ function _applyTriviaBonusApplied() {
    ═══════════════════════════════════════════════════════════ */
 
 function _applyThemedBanner(state, profile) {
-  // Standing banner handles this via _applyStandingBanner
-  // This also sets a CSS var for themed accent colour
+  // Only apply national day color for full_game users
+  if (profile?.full_game !== true) return;
   const bg = state.themedDay?.banner_color_primary;
   if (bg) document.documentElement.style.setProperty('--themed-day-color', bg);
 }
@@ -818,6 +823,83 @@ function _applyWin98Theme() {
   document.body.classList.add('theme-win98');
   // Play startup sound is handled separately
 }
+
+function _applyWin98Bsod() {
+  if (NP.qs('#bsod-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'bsod-overlay';
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:9900;
+    background:#0000AA;color:#AAAAAA;
+    font-family:'Courier New',monospace;font-size:14px;
+    display:none;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:40px;text-align:left;cursor:default;user-select:none;`;
+  overlay.innerHTML = `
+    <div style="max-width:640px;width:100%">
+      <div style="background:#AAAAAA;color:#0000AA;padding:2px 8px;font-weight:bold;font-size:15px;margin-bottom:24px;display:inline-block">
+        \u00a0Kritična napaka sistema Windows\u00a0
+      </div>
+      <div style="color:#FFFFFF;line-height:2;margin-bottom:28px">
+        Prišlo je do usodne napake pri procesiranju napovedi oddelka.<br>
+        <strong>NAPOVED.EXE</strong> je povzročil kritičen izpad pisarniške sinergije.<br><br>
+        Napaka: <strong>0x0000002B PREDICTION_OVERFLOW</strong><br>
+        Modul: <strong>KORPORATIVNI_KPI_HANDLER.DLL</strong>
+      </div>
+      <div style="font-size:12px;color:#AAAAAA;line-height:1.8;margin-bottom:28px">
+        * Pritisnite katero koli tipko za nadaljevanje ... ali ne.<br>
+        * Če se ta zaslon pojavi prvič, ponovni zagon morda ne bo pomagal.<br>
+        * Preverite, ali ste pravilno napovedali izid zadnje tekme.<br><br>
+        Technical information:<br>
+        *** STOP: 0x0000002B (0xC0034A72, 0x00000000, 0xF891AC3D, 0x00000001)<br>
+        *** NAPOVED.EXE - Address F891AC3D base at F8910000, DateStamp 3d6dd67c
+      </div>
+      <div style="color:#FFFFFF;font-size:13px">
+        <span id="bsod-blink">█</span>\u00a0 Kliknite kjerkoli za vrnitev v sistem.
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  // Blinking cursor
+  setInterval(() => {
+    const b = NP.qs('#bsod-blink');
+    if (b) b.style.opacity = b.style.opacity === '0' ? '1' : '0';
+  }, 500);
+
+  function _bsodHide() {
+    overlay.style.display = 'none';
+    document.removeEventListener('keydown', _bsodHide);
+    setTimeout(() => {
+      const c = NP.qs('#clippy');
+      if (c) {
+        c.innerHTML = `<strong>📎 Sistem obnovljen!</strong><br><br>
+          Zgleda, da si preživel. Čestitam. Napovedi so še vedno napačne.
+          <br><br>
+          <button onclick="document.getElementById('clippy').remove()"
+            style="font-family:'Courier New';font-size:11px;padding:2px 8px;cursor:pointer">
+            Ne, hvala
+          </button>`;
+        c.style.display = 'block';
+      }
+    }, 600);
+  }
+  function _bsodShow() {
+    overlay.style.display = 'flex';
+    document.addEventListener('keydown', _bsodHide, { once: true });
+  }
+  overlay.addEventListener('click', _bsodHide);
+
+  // Wire to "Optimiziraj napovedi →" hero button — delay so DOM is ready
+  setTimeout(() => {
+    const heroBtn = NP.qs('.hero-btn-primary');
+    if (heroBtn) {
+      heroBtn.removeAttribute('href');
+      heroBtn.style.cursor = 'pointer';
+      heroBtn.addEventListener('click', (e) => { e.preventDefault(); _bsodShow(); });
+    }
+  }, 500);
+}
+
 
 function _applyWin98Clippy() {
   if (NP.qs('#clippy')) return;
@@ -1147,15 +1229,25 @@ function _flagEmoji(iso2) {
 function _jerseyNameOverlay(name, themeCode, nameColor, td) {
   const cfg  = JERSEY_CONFIG[themeCode] ?? JERSEY_CONFIG_DEFAULT;
   const fill = cfg.color ?? nameColor ?? '#ffffff';
-  // Coords from themed_days DB columns, fallback to JERSEY_CONFIG
   const imgW  = 1024;
   const imgH  = 1024;
   const cx    = td?.jersey_center_x || cfg.centerX || 312;
   const cy    = td?.jersey_center_y || cfg.centerY || 147;
   const leftPct = (cx / imgW * 100).toFixed(4);
   const topPct  = (cy / imgH * 100).toFixed(4);
-  return `<div class="jersey-name" style="left:${leftPct}%;top:${topPct}%;
-    color:${fill};font-family:Figtree,Arial,sans-serif;font-weight:900;
+  // Font size as % of image width via CSS calc — shrinks for long names
+  const len = name.length;
+  const basePct = 6.5;
+  const shrink  = Math.max(0, (len - 6) * 0.35);
+  const fontPct = Math.max(3.0, basePct - shrink).toFixed(2);
+  return `<div class="jersey-name" style="
+    position:absolute;
+    left:${leftPct}%;top:${topPct}%;
+    transform:translate(-50%,-50%);
+    width:60%;text-align:center;
+    color:${fill};
+    font-family:Figtree,Arial,sans-serif;font-weight:900;
+    font-size:${fontPct}cqw;
     text-shadow:0 1px 3px rgba(0,0,0,.4);letter-spacing:.05em;line-height:1">
     ${name.toUpperCase()}</div>`;
 }
