@@ -137,7 +137,7 @@ async function _applyStandingBanner(state, profile) {
   // Fetch live stats
   const { data: lb } = await NP.db
     .from('leaderboard')
-    .select('rank, total_points, correct_scores, correct_outcomes, trivia_correct, trivia_total, delta')
+    .select('rank, total_points, correct_scores, correct_outcomes, delta')
     .eq('user_id', profile.id)
     .maybeSingle();
 
