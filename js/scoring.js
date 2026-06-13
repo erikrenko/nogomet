@@ -449,9 +449,29 @@ NP.scoring = {
 
     rows.sort((a, b) => b.total_points - a.total_points);
     const ranked = this.assignRanks(rows);
+
+    // Update leaderboard table
     const { error: lErr } = await NP.db
       .from('leaderboard').upsert(ranked, { onConflict: 'user_id' });
     if (lErr) errors.push(lErr.message);
+
+    // Save snapshot for trajectory chart
+    const today = new Date().toISOString().slice(0, 10);
+    const snapshots = ranked.map(r => ({
+      user_id:       r.user_id,
+      snapshot_date: today,
+      total_points:  r.total_points,
+      match_points:  r.match_points,
+      trivia_points: 0,
+      correct_scores:   r.correct_scores,
+      correct_outcomes: r.correct_outcomes,
+      rank:          r.rank,
+    }));
+    const { error: sErr } = await NP.db
+      .from('leaderboard_snapshots')
+      .upsert(snapshots, { onConflict: 'user_id,snapshot_date' });
+    if (sErr) errors.push(sErr.message);
+
     return { saved: ranked.length, errors };
   },
 
