@@ -205,7 +205,7 @@ async function _applyStandingBanner(state, profile) {
               </span>
             </div>
             <div class="standing-pts" style="color:rgba(255,255,255,.8)">
-              ${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih
+              ${nNapovedi(scores)}
             </div>
           </div>
           <div class="standing-divider" style="background:rgba(255,255,255,.3)"></div>
@@ -260,7 +260,7 @@ async function _applyStandingBanner(state, profile) {
 
           <div style="padding:0 18px 14px">
             <div class="standing-pts" style="color:rgba(255,255,255,.7);font-size:.72rem">
-              ${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih
+              ${nNapovedi(scores)}
             </div>
           </div>
 
@@ -281,7 +281,7 @@ async function _applyStandingBanner(state, profile) {
         <div class="standing-divider"></div>
         <div class="standing-info">
           <div class="standing-name">${_esc(profile.original_name ?? profile.display_name)}</div>
-          <div class="standing-pts">${nNapovedi(scores)} · Trivia ${triviaCorrect}/${triviaTotal} pravilnih</div>
+          <div class="standing-pts">${nNapovedi(scores)}</div>
         </div>
         <div class="standing-divider"></div>
         <div class="standing-stat">
