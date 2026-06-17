@@ -429,6 +429,20 @@ NP.scoring = {
       .from('users').select('id, display_name, avatar_team_iso2');
     if (uErr) return { saved: 0, errors: [uErr.message] };
 
+    // Fetch most recent snapshot per user (any date before today) for delta calc
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: prevSnaps } = await NP.db
+      .from('leaderboard_snapshots')
+      .select('user_id, snapshot_date, rank')
+      .lt('snapshot_date', today)
+      .order('snapshot_date', { ascending: false });
+
+    // Keep only the latest snapshot per user
+    const prevRankByUser = {};
+    (prevSnaps ?? []).forEach(s => {
+      if (!(s.user_id in prevRankByUser)) prevRankByUser[s.user_id] = s.rank;
+    });
+
     const rows = [];
     for (const user of users ?? []) {
       try {
@@ -442,30 +456,33 @@ NP.scoring = {
           trivia_points:    0,
           correct_scores:   stats.correct_scores,
           correct_outcomes: stats.correct_outcomes,
-          delta:            0,
         });
       } catch (e) { errors.push(`User ${user.id}: ${e.message}`); }
     }
 
     rows.sort((a, b) => b.total_points - a.total_points);
-    const ranked = this.assignRanks(rows);
+    let ranked = this.assignRanks(rows);
 
-    // Update leaderboard table
+    // Calculate delta using previous rank
+    ranked = ranked.map(r => ({
+      ...r,
+      delta: this.calcDelta(r.rank, prevRankByUser[r.user_id]),
+    }));
+
     const { error: lErr } = await NP.db
       .from('leaderboard').upsert(ranked, { onConflict: 'user_id' });
     if (lErr) errors.push(lErr.message);
 
-    // Save snapshot for trajectory chart
-    const today = new Date().toISOString().slice(0, 10);
+    // Save today's snapshot for future delta calculations + trajectory chart
     const snapshots = ranked.map(r => ({
-      user_id:       r.user_id,
-      snapshot_date: today,
-      total_points:  r.total_points,
-      match_points:  r.match_points,
-      trivia_points: 0,
+      user_id:          r.user_id,
+      snapshot_date:    today,
+      total_points:     r.total_points,
+      match_points:     r.match_points,
+      trivia_points:    0,
       correct_scores:   r.correct_scores,
       correct_outcomes: r.correct_outcomes,
-      rank:          r.rank,
+      rank:             r.rank,
     }));
     const { error: sErr } = await NP.db
       .from('leaderboard_snapshots')
