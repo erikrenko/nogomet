@@ -1144,18 +1144,21 @@
   /* ── LOAD ALL DATA ── */
   async function _loadData() {
     // All group stage + next matches
-    const { data: matches } = await NP.db
-      .from('matches')
-      .select(`
-        id, kickoff_at, phase, group_name,
-        home_score_90, away_score_90, home_score_120, away_score_120,
-        home_team:teams!matches_home_team_id_fkey(id, name_sl, flag_code, fifa_code),
-        away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)
-      `)
-      .not('home_team_id', 'is', null)  // only matches with known teams
-      .order('kickoff_at');
+    const [matchesRes, phasesRes] = await Promise.all([
+      NP.db.from('matches')
+        .select(`
+          id, kickoff_at, phase, group_name,
+          home_score_90, away_score_90, home_score_120, away_score_120,
+          home_team:teams!matches_home_team_id_fkey(id, name_sl, flag_code, fifa_code),
+          away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)
+        `)
+        .not('home_team_id', 'is', null)
+        .order('kickoff_at'),
+      NP.db.from('tournament_phases').select('starts_at, ends_at, multiplier'),
+    ]);
 
-    _allMatches = matches ?? [];
+    _allMatches = matchesRes.data ?? [];
+    window._phases = phasesRes.data ?? [];
 
     // All user predictions
     const matchIds = _allMatches.map(m => m.id);
@@ -1473,7 +1476,12 @@
     let rightHtml = '';
     if (finished) {
       if (pred) {
-        const { label, type } = NP.scoring.getResultLabel(pred, m, _multiplier);
+        const kickoff = new Date(m.kickoff_at);
+        const matchPhase = (window._phases ?? []).find(p =>
+          new Date(p.starts_at) <= kickoff && new Date(p.ends_at) >= kickoff
+        );
+        const matchMult = matchPhase?.multiplier ?? 1;
+        const { label, type } = NP.scoring.getResultLabel(pred, m, matchMult);
         const shortLabel = _compactResultLabel(label, type);
         rightHtml = `<div style="display:flex;align-items:center;gap:6px">${predPreview}<span class="pred-result-chip ${type}"><span class="result-full">${label}</span><span class="result-short">${shortLabel}</span></span></div>`;
       } else {
@@ -1850,7 +1858,7 @@
 
       distHtml = `
         <div class="dist-section">
-          <div class="dist-title">Kako so napovedali ostali (${total})</div>
+          <div class="dist-title">Kako so glasovali sodelavci (${total} glasov)</div>
           ${topTeams.map(({ team, pct }) => `
             <div class="dist-row">
               <img class="dist-flag" src="${NP.flagUrl(team.flag_code)}" alt="" onerror="this.style.display='none'">
@@ -1962,7 +1970,7 @@
 
       distHtml = `
         <div class="dist-section">
-          <div class="dist-title">Kako so napovedali ostali (${total})</div>
+          <div class="dist-title">Kako so glasovali sodelavci (${total} glasov)</div>
           ${sorted.map(([pid, count]) => {
             const p   = playerMap[parseInt(pid)];
             if (!p) return '';

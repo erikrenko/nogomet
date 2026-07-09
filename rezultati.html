@@ -440,7 +440,7 @@
         : profile.display_name.charAt(0).toUpperCase();
 
     // Load data in parallel
-    const [matchesRes, predsRes, standingsRes] = await Promise.all([
+    const [matchesRes, predsRes, standingsRes, phasesRes] = await Promise.all([
       NP.db.from('matches')
         .select(`id, phase, group_name, kickoff_at,
           home_score_90, away_score_90, home_score_120, away_score_120,
@@ -456,9 +456,16 @@
         .order('group_name')
         .order('points', { ascending: false })
         .order('goal_difference', { ascending: false }),
+      NP.db.from('tournament_phases').select('starts_at, ends_at, multiplier'),
     ]);
 
     const allMatches = matchesRes.data ?? [];
+    const phases = phasesRes.data ?? [];
+    const _getMatchMult = (kickoff) => {
+      const d = new Date(kickoff);
+      const p = phases.find(p => new Date(p.starts_at) <= d && new Date(p.ends_at) >= d);
+      return p?.multiplier ?? 1;
+    };
     const predMap = {};
     (predsRes.data ?? []).forEach(p => { predMap[p.match_id] = p; });
     const standings = standingsRes.data ?? [];
@@ -577,7 +584,7 @@
             predHtml = `<span class="gm-pred missing">✗ ni napovedi · +0</span>`;
           } else {
             const base = NP.scoring.calcBasePoints(pred, m);
-            const pts  = NP.scoring.applyMultiplier(base, state.multiplier ?? 1);
+            const pts  = NP.scoring.applyMultiplier(base, _getMatchMult(m.kickoff_at));
             if (base === 3)      predHtml = `<span class="gm-pred exact">✓ Točno · +${pts}</span>`;
             else if (base === 1) predHtml = `<span class="gm-pred correct">✓ Pravilno · +${pts}</span>`;
             else                 predHtml = `<span class="gm-pred wrong">✗ Napačno · +0</span>`;
@@ -668,7 +675,8 @@
         // Prediction
         let predHtml = '';
         if (finished && pred) {
-          const { label: lbl, type, points } = NP.scoring.getResultLabel(pred, m, mult);
+          const matchMult = _getMatchMult(m.kickoff_at);
+          const { label: lbl, type, points } = NP.scoring.getResultLabel(pred, m, matchMult);
           predHtml = `<span class="gm-pred ${type}" style="font-size:.68rem">${lbl} · +${points}</span>`;
         } else if (!locked && !finished && hasBothTeams) {
           predHtml = pred

@@ -33,8 +33,6 @@
       /* Short result labels on mobile */
       .pred-chip .ix-lbl-full  { display: none; }
       .pred-chip .ix-lbl-short { display: inline; }
-
-
     }
 
     /* ── MATCH ROWS ── */
@@ -373,12 +371,16 @@
       return;
     }
 
-    // Fetch predictions for all these matches
-    const { data: preds } = await NP.db
-      .from('predictions')
-      .select('match_id, pred_home, pred_away, points_awarded')
-      .eq('user_id', profile.id)
-      .in('match_id', allIds);
+    // Fetch predictions + phases for multiplier lookup
+    const [predsRes, phasesRes] = await Promise.all([
+      NP.db.from('predictions')
+        .select('match_id, pred_home, pred_away, points_awarded')
+        .eq('user_id', profile.id)
+        .in('match_id', allIds),
+      NP.db.from('tournament_phases').select('starts_at, ends_at, multiplier'),
+    ]);
+    const preds = predsRes.data;
+    const phases = phasesRes.data ?? [];
 
     const predMap = {};
     (preds ?? []).forEach(p => { predMap[p.match_id] = p; });
@@ -437,7 +439,9 @@
           const ph = pred.pred_home, pa = pred.pred_away;
           const exact = ph === hs && pa === as;
           const correctWinner = !exact && ((ph>pa&&hs>as)||(ph<pa&&hs<as)||(ph===pa&&hs===as));
-          const mult = state?.multiplier ?? 1;
+          const kickoff = new Date(m.kickoff_at);
+          const matchPhase = phases.find(p => new Date(p.starts_at) <= kickoff && new Date(p.ends_at) >= kickoff);
+          const mult = matchPhase?.multiplier ?? 1;
           const pts = exact ? 3*mult : correctWinner ? 1*mult : 0;
           if (exact)              rightHtml = `<span class="pred-chip exact">✓ Natančno · +${pts}</span>`;
           else if (correctWinner) rightHtml = `<span class="pred-chip correct">✓ Pravilno · +${pts}</span>`;
@@ -470,19 +474,6 @@
           </div>
           <div class="match-pred-col">${predPreviewHtml}</div>
           <div class="match-btn-col">${rightHtml}</div>
-          <div class="match-row2">
-            <span class="match-row2-item">
-              <span class="match-row2-label">Napoved</span>
-              ${predPreviewHtml || '<span class="match-row2-empty">—</span>'}
-            </span>
-            <span class="match-row2-item">
-              <span class="match-row2-label">Rezultat</span>
-              ${isPast ? (rightHtml || '<span class="match-row2-empty">—</span>') : '<span class="match-row2-empty">—</span>'}
-            </span>
-            <span class="match-row2-action">
-              ${!isPast ? rightHtml : ''}
-            </span>
-          </div>
         </div>`;
     };
 
