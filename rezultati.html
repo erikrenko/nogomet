@@ -677,7 +677,7 @@
         if (finished && pred) {
           const matchMult = _getMatchMult(m.kickoff_at);
           const { label: lbl, type, points } = NP.scoring.getResultLabel(pred, m, matchMult);
-          predHtml = `<span class="gm-pred ${type}" style="font-size:.68rem">${lbl} · +${points}</span>`;
+          predHtml = `<span class="gm-pred ${type}" style="font-size:.68rem">${lbl}</span>`;
         } else if (!locked && !finished && hasBothTeams) {
           predHtml = pred
             ? `<span class="gm-pred pending" style="font-size:.68rem">tvoj ${pred.pred_home}–${pred.pred_away}</span>`
