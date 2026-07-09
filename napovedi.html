@@ -33,11 +33,6 @@
     .nap-team  { display:flex;align-items:center;gap:5px;flex:1; }
     .nap-team.right { justify-content:flex-end; }
     .nap-team-name { font-size:.88rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-    .nap-lbl-short { display:none; }
-    @media (max-width: 768px) {
-      .nap-lbl-full  { display:none; }
-      .nap-lbl-short { display:inline; }
-    }
     .nap-team img  { width:22px;height:15px;object-fit:cover;border-radius:2px;border:1px solid var(--border);flex-shrink:0; }
     .nap-score { font-size:1rem;font-weight:800;color:var(--text);min-width:44px;text-align:center;flex-shrink:0; }
     .nap-time  { font-size:.82rem;color:var(--muted);font-weight:600;min-width:44px;text-align:center;flex-shrink:0; }
@@ -213,7 +208,7 @@
         ? _flagEmoji(_state.themedDay.theme_flag_iso2)
         : _profile.display_name.charAt(0).toUpperCase();
 
-    const [matchesRes, predsRes, usersRes] = await Promise.all([
+    const [matchesRes, predsRes, usersRes, phasesRes] = await Promise.all([
       NP.db.from('matches')
         .select(`id, phase, group_name, kickoff_at,
           home_score_90, away_score_90, home_score_120, away_score_120,
@@ -223,9 +218,11 @@
         .order('kickoff_at', { ascending: false }),
       NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded'),
       NP.db.from('users').select('id, display_name, original_name, avatar_team_iso2, aliases'),
+      NP.db.from('tournament_phases').select('starts_at, ends_at, multiplier'),
     ]);
 
     _allMatches = matchesRes.data ?? [];
+    window._phases = phasesRes.data ?? [];
     _users      = usersRes.data   ?? [];
     _userMap    = {};
     _users.forEach(u => { _userMap[u.id] = u; });
@@ -330,7 +327,7 @@
       : `<span class="nap-time">${NP.formatKickoff(m.kickoff_at, false)}</span>`;
 
     const bodyHtml = finished
-      ? _renderScoreGroups(m, preds, noPred, mult)
+      ? _renderScoreGroups(m, preds, noPred)
       : _renderLocked(preds, noPred);
 
     return `
@@ -339,13 +336,13 @@
           <div class="nap-group">${m.group_name ? 'Sk.' + m.group_name : m.phase ?? ''}</div>
           <div class="nap-teams">
             <div class="nap-team">
-              <span class="nap-team-name"><span class="nap-lbl-full">${m.home_team?.name_sl ?? '—'}</span><span class="nap-lbl-short">${m.home_team?.fifa_code ?? m.home_team?.name_sl ?? '—'}</span></span>
+              <span class="nap-team-name">${m.home_team?.fifa_code ?? m.home_team?.name_sl ?? '—'}</span>
               <img src="${NP.flagUrl(m.home_team?.flag_code)}" alt="" onerror="this.style.display='none'">
             </div>
             ${scoreHtml}
             <div class="nap-team right">
               <img src="${NP.flagUrl(m.away_team?.flag_code)}" alt="" onerror="this.style.display='none'">
-              <span class="nap-team-name"><span class="nap-lbl-full">${m.away_team?.name_sl ?? '—'}</span><span class="nap-lbl-short">${m.away_team?.fifa_code ?? m.away_team?.name_sl ?? '—'}</span></span>
+              <span class="nap-team-name">${m.away_team?.fifa_code ?? m.away_team?.name_sl ?? '—'}</span>
             </div>
           </div>
           <div class="nap-meta">
@@ -394,7 +391,14 @@
       </div>`;
   }
 
-  function _renderScoreGroups(m, preds, noPred, mult) {
+  function _renderScoreGroups(m, preds, noPred) {
+    // Get multiplier for THIS match's kickoff time, not current phase
+    const matchKickoff = new Date(m.kickoff_at);
+    let mult = 1;
+    const phase = (window._phases ?? []).find(p =>
+      new Date(p.starts_at) <= matchKickoff && new Date(p.ends_at) >= matchKickoff
+    );
+    if (phase) mult = phase.multiplier ?? 1;
     if (!preds.length && !noPred.length) return '<div style="padding:12px 16px;font-size:.8rem;color:var(--muted)">Ni napovedi.</div>';
     const groups = {};
     preds.forEach(p => {
