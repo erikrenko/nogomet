@@ -35,6 +35,9 @@
       .pred-chip .ix-lbl-short { display: inline; }
     }
 
+    /* ── MATCH ROW 2 (mobile only, shown via style.css @media) ── */
+    .match-row2 { display: none; }
+
     /* ── MATCH ROWS ── */
     .match-time-label {
       font-size: .65rem;
@@ -474,6 +477,19 @@
           </div>
           <div class="match-pred-col">${predPreviewHtml}</div>
           <div class="match-btn-col">${rightHtml}</div>
+          <div class="match-row2">
+            <span class="match-row2-item">
+              <span class="match-row2-label">Napoved</span>
+              ${predPreviewHtml || '<span class="match-row2-empty">—</span>'}
+            </span>
+            <span class="match-row2-item">
+              <span class="match-row2-label">Rezultat</span>
+              ${isPast ? (rightHtml || '<span class="match-row2-empty">—</span>') : '<span class="match-row2-empty">—</span>'}
+            </span>
+            <span class="match-row2-action">
+              ${!isPast ? rightHtml : ''}
+            </span>
+          </div>
         </div>`;
     };
 
