@@ -159,6 +159,7 @@
     .lb-late-title { font-size: .72rem; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
     .lb-late-sub { font-size: .65rem; color: var(--muted); margin-top: 2px; }
     .lb-row.late-lb:hover { background: rgba(180,90,0,.04); }
+    .match-row2 { display: none; }
   </style>
 </head>
 <body>
@@ -482,6 +483,19 @@
           </div>
           <div class="match-pred-col">${predPreviewHtml}</div>
           <div class="match-btn-col">${rightHtml}</div>
+          <div class="match-row2">
+            <span class="match-row2-item">
+              <span class="match-row2-label">Napoved</span>
+              ${predPreviewHtml || '<span class="match-row2-empty">—</span>'}
+            </span>
+            <span class="match-row2-item">
+              <span class="match-row2-label">Rezultat</span>
+              ${isPast ? (rightHtml || '<span class="match-row2-empty">—</span>') : '<span class="match-row2-empty">—</span>'}
+            </span>
+            <span class="match-row2-action">
+              ${!isPast ? rightHtml : ''}
+            </span>
+          </div>
         </div>`;
     };
 
