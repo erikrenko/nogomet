@@ -16,6 +16,15 @@
       gap: 16px;
       align-items: start;
     }
+    .lb-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .lb-grid { grid-template-columns: 1fr; }
+    }
 
     /* Short/full label toggle — desktop shows full, mobile shows short */
     .ix-lbl-short { display: none; }
@@ -153,12 +162,6 @@
     }
     .ob-colleague-chip:hover { border-color: var(--accent); background: #f0faf0; }
     .ob-colleague-chip.selected { border-color: var(--accent); background: #f0faf0; color: var(--accent-dark); font-weight: 700; }
-
-    /* ── LATE LEADERBOARD ── */
-    .lb-late-header { padding: 10px 16px 6px; border-bottom: 1px solid var(--border); background: var(--gold-bg); }
-    .lb-late-title { font-size: .72rem; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
-    .lb-late-sub { font-size: .65rem; color: var(--muted); margin-top: 2px; }
-    .lb-row.late-lb:hover { background: rgba(180,90,0,.04); }
   </style>
 </head>
 <body>
@@ -224,44 +227,41 @@
       <!-- 1. STANDING BANNER — full width -->
       <div data-slot="standing-banner"></div>
 
-      <!-- 2. TOP GRID — hero/jersey LEFT · matches RIGHT -->
-      <!-- ROW 1: Tekme (left) + Lestvica (right) -->
-      <div class="index-grid-top">
+      <!-- 2. TEKME — full width -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📅 Tekme</div>
+        </div>
+        <div id="matches-list">
+          <div class="no-matches">Nalagam tekme...</div>
+        </div>
+        <div class="matches-footer">
+          <a href="predictions.html" class="matches-footer-link">📋 Vse moje napovedi →</a>
+        </div>
+      </div>
 
-        <!-- LEFT: matches -->
-        <div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">📅 Tekme</div>
-            </div>
-            <div id="matches-list">
-              <div class="no-matches">Nalagam tekme...</div>
-            </div>
-            <div class="matches-footer">
-              <a href="predictions.html" class="matches-footer-link">📋 Vse moje napovedi →</a>
-            </div>
+      <!-- 3. LESTVICI — side by side -->
+      <div class="lb-grid">
+
+        <!-- LEFT: main leaderboard -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏆 Lestvica</div>
+            <a href="leaderboard.html" class="card-action">Celotna →</a>
+          </div>
+          <div id="leaderboard-list">
+            <div class="no-matches">Nalagam lestvico...</div>
           </div>
         </div>
 
-        <!-- RIGHT: mini leaderboard -->
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">🏆 Lestvica</div>
-              <a href="leaderboard.html" class="card-action">Celotna →</a>
-            </div>
-            <div id="leaderboard-list">
-              <div class="no-matches">Nalagam lestvico...</div>
-            </div>
+        <!-- RIGHT: late leaderboard -->
+        <div class="card" id="late-leaderboard-card">
+          <div class="lb-late-header">
+            <div class="lb-late-title">⚡ Od tekme 74 naprej</div>
+            <div class="lb-late-sub">Oskar, Mija, Vanja, Greta so se pridružili 29. jun · enake možnosti od tu</div>
           </div>
-          <div class="card" id="late-leaderboard-card">
-            <div class="lb-late-header">
-              <div class="lb-late-title">⚡ Od tekme 74 naprej</div>
-              <div class="lb-late-sub">Oskar, Mija, Vanja, Greta so se pridružili 29. jun · enake možnosti od tu</div>
-            </div>
-            <div id="late-leaderboard-list">
-              <div class="no-matches">Nalagam...</div>
-            </div>
+          <div id="late-leaderboard-list">
+            <div class="no-matches">Nalagam...</div>
           </div>
         </div>
 
@@ -352,8 +352,8 @@
     const months = ['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
     const mult = state?.multiplier ?? 1;
 
-    const TOTAL = 10;
-    const MAX_PAST = 3;
+    const TOTAL = 4;
+    const MAX_PAST = 2;
     const from = new Date(now - 2 * 60 * 60 * 1000);
 
     // Fetch future up to TOTAL, then trim after we know past count
@@ -568,48 +568,31 @@
      ══════════════════════════════════════════════════════ */
   async function _loadLateLeaderboard(profile, state) {
     const list = document.getElementById('late-leaderboard-list');
-
-    // Fetch all match IDs from match 74 onwards
     const { data: lateMatches } = await NP.db
-      .from('matches')
-      .select('id')
+      .from('matches').select('id')
       .gte('kickoff_at', '2026-06-29T17:00:00+00:00');
-
     const lateMatchIds = (lateMatches ?? []).map(m => m.id);
     if (!lateMatchIds.length) { list.innerHTML = '<div class="no-matches">Ni podatkov.</div>'; return; }
 
-    // Fetch all predictions for late matches with points
-    const { data: preds } = await NP.db
-      .from('predictions')
-      .select('user_id, match_id, points_awarded')
-      .in('match_id', lateMatchIds)
-      .not('points_awarded', 'is', null);
-
-    // Fetch all users for display
-    const { data: users } = await NP.db
-      .from('users')
-      .select('id, display_name, avatar_team_iso2');
+    const [predsRes, usersRes] = await Promise.all([
+      NP.db.from('predictions').select('user_id, points_awarded')
+        .in('match_id', lateMatchIds).not('points_awarded', 'is', null),
+      NP.db.from('users').select('id, display_name, avatar_team_iso2'),
+    ]);
 
     const userMap = {};
-    (users ?? []).forEach(u => { userMap[u.id] = u; });
+    (usersRes.data ?? []).forEach(u => { userMap[u.id] = u; });
 
-    // Sum points per user
     const totals = {};
-    (preds ?? []).forEach(p => {
+    (predsRes.data ?? []).forEach(p => {
       totals[p.user_id] = (totals[p.user_id] ?? 0) + (p.points_awarded ?? 0);
     });
+    (usersRes.data ?? []).forEach(u => { if (!(u.id in totals)) totals[u.id] = 0; });
 
-    // Include all users (even those with 0 points)
-    (users ?? []).forEach(u => {
-      if (!(u.id in totals)) totals[u.id] = 0;
-    });
-
-    // Sort by points
     const ranked = Object.entries(totals)
       .map(([uid, pts]) => ({ user_id: uid, pts }))
       .sort((a, b) => b.pts - a.pts);
 
-    // Assign ranks
     let rank = 1;
     ranked.forEach((r, i) => {
       if (i > 0 && r.pts < ranked[i-1].pts) rank = i + 1;
@@ -622,25 +605,17 @@
       if (!u) return;
       const isMe = r.user_id === profile.id;
       const rankCls = r.rank === 1 ? 'r1' : r.rank === 2 ? 'r2' : r.rank === 3 ? 'r3' : '';
-      let displayName = u.display_name;
-      if (state.isThemedDay && state.plugins?.alias_names) {
-        // no alias logic needed here, keep simple
-      }
       html += `
         <div class="lb-row late-lb ${isMe ? 'me' : ''}">
           <div class="lb-rank ${rankCls}">${r.rank}</div>
-          <img src="${NP.flagUrl(u.avatar_team_iso2, 40)}"
-               class="lb-avatar"
-               onerror="this.style.visibility='hidden'" alt="">
+          <img src="${NP.flagUrl(u.avatar_team_iso2, 40)}" class="lb-avatar" onerror="this.style.visibility='hidden'" alt="">
           <div class="lb-name" style="${isMe ? 'color:var(--accent-dark);font-weight:600' : ''}">
-            ${displayName}
-            ${isMe ? '<span class="lb-alias-tag">ti</span>' : ''}
+            ${u.display_name}${isMe ? ' <span class="lb-alias-tag">ti</span>' : ''}
           </div>
           <div class="lb-pts" style="${isMe ? 'color:var(--accent-dark)' : ''}">${r.pts}</div>
           <div class="lb-delta same">—</div>
         </div>`;
     });
-
     list.innerHTML = html || '<div class="no-matches">Ni podatkov.</div>';
   }
 
