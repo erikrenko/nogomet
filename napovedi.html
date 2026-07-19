@@ -208,7 +208,7 @@
         ? _flagEmoji(_state.themedDay.theme_flag_iso2)
         : _profile.display_name.charAt(0).toUpperCase();
 
-    const [matchesRes, predsRes, usersRes, phasesRes] = await Promise.all([
+    const [matchesRes, predsRes, usersRes] = await Promise.all([
       NP.db.from('matches')
         .select(`id, phase, group_name, kickoff_at,
           home_score_90, away_score_90, home_score_120, away_score_120,
@@ -216,13 +216,11 @@
           away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)`)
         .not('home_team_id', 'is', null)
         .order('kickoff_at', { ascending: false }),
-      NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded'),
+      NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded').limit(5000),
       NP.db.from('users').select('id, display_name, original_name, avatar_team_iso2, aliases'),
-      NP.db.from('tournament_phases').select('starts_at, ends_at, multiplier'),
     ]);
 
     _allMatches = matchesRes.data ?? [];
-    window._phases = phasesRes.data ?? [];
     _users      = usersRes.data   ?? [];
     _userMap    = {};
     _users.forEach(u => { _userMap[u.id] = u; });
@@ -327,7 +325,7 @@
       : `<span class="nap-time">${NP.formatKickoff(m.kickoff_at, false)}</span>`;
 
     const bodyHtml = finished
-      ? _renderScoreGroups(m, preds, noPred)
+      ? _renderScoreGroups(m, preds, noPred, mult)
       : _renderLocked(preds, noPred);
 
     return `
@@ -391,14 +389,7 @@
       </div>`;
   }
 
-  function _renderScoreGroups(m, preds, noPred) {
-    // Get multiplier for THIS match's kickoff time, not current phase
-    const matchKickoff = new Date(m.kickoff_at);
-    let mult = 1;
-    const phase = (window._phases ?? []).find(p =>
-      new Date(p.starts_at) <= matchKickoff && new Date(p.ends_at) >= matchKickoff
-    );
-    if (phase) mult = phase.multiplier ?? 1;
+  function _renderScoreGroups(m, preds, noPred, mult) {
     if (!preds.length && !noPred.length) return '<div style="padding:12px 16px;font-size:.8rem;color:var(--muted)">Ni napovedi.</div>';
     const groups = {};
     preds.forEach(p => {
