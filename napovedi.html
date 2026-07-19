@@ -208,7 +208,7 @@
         ? _flagEmoji(_state.themedDay.theme_flag_iso2)
         : _profile.display_name.charAt(0).toUpperCase();
 
-    const [matchesRes, predsRes, usersRes] = await Promise.all([
+    const [matchesRes, predsRes1, predsRes2, usersRes] = await Promise.all([
       NP.db.from('matches')
         .select(`id, phase, group_name, kickoff_at,
           home_score_90, away_score_90, home_score_120, away_score_120,
@@ -216,7 +216,8 @@
           away_team:teams!matches_away_team_id_fkey(id, name_sl, flag_code, fifa_code)`)
         .not('home_team_id', 'is', null)
         .order('kickoff_at', { ascending: false }),
-      NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded').limit(5000),
+      NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded').range(0, 999),
+      NP.db.from('predictions').select('user_id, match_id, pred_home, pred_away, points_awarded').range(1000, 1999),
       NP.db.from('users').select('id, display_name, original_name, avatar_team_iso2, aliases'),
     ]);
 
@@ -225,8 +226,9 @@
     _userMap    = {};
     _users.forEach(u => { _userMap[u.id] = u; });
 
+    const _allPreds = [...(predsRes1.data ?? []), ...(predsRes2.data ?? [])];
     _predsByMatch = {};
-    (predsRes.data ?? []).forEach(p => {
+    _allPreds.forEach(p => {
       if (!_predsByMatch[p.match_id]) _predsByMatch[p.match_id] = [];
       _predsByMatch[p.match_id].push(p);
     });
