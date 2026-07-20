@@ -429,66 +429,37 @@ NP.scoring = {
       .from('users').select('id, display_name, avatar_team_iso2');
     if (uErr) return { saved: 0, errors: [uErr.message] };
 
-    // Fetch most recent snapshot per user (any date before today) for delta calc
-    const today = new Date().toISOString().slice(0, 10);
-    const { data: prevSnaps } = await NP.db
-      .from('leaderboard_snapshots')
-      .select('user_id, snapshot_date, rank')
-      .lt('snapshot_date', today)
-      .order('snapshot_date', { ascending: false });
-
-    // Keep only the latest snapshot per user
-    const prevRankByUser = {};
-    (prevSnaps ?? []).forEach(s => {
-      if (!(s.user_id in prevRankByUser)) prevRankByUser[s.user_id] = s.rank;
-    });
+    // Fetch existing bonus_points so rebuild never overwrites them
+    const { data: bonusRows } = await NP.db
+      .from('leaderboard').select('user_id, bonus_points');
+    const bonusMap = {};
+    (bonusRows ?? []).forEach(r => { bonusMap[r.user_id] = r.bonus_points ?? 0; });
 
     const rows = [];
     for (const user of users ?? []) {
       try {
         const stats = await this.recalcUser(user.id);
+        const bonus = bonusMap[user.id] ?? 0;
         rows.push({
           user_id:          user.id,
           display_name:     user.display_name,
           flag_iso2:        user.avatar_team_iso2 ?? null,
-          total_points:     stats.total_points,
+          total_points:     stats.total_points + bonus,
           match_points:     stats.match_points,
+          bonus_points:     bonus,
           trivia_points:    0,
           correct_scores:   stats.correct_scores,
           correct_outcomes: stats.correct_outcomes,
+          delta:            0,
         });
       } catch (e) { errors.push(`User ${user.id}: ${e.message}`); }
     }
 
     rows.sort((a, b) => b.total_points - a.total_points);
-    let ranked = this.assignRanks(rows);
-
-    // Calculate delta using previous rank
-    ranked = ranked.map(r => ({
-      ...r,
-      delta: this.calcDelta(r.rank, prevRankByUser[r.user_id]),
-    }));
-
+    const ranked = this.assignRanks(rows);
     const { error: lErr } = await NP.db
       .from('leaderboard').upsert(ranked, { onConflict: 'user_id' });
     if (lErr) errors.push(lErr.message);
-
-    // Save today's snapshot for future delta calculations + trajectory chart
-    const snapshots = ranked.map(r => ({
-      user_id:          r.user_id,
-      snapshot_date:    today,
-      total_points:     r.total_points,
-      match_points:     r.match_points,
-      trivia_points:    0,
-      correct_scores:   r.correct_scores,
-      correct_outcomes: r.correct_outcomes,
-      rank:             r.rank,
-    }));
-    const { error: sErr } = await NP.db
-      .from('leaderboard_snapshots')
-      .upsert(snapshots, { onConflict: 'user_id,snapshot_date' });
-    if (sErr) errors.push(sErr.message);
-
     return { saved: ranked.length, errors };
   },
 
